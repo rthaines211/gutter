@@ -9,6 +9,10 @@ class SyncResponse {
   final List<Map<String, dynamic>> arcs;
   final List<String> arcIds;
 
+  /// False for servers with no queues or arcs (Komga): the mirror then keeps
+  /// its local ones instead of pruning them to the empty id lists.
+  final bool serverHasQueues;
+
   const SyncResponse({
     required this.serverTime,
     required this.series,
@@ -19,6 +23,7 @@ class SyncResponse {
     this.queueIds = const [],
     this.arcs = const [],
     this.arcIds = const [],
+    this.serverHasQueues = true,
   });
 
   factory SyncResponse.fromJson(Map<String, dynamic> json) {

@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/server_config.dart';
 import '../models/server_source.dart';
 import '../services/api_client.dart';
+import '../services/komga_client.dart';
 import '../services/label_client.dart';
 import 'connectivity_provider.dart';
 import 'source_provider.dart';
@@ -16,19 +17,27 @@ final serverConfigProvider = Provider<ServerConfig>((ref) {
   return ServerConfig(prefs);
 });
 
-/// ApiClient for the custom backend. Only valid when active source is custom.
+/// Client for the active source: [KomgaClient] for Komga, else the Gutter
+/// server's [ApiClient].
 /// Rebuilds when active source changes.
 final apiClientProvider = Provider<ApiClient>((ref) {
   final source = ref.watch(activeSourceProvider);
   final config = ref.watch(serverConfigProvider);
-  return ApiClient(
-    baseUrl: source.baseUrl,
-    deviceId: config.deviceId,
-    authHeaders: source.authHeaders,
-    onRequestOutcome: (reachedServer) {
+  void onOutcome(bool reachedServer) =>
       ref.read(connectivityProvider.notifier).reportOutcome(reachedServer);
-    },
-  );
+  return source.type == SourceType.komga
+      ? KomgaClient(
+          baseUrl: source.baseUrl,
+          deviceId: config.deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onOutcome,
+        )
+      : ApiClient(
+          baseUrl: source.baseUrl,
+          deviceId: config.deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onOutcome,
+        );
 });
 
 /// Client for the panel label server, proxied at `<baseUrl>/labeller/`.

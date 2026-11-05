@@ -178,6 +178,18 @@ class ApiClient {
     throw ApiException(response.statusCode, response.body);
   }
 
+  /// For server adapters ([KomgaClient]): any method, JSON body in, decoded
+  /// JSON (or null for an empty body) out; non-2xx throws [ApiException].
+  Future<dynamic> requestJson(String method, String path,
+      {Object? body, Duration timeout = const Duration(seconds: 60)}) async {
+    final response =
+        await _request(method: method, path: path, body: body, timeout: timeout);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    return response.body.isEmpty ? null : jsonDecode(response.body);
+  }
+
   Future<void> _put(String path, Map<String, dynamic> body) async {
     final response = await _request(method: 'PUT', path: path, body: body);
     if (response.statusCode < 200 || response.statusCode >= 300) {
