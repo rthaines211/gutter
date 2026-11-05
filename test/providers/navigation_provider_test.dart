@@ -53,5 +53,7 @@ void main() {
     n.go(NavDestination.library);
     n.setTabIndex(2);
     expect(c.read(navigationProvider), NavDestination.read);
+    n.go(NavDestination.arcs);
+    expect(c.read(navigationProvider), NavDestination.read);
   });
 }

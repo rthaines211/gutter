@@ -152,12 +152,14 @@ void main() {
     expect(t.getSize(find.byType(IconRail)).width, 76);
   });
 
-  testWidgets('store: no Creators or Review in the rail', (t) async {
+  testWidgets('store: no Creators, Review or Arcs in the rail', (t) async {
     isStore = true;
     addTearDown(() => isStore = false);
     await t.pumpWidget(_host());
     expect(find.text('Creators'), findsNothing);
     expect(find.text('Review'), findsNothing);
+    // Arcs come from Mylar via the personal backend: empty for strangers.
+    expect(find.text('Arcs'), findsNothing);
     expect(find.text('Library'), findsOneWidget);
   });
 }

@@ -76,7 +76,7 @@ class _SidebarV2State extends ConsumerState<SidebarV2> {
                 if (!isStore) _NavRow(icon: Icons.people_alt_outlined, label: 'Creators', active: current == NavDestination.creators, onTap: () => _navigate(NavDestination.creators)),
                 _NavRow(icon: Icons.download_rounded, label: 'Downloads', active: current == NavDestination.downloads, onTap: () => _navigate(NavDestination.downloads)),
                 _NavRow(icon: Icons.playlist_play_rounded, label: 'Queues', active: current == NavDestination.queues, onTap: () => _navigate(NavDestination.queues)),
-                _NavRow(icon: Icons.account_tree_rounded, label: 'Arcs', active: current == NavDestination.arcs, onTap: () => _navigate(NavDestination.arcs)),
+                if (!isStore) _NavRow(icon: Icons.account_tree_rounded, label: 'Arcs', active: current == NavDestination.arcs, onTap: () => _navigate(NavDestination.arcs)),
                 _NavRow(icon: Icons.bar_chart_rounded, label: 'Stats', active: current == NavDestination.stats, onTap: () => _navigate(NavDestination.stats)),
                 const SizedBox(height: 16),
                 _GroupHeader(label: 'Smart Filters'),

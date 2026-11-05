@@ -17,10 +17,11 @@ enum NavDestination {
 }
 
 /// Personal-only destinations: hidden in the store app (backend-only Creators,
-/// the match Review deck).
+/// the match Review deck, Arcs synced from Mylar).
 const storeHiddenDestinations = {
   NavDestination.creators,
   NavDestination.review,
+  NavDestination.arcs,
 };
 
 /// Destinations that need the server; hidden while offline.

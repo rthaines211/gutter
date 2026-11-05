@@ -125,7 +125,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   sub: 'Control the iPad reader',
                   onTap: () => _push(context, const RemoteScreen(), '/remote'),
                 ),
-                _MoreRow(
+                if (!isStore) _MoreRow(
                   icon: Icons.account_tree_rounded,
                   iconColor: AppTheme.violet,
                   label: 'Story Arcs',
