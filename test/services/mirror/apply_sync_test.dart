@@ -191,4 +191,12 @@ void main() {
         serverTime: 2, series: [], progress: [], seriesIds: [], progressIds: []));
     expect(await db.watchQueues().first, isEmpty);
   });
+
+  test('seriesIdForComic finds the issue\'s series', () async {
+    await db.applySync(SyncResponse(
+        serverTime: 1, series: [seriesJson('s1', issues: [issueJson('c1')])],
+        progress: const [], seriesIds: const ['s1'], progressIds: const []));
+    expect(await db.seriesIdForComic('c1'), 's1');
+    expect(await db.seriesIdForComic('nope'), isNull);
+  });
 }

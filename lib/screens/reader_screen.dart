@@ -271,6 +271,12 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final folder = seriesFromComicPath(_comicPath);
     _seriesId = (widget.seriesId?.isNotEmpty ?? false) ? widget.seriesId : folder?.id;
     _seriesName = (widget.seriesName?.isNotEmpty ?? false) ? widget.seriesName : folder?.name;
+    // Komga ids carry no folder: ask the mirror.
+    if (_seriesId == null) {
+      ref.read(mirrorDbProvider).seriesIdForComic(_comicId).then((id) {
+        if (mounted) _seriesId ??= id;
+      }).ignore();
+    }
     _pageController = PageController(initialPage: widget.initialPage);
     _remoteCommands = ref.read(remoteCommandsProvider)();
     _overlayAnim = AnimationController(

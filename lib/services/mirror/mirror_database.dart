@@ -334,6 +334,13 @@ class MirrorDatabase extends _$MirrorDatabase {
     });
   }
 
+  /// The series a mirrored issue belongs to, or null if it isn't mirrored.
+  Future<String?> seriesIdForComic(String comicId) async {
+    final row = await (select(issueRows)..where((t) => t.id.equals(comicId)))
+        .getSingleOrNull();
+    return row?.seriesId;
+  }
+
   /// Inserts/updates one series row (+ its issue rows) from a raw server map
   /// (issues inline). Shared by [applySync]'s changed-set loop and
   /// [healMissingSeries]'s backfill. Must run inside a transaction.
