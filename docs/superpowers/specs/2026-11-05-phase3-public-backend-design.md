@@ -241,5 +241,5 @@ won't respond until scan completes" line.
 
 On a machine that has never run Gutter: follow only the README, `docker compose up -d`
 with a folder of CBZs, open the status page and watch the scan, add the server in the store
-build of the app with the password, and read a comic. Repeat with no metadata keys at all,
+build of the app with the password, and read a comic. Repeat with no `localcv.db` or keys at all,
 and confirm there are no errors or dead UI.
