@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -175,7 +176,7 @@ class _FilmstripScrubberState extends State<FilmstripScrubber> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: _localThumb(context, page) ?? CachedNetworkImage(
+                  child: _localThumb(context, page) ?? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                     imageUrl: widget.pageUrlBuilder(page),
                     fit: BoxFit.cover,
                     // Decode at thumb size: full pages would evict the

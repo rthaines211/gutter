@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/services/page_prefetcher.dart';
 import 'package:comic_reader_app/services/cache_layer.dart';
 
 void main() {
@@ -63,5 +65,19 @@ void main() {
     await cache.write('series/batman-2024', {'id': 'ok'});
     final result = await cache.read('series/batman-2024');
     expect(result, isNotNull);
+  });
+
+  test('prefetch and display share one cache entry with headers', () {
+    const h = {'Authorization': 'Bearer k'};
+    const url = 'http://x/comics/1/pages/0';
+    final display = CachedNetworkImageProvider(url, headers: h);
+    final fetched = PagePrefetcher(
+      totalPages: 3,
+      pageUrlBuilder: (_) => url,
+      headers: h,
+    ).providerFor(0);
+    expect(fetched, display);
+    expect(fetched.cacheKey, display.cacheKey);
+    expect(fetched.headers, h);
   });
 }

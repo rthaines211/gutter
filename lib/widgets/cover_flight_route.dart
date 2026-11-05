@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../providers/providers.dart';
+
 /// Marks an issue's cover on screen so [readerRoute] can fly it into the
 /// reader. Wrap the cover image (inside its clip) with the comic id and the
 /// URL it shows, so the flight reuses the cached image.
@@ -129,7 +131,10 @@ Route<T> readerRoute<T>(
   }
 
   final reveal = CoverReveal();
-  final image = CachedNetworkImageProvider(anchor.widget.imageUrl);
+  final image = CachedNetworkImageProvider(
+    anchor.widget.imageUrl,
+    headers: imageHeadersOf(anchor.context),
+  );
   return PageRouteBuilder<T>(
     settings: settings,
     transitionDuration: const Duration(milliseconds: _flight),

@@ -99,7 +99,9 @@ Future<void> _pump(WidgetTester tester, _Server server, Widget home) async {
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [labelClientProvider.overrideWithValue(server.client())],
+      overrides: [
+        imageHeadersProvider.overrideWithValue(const {}),
+        labelClientProvider.overrideWithValue(server.client())],
       child: MaterialApp(home: home),
     ),
   );

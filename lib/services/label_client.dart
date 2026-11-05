@@ -396,7 +396,10 @@ class LabelSession extends ChangeNotifier {
         unawaited(
           // onError: a failed prefetch is not worth a FlutterError report.
           precacheImage(
-            CachedNetworkImageProvider(client.imageUrl(id)),
+            CachedNetworkImageProvider(
+              client.imageUrl(id),
+              headers: client.authHeaders,
+            ),
             context,
             onError: (_, _) {},
           ),

@@ -158,7 +158,7 @@ class _RemoteBodyState extends ConsumerState<_RemoteBody> {
     final url = ref
         .watch(apiClientProvider)
         .pageUrl(widget.snapshot.comicId, _shownPage);
-    return CachedNetworkImage(
+    return CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
       imageUrl: url,
       fit: BoxFit.contain,
       memCacheWidth: _decodeWidth,

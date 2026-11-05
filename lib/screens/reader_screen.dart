@@ -2141,6 +2141,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     _prefetcher ??= PagePrefetcher(
       totalPages: pageCount,
       pageUrlBuilder: (p) => client.pageUrl(_comicId, p),
+      headers: ref.read(imageHeadersProvider),
     );
 
     final jumpChip = _buildJumpChip();

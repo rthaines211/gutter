@@ -181,7 +181,7 @@ class _Cover extends StatelessWidget {
     if (rec.isInLibrary && rec.seriesId != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: CachedNetworkImage(
+        child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
           imageUrl: '$serverUrl/library/${rec.seriesId}/cover',
           width: 80, height: 120, fit: BoxFit.cover,
           errorWidget: (_, _, _) => const _GenericCover(),

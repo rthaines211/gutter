@@ -11,6 +11,7 @@ class PagePrefetcher {
 
   final int totalPages;
   final String Function(int page) pageUrlBuilder;
+  final Map<String, String> headers;
 
   int _prefetchCount = _defaultPrefetchCount;
   final List<DateTime> _recentPageTimes = [];
@@ -20,6 +21,7 @@ class PagePrefetcher {
   PagePrefetcher({
     required this.totalPages,
     required this.pageUrlBuilder,
+    this.headers = const {},
   });
 
   List<int> prefetchRange({required int currentPage, required bool rtl}) {
@@ -45,11 +47,14 @@ class PagePrefetcher {
     _precachePages(pages, context);
   }
 
+  /// Same URL and headers the page widget uses, so both share one cache entry.
+  CachedNetworkImageProvider providerFor(int page) =>
+      CachedNetworkImageProvider(pageUrlBuilder(page), headers: headers);
+
   void _precachePages(List<int> pages, BuildContext context) {
     for (final page in pages) {
       if (_inflightHandles.containsKey(page)) continue;
-      final url = pageUrlBuilder(page);
-      final provider = CachedNetworkImageProvider(url);
+      final provider = providerFor(page);
       final stream = provider.resolve(const ImageConfiguration());
       final listener = ImageStreamListener(
         (info, sync) => _inflightHandles.remove(page),

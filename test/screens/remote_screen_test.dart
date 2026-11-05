@@ -33,6 +33,7 @@ void main() {
 
   Widget build() => ProviderScope(
         overrides: [
+          imageHeadersProvider.overrideWithValue(const {}),
           remoteSnapshotProvider.overrideWith((ref) => snapshots.stream),
           remoteConnectedProvider.overrideWith((ref) => connected.stream),
           remoteSessionProvider.overrideWithValue(session),

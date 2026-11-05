@@ -1,4 +1,5 @@
 // lib/widgets/issue_grid_view.dart
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -63,7 +64,7 @@ class IssueGridTile extends StatelessWidget {
                       comicId: issue.id,
                       imageUrl: coverUrl,
                       radius: AppTheme.r12,
-                      child: CachedNetworkImage(
+                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                         imageUrl: coverUrl,
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s1),

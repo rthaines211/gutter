@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:comic_reader_app/providers/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/widgets/page_reader.dart';
 
@@ -9,7 +11,7 @@ void main() {
       addTearDown(controller.dispose);
 
       await tester.pumpWidget(
-        MaterialApp(
+        noImgAuth(MaterialApp(
           home: Scaffold(
             body: PageReader(
               controller: controller,
@@ -19,7 +21,7 @@ void main() {
               onPageChanged: (_) {},
             ),
           ),
-        ),
+        )),
       );
 
       final pageView = tester.widget<PageView>(find.byType(PageView));
@@ -31,7 +33,7 @@ void main() {
       addTearDown(controller.dispose);
 
       await tester.pumpWidget(
-        MaterialApp(
+        noImgAuth(MaterialApp(
           home: Scaffold(
             body: PageReader(
               controller: controller,
@@ -46,7 +48,7 @@ void main() {
               ),
             ),
           ),
-        ),
+        )),
       );
 
       final pageView = tester.widget<PageView>(find.byType(PageView));
@@ -58,7 +60,7 @@ void main() {
       addTearDown(controller.dispose);
 
       await tester.pumpWidget(
-        MaterialApp(
+        noImgAuth(MaterialApp(
           home: Scaffold(
             body: PageReader(
               controller: controller,
@@ -72,7 +74,7 @@ void main() {
               ),
             ),
           ),
-        ),
+        )),
       );
 
       await tester.pumpAndSettle();
@@ -80,3 +82,10 @@ void main() {
     });
   });
 }
+
+
+/// Cover images ask for auth headers; these tests have no source.
+Widget noImgAuth(Widget child) => ProviderScope(
+      overrides: [imageHeadersProvider.overrideWithValue(const {})],
+      child: child,
+    );

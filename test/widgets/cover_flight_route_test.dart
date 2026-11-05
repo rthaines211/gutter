@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:comic_reader_app/providers/providers.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/widgets/cover_flight_route.dart';
 
@@ -15,7 +17,7 @@ Future<void> _pumpShelf(WidgetTester t, {String comicId = 'c1', bool reduce = fa
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.reset);
   _tileLeft.value = 100;
-  await t.pumpWidget(MaterialApp(
+  await t.pumpWidget(noImgAuth(MaterialApp(
     builder: (context, child) => MediaQuery(
       data: MediaQuery.of(context).copyWith(disableAnimations: reduce),
       child: child!,
@@ -45,7 +47,7 @@ Future<void> _pumpShelf(WidgetTester t, {String comicId = 'c1', bool reduce = fa
         ),
       ]),
     ),
-  ));
+  )));
 }
 
 Finder get _flyer => find.byType(ClipRRect);
@@ -173,3 +175,10 @@ void main() {
     expect(find.descendant(of: find.byType(Visibility), matching: find.byType(ClipRRect)), findsNothing);
   });
 }
+
+
+/// Cover images ask for auth headers; these tests have no source.
+Widget noImgAuth(Widget child) => ProviderScope(
+      overrides: [imageHeadersProvider.overrideWithValue(const {})],
+      child: child,
+    );

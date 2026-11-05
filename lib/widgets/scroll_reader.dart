@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:path/path.dart' as p;
@@ -156,7 +157,7 @@ class _ScrollReaderState extends State<ScrollReader> {
             key: _keys.putIfAbsent(index, GlobalKey.new),
             child: widget.localPagesPath != null
                 ? _buildLocalImage(index)
-                : CachedNetworkImage(
+                : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                     imageUrl: widget.pageUrlBuilder(index),
                     fit: BoxFit.fitWidth,
                     width: double.infinity,

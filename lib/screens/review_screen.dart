@@ -240,7 +240,7 @@ class _Cover extends StatelessWidget {
     final Widget body = (url != null && url!.isNotEmpty)
         ? ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: CachedNetworkImage(
+            child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
               imageUrl: url!,
               fit: BoxFit.contain,
               placeholder: (_, _) => const ShimmerBox(height: double.infinity),

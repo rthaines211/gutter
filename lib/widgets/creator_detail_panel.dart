@@ -481,7 +481,7 @@ class _VolumeRowWidget extends StatelessWidget {
         ? placeholder
         : ClipRRect(
             borderRadius: BorderRadius.circular(AppTheme.r4),
-            child: CachedNetworkImage(
+            child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
               imageUrl: row.coverUrl,
               width: 40,
               height: 60,

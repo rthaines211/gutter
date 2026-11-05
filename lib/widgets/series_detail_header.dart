@@ -1,4 +1,5 @@
 // lib/widgets/series_detail_header.dart
+import '../providers/providers.dart';
 import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +129,7 @@ class SeriesDetailHeader extends ConsumerWidget {
                     scale: 1.3,
                     child: Opacity(
                       opacity: backdropOpacity,
-                      child: CachedNetworkImage(
+                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                         imageUrl: coverImageUrl!,
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s1),
@@ -301,7 +302,7 @@ class SeriesDetailHeader extends ConsumerWidget {
                 width: 150,
                 height: 225,
                 child: coverImageUrl != null
-                    ? CachedNetworkImage(
+                    ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                         imageUrl: coverImageUrl!,
                         fit: BoxFit.cover,
                       )
@@ -373,7 +374,7 @@ class SeriesDetailHeader extends ConsumerWidget {
                   width: LayoutBreakpoint.isTablet(context) ? 200 : 128,
                   height: LayoutBreakpoint.isTablet(context) ? 300 : 192,
                   child: coverImageUrl != null
-                      ? CachedNetworkImage(
+                      ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                           imageUrl: coverImageUrl!,
                           fit: BoxFit.cover,
                         )

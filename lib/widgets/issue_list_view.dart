@@ -109,7 +109,7 @@ class IssueListRow extends ConsumerWidget {
                   child: CoverAnchor(
                     comicId: issue.id,
                     imageUrl: '$serverUrl/comics/${issue.id}/cover',
-                    child: CachedNetworkImage(
+                    child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                       imageUrl: '$serverUrl/comics/${issue.id}/cover',
                       fit: BoxFit.cover,
                       placeholder: (_, _) => Container(color: context.scheme.s2),

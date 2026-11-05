@@ -553,7 +553,7 @@ class _Cover extends StatelessWidget {
     final placeholder = Container(color: context.scheme.s2);
     final Widget network = networkUrl.isEmpty
         ? placeholder
-        : CachedNetworkImage(
+        : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
             imageUrl: networkUrl,
             fit: BoxFit.cover,
             placeholder: (_, _) => placeholder,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/comic_file.dart';
 
@@ -16,7 +17,7 @@ class ComicGridTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: _buildCover()),
+          Expanded(child: _buildCover(context)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
             child: Text(
@@ -34,7 +35,7 @@ class ComicGridTile extends StatelessWidget {
     );
   }
 
-  Widget _buildCover() {
+  Widget _buildCover(BuildContext context) {
     if (file.isDir) {
       return Container(
         color: Colors.grey[800],
@@ -43,7 +44,7 @@ class ComicGridTile extends StatelessWidget {
     }
 
     if (file.coverUrl != null && file.coverUrl!.isNotEmpty) {
-      return CachedNetworkImage(
+      return CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
         imageUrl: '$serverUrl${file.coverUrl!}',
         fit: BoxFit.cover,
         placeholder: (_, _) => Container(

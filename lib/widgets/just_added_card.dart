@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -50,7 +51,7 @@ class JustAddedCard extends ConsumerWidget {
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
                     child: coverUrl != null
-                        ? CachedNetworkImage(
+                        ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                             imageUrl: coverUrl,
                             fit: BoxFit.cover,
                             placeholder: (_, _) =>

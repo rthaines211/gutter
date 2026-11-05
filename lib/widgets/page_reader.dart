@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -231,7 +232,7 @@ class PageReaderState extends State<PageReader>
   Widget _buildPageImage(int index) {
     return widget.localPagesPath != null
         ? _buildLocalPage(index)
-        : CachedNetworkImage(
+        : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
             imageUrl: widget.pageUrlBuilder(index),
             fit: BoxFit.contain,
             width: double.infinity,

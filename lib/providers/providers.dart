@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/server_config.dart';
@@ -30,6 +31,14 @@ final apiClientProvider = Provider<ApiClient>((ref) {
     },
   );
 });
+
+/// Auth headers for cover and page images from the active source.
+final imageHeadersProvider = Provider<Map<String, String>>(
+    (ref) => ref.watch(activeSourceProvider).authHeaders);
+
+/// [imageHeadersProvider] for widgets without a `ref` (read once per build).
+Map<String, String> imageHeadersOf(BuildContext context) =>
+    ProviderScope.containerOf(context).read(imageHeadersProvider);
 
 /// Client for the panel label server, proxied at `<baseUrl>/labeller/`.
 final labelClientProvider = Provider<LabelClient>((ref) {

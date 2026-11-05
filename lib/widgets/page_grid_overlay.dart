@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../services/local_pages.dart';
 import '../config/app_theme.dart';
@@ -185,7 +186,7 @@ class _PageGridOverlayState extends State<PageGridOverlay> {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: _localThumb(context, index) ?? CachedNetworkImage(
+              child: _localThumb(context, index) ?? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
                 imageUrl: widget.pageUrlBuilder(index),
                 fit: BoxFit.cover,
                 placeholder: (_, _) => const ShimmerBox(

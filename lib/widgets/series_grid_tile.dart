@@ -1,4 +1,5 @@
 // lib/widgets/series_grid_tile.dart
+import '../providers/providers.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -195,7 +196,7 @@ class SeriesGridTile extends ConsumerWidget {
 
   Widget _coverImage(BuildContext context) {
     final Widget network = series.coverUrl.isNotEmpty
-        ? CachedNetworkImage(
+        ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
             imageUrl: '$serverUrl${series.coverUrl}',
             fit: BoxFit.cover,
             memCacheWidth: _decodeWidth,
