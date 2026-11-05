@@ -13,8 +13,10 @@ const _credentialPrefix = 'source_cred_';
 const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
 /// The push-registration key baked in by `make ipad` (read from the server's
-/// register_secret on the build Mac), so a reinstall needs no typing. Only
-/// seeds a fresh install; Settings → API Key still overrides or clears it.
+/// register_secret on the build Mac), so a reinstall needs no typing. Seeds a
+/// fresh install and fills in a keyless default source on an existing one;
+/// a key set in Settings → API Key wins. (Clearing it there only lasts until
+/// the next launch of a build that carries a built-in key.)
 /// ponytail: the secret ships inside the app; fine for a sideloaded,
 /// own-devices-only build.
 @visibleForTesting
@@ -62,7 +64,21 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
         updated.add(s);
       }
     }
+    // An install over an older build keeps its saved sources, so the seed
+    // above never runs: give a keyless default source the built-in key too.
+    var seeded = false;
+    if (builtInApiKey.isNotEmpty) {
+      for (var i = 0; i < updated.length; i++) {
+        final s = updated[i];
+        if (s.isDefault && (s.apiKey ?? '').isEmpty) {
+          updated[i] =
+              s.copyWith(authType: AuthType.apiKey, apiKey: builtInApiKey);
+          seeded = true;
+        }
+      }
+    }
     state = updated;
+    if (seeded) _persist(updated);
   }
 
   void add(ServerSource source) {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,6 +56,45 @@ void builtInKeyTests() {
 
   test('no built-in key seeds without auth', () async {
     final c = await _container();
+    expect(c.read(activeSourceProvider).authType, AuthType.none);
+  });
+
+  Future<ProviderContainer> existingInstall(
+      {Map<String, String> secure = const {}}) async {
+    var saved = ServerSource.createDefault(url: 'https://my.server');
+    if (secure.containsKey('apiKey')) {
+      saved = saved.copyWith(authType: AuthType.apiKey); // as _persist saves it
+    }
+    SharedPreferences.setMockInitialValues({
+      'server_sources': jsonEncode([saved.toJson()]),
+    });
+    FlutterSecureStorage.setMockInitialValues(
+        {for (final e in secure.entries) 'source_cred_${saved.id}_${e.key}': e.value});
+    final prefs = await SharedPreferences.getInstance();
+    final c = ProviderContainer(
+        overrides: [sharedPrefsProvider.overrideWithValue(prefs)]);
+    addTearDown(c.dispose);
+    c.read(sourceListProvider);
+    await Future<void>.delayed(Duration.zero); // credentials load async
+    return c;
+  }
+
+  test('existing install with no key picks up the built-in key', () async {
+    builtInApiKey = 'baked';
+    final c = await existingInstall();
+    expect(c.read(activeSourceProvider).authHeaders,
+        {'Authorization': 'Bearer baked'});
+  });
+
+  test('existing install keeps its own key over the built-in one', () async {
+    builtInApiKey = 'baked';
+    final c = await existingInstall(secure: {'apiKey': 'mine'});
+    expect(c.read(activeSourceProvider).authHeaders,
+        {'Authorization': 'Bearer mine'});
+  });
+
+  test('existing install without a built-in key stays keyless', () async {
+    final c = await existingInstall();
     expect(c.read(activeSourceProvider).authType, AuthType.none);
   });
 }
