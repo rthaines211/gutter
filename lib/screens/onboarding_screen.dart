@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
 import '../config/scheme.dart';
+import '../models/server_source.dart';
 import '../providers/accent_provider.dart';
 import '../providers/providers.dart';
 import '../providers/source_provider.dart';
@@ -32,9 +33,9 @@ List<String> serverUrlCandidates(String input) {
 /// check it answers, then save it as the default source. `app.dart` swaps to
 /// the shell once the active source has a URL, so this never pushes.
 class OnboardingScreen extends ConsumerStatefulWidget {
-  /// Checks a normalized URL reaches a server. Defaults to
-  /// [ApiClient.checkConnection].
-  final Future<bool> Function(String url)? probe;
+  /// Returns the HTTP status of a normalized URL (null when unreachable).
+  /// Defaults to [ApiClient.probeStatus].
+  final Future<int?> Function(String url, Map<String, String> headers)? probe;
 
   const OnboardingScreen({super.key, this.probe});
 
@@ -44,40 +45,84 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _urlCtrl = TextEditingController();
+  final _userCtrl = TextEditingController();
+  final _passCtrl = TextEditingController();
   bool _probing = false;
   String? _error;
+  // Set once a candidate answered 401: the server needs a password.
+  String? _authUrl;
 
   @override
   void dispose() {
     _urlCtrl.dispose();
+    _userCtrl.dispose();
+    _passCtrl.dispose();
     super.dispose();
   }
 
-  Future<bool> _defaultProbe(String url) => ApiClient(
+  Future<int?> _defaultProbe(String url, Map<String, String> headers) =>
+      ApiClient(
         baseUrl: url,
         deviceId: ref.read(serverConfigProvider).deviceId,
-      ).checkConnection();
+        authHeaders: headers,
+      ).probeStatus();
+
+  bool _ok(int? s) => s != null && s >= 200 && s < 300;
 
   Future<void> _connect() async {
-    final candidates = serverUrlCandidates(_urlCtrl.text);
+    final probe = widget.probe ?? _defaultProbe;
+    final candidates =
+        _authUrl != null ? [_authUrl!] : serverUrlCandidates(_urlCtrl.text);
+    final user = _userCtrl.text;
+    final pass = _passCtrl.text;
+    final withAuth = _authUrl != null;
+    final headers = withAuth
+        ? ServerSource(
+            id: '',
+            name: '',
+            type: SourceType.custom,
+            baseUrl: '',
+            authType: AuthType.basic,
+            username: user,
+            password: pass,
+          ).authHeaders
+        : const <String, String>{};
     setState(() {
       _probing = true;
       _error = null;
     });
     String? url;
+    String? needsAuth;
     for (final c in candidates) {
-      if (await (widget.probe ?? _defaultProbe)(c)) {
+      final status = await probe(c, headers);
+      if (_ok(status)) {
         url = c;
+        break;
+      }
+      if (status == 401) {
+        needsAuth = c;
         break;
       }
     }
     if (!mounted) return;
     if (url != null) {
+      // Credentials first: the shell mounts as soon as the URL lands, and its
+      // first API calls must already carry auth.
+      if (withAuth) {
+        ref.read(sourceListProvider.notifier).updateDefaultBasicAuth(user, pass);
+      }
       // Both, as Settings → Server URL does: covers and series detail build
       // URLs from ServerConfig, the API client from the source.
       await ref.read(serverConfigProvider).setServerUrl(url);
       if (!mounted) return;
       ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
+    } else if (needsAuth != null) {
+      setState(() {
+        _probing = false;
+        _authUrl = needsAuth;
+        _error =
+            withAuth ? 'Wrong username or password' : 'This server needs a password';
+      });
     } else {
       setState(() {
         _probing = false;
@@ -129,6 +174,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             hintText: 'comics.example.com',
                           ),
                         ),
+                        if (_authUrl != null) ...[
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _userCtrl,
+                            autocorrect: false,
+                            enableSuggestions: false,
+                            autofillHints: const [AutofillHints.username],
+                            decoration:
+                                const InputDecoration(labelText: 'Username'),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: _passCtrl,
+                            obscureText: true,
+                            autofillHints: const [AutofillHints.password],
+                            onSubmitted: (_) => _probing ? null : _connect(),
+                            decoration:
+                                const InputDecoration(labelText: 'Password'),
+                          ),
+                        ],
                         const SizedBox(height: 16),
                         FilledButton(
                           style:

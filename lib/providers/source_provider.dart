@@ -130,6 +130,28 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
     _persist(state);
   }
 
+  /// Sets the default server's Basic credentials (the password goes to secure
+  /// storage via [_persist]).
+  void updateDefaultBasicAuth(String username, String password) {
+    state = [
+      for (final s in state)
+        if (s.isDefault)
+          ServerSource(
+            id: s.id,
+            name: s.name,
+            type: s.type,
+            baseUrl: s.baseUrl,
+            authType: AuthType.basic,
+            username: username,
+            password: password,
+            isDefault: true,
+          )
+        else
+          s,
+    ];
+    _persist(state);
+  }
+
   void _persist(List<ServerSource> sources) {
     _prefs.setString(
       _sourcesKey,
