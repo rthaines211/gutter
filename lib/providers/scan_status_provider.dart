@@ -59,6 +59,17 @@ class ScanStatusNotifier extends Notifier<ScanStatusState> {
     }
   }
 
+  /// One poll; if the server is busy (e.g. its first scan), keep polling and
+  /// ScanBanner syncs the mirror on done. Idle stays idle.
+  Future<void> watchIfBusy() async {
+    try {
+      final status = await ref.read(apiClientProvider).getScanStatus();
+      if (!status.isBusy) return;
+      state = state.copyWith(phase: ScanPhase.scanning, status: status);
+      _startPolling();
+    } catch (_) {}
+  }
+
   void _startPolling() {
     _pollTimer?.cancel();
     _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) => _poll());

@@ -58,6 +58,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   /// and scrolling as the body height crosses [_minPinnedHeight].
   final _headerKey = GlobalKey();
   static const _minPinnedHeight = 420.0;
+  bool _scanWatched = false;
   bool _headerPinned = false;
 
   /// Pinned header height, so the pull-to-refresh spinner starts below it.
@@ -557,11 +558,54 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           }
 
           if (filteredList.isEmpty) {
+            final unfiltered = filter.isDefault && activeCollection == null;
+            if (unfiltered && ref.read(isCustomSourceProvider)) {
+              if (!_scanWatched) {
+                _scanWatched = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    ref.read(scanStatusProvider.notifier).watchIfBusy();
+                  }
+                });
+              }
+              final scan = ref.watch(scanStatusProvider);
+              if (scan.phase == ScanPhase.scanning) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: SizedBox(
+                      width: 280,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Scanning your library…',
+                              style: TextStyle(color: context.scheme.t2)),
+                          const SizedBox(height: 12),
+                          // Indeterminate while the server is still
+                          // enumerating folders (total == 0).
+                          LinearProgressIndicator(
+                              value: scan.status.total > 0
+                                  ? scan.status.progress
+                                  : null),
+                          if (scan.status.total > 0) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                                '${scan.status.scanned} of ${scan.status.total}',
+                                style: TextStyle(color: context.scheme.t2)),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            }
             return SliverFillRemaining(
               child: Center(
                 child: Text(
-                  filter.isDefault && activeCollection == null
-                      ? 'No series found.\nAdd comics and refresh.'
+                  unfiltered
+                      ? (ref.read(isCustomSourceProvider)
+                          ? 'No comics found in your library folder yet.'
+                          : 'No series found.\nAdd comics and refresh.')
                       : 'No series match the current filters.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: context.scheme.t2),
