@@ -186,8 +186,9 @@ class _PageGridOverlayState extends State<PageGridOverlay> {
           Positioned.fill(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
-              child: _localThumb(context, index) ?? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+              child: _localThumb(context, index) ?? CachedNetworkImage(
                 imageUrl: widget.pageUrlBuilder(index),
+                httpHeaders: imageHeadersOf(context, widget.pageUrlBuilder(index)),
                 fit: BoxFit.cover,
                 placeholder: (_, _) => const ShimmerBox(
                     width: double.infinity, height: double.infinity, radius: 4),

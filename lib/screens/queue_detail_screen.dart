@@ -81,8 +81,9 @@ class QueueDetailScreen extends ConsumerWidget {
                   child: ListTile(
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(4),
-                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                      child: CachedNetworkImage(
                         imageUrl: coverUrl,
+                        httpHeaders: imageHeadersOf(context, coverUrl),
                         width: 36,
                         height: 52,
                         fit: BoxFit.cover,

@@ -2138,10 +2138,11 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       });
     }
 
+    final source = ref.read(activeSourceProvider);
     _prefetcher ??= PagePrefetcher(
       totalPages: pageCount,
       pageUrlBuilder: (p) => client.pageUrl(_comicId, p),
-      headers: ref.read(imageHeadersProvider),
+      headersFor: (url) => imageHeadersFor(source, url),
     );
 
     final jumpChip = _buildJumpChip();

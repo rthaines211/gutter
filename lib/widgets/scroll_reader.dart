@@ -157,8 +157,9 @@ class _ScrollReaderState extends State<ScrollReader> {
             key: _keys.putIfAbsent(index, GlobalKey.new),
             child: widget.localPagesPath != null
                 ? _buildLocalImage(index)
-                : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                : CachedNetworkImage(
                     imageUrl: widget.pageUrlBuilder(index),
+                    httpHeaders: imageHeadersOf(context, widget.pageUrlBuilder(index)),
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     placeholder: (_, _) => AspectRatio(

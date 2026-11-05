@@ -196,8 +196,9 @@ class SeriesGridTile extends ConsumerWidget {
 
   Widget _coverImage(BuildContext context) {
     final Widget network = series.coverUrl.isNotEmpty
-        ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+        ? CachedNetworkImage(
             imageUrl: '$serverUrl${series.coverUrl}',
+            httpHeaders: imageHeadersOf(context, '$serverUrl${series.coverUrl}'),
             fit: BoxFit.cover,
             memCacheWidth: _decodeWidth,
             placeholder: (_, _) => Container(color: context.scheme.s1),

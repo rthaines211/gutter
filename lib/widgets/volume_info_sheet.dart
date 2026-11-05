@@ -112,8 +112,9 @@ class _InfoBody extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppTheme.r8),
               child: info.coverUrl.isEmpty
                   ? Container(width: 96, height: 146, color: context.scheme.s2)
-                  : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                  : CachedNetworkImage(
                       imageUrl: info.coverUrl,
+                      httpHeaders: imageHeadersOf(context, info.coverUrl),
                       width: 96,
                       height: 146,
                       fit: BoxFit.cover,

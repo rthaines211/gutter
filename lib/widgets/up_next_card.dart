@@ -69,8 +69,9 @@ class UpNextCard extends ConsumerWidget {
                       comicId: progress.comicId,
                       imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
                       radius: AppTheme.r18,
-                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                      child: CachedNetworkImage(
                         imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
+                        httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${progress.comicId}/cover'),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s2),
                         errorWidget: (_, _, _) => Container(color: context.scheme.s2),

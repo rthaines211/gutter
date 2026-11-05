@@ -44,8 +44,9 @@ class ComicGridTile extends StatelessWidget {
     }
 
     if (file.coverUrl != null && file.coverUrl!.isNotEmpty) {
-      return CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+      return CachedNetworkImage(
         imageUrl: '$serverUrl${file.coverUrl!}',
+        httpHeaders: imageHeadersOf(context, '$serverUrl${file.coverUrl!}'),
         fit: BoxFit.cover,
         placeholder: (_, _) => Container(
           color: Colors.grey[900],

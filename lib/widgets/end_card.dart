@@ -200,8 +200,9 @@ class _EndCardState extends State<EndCard> with SingleTickerProviderStateMixin {
                   imageFilter: ui.ImageFilter.blur(sigmaX: 60, sigmaY: 60),
                   child: Transform.scale(
                     scale: 1.3,
-                    child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                    child: CachedNetworkImage(
                       imageUrl: widget.currentCoverUrl,
+                      httpHeaders: imageHeadersOf(context, widget.currentCoverUrl),
                       fit: BoxFit.cover,
                       placeholder: (_, _) => const SizedBox.shrink(),
                       errorWidget: (_, _, _) => const SizedBox.shrink(),
@@ -542,8 +543,9 @@ class _EndCardState extends State<EndCard> with SingleTickerProviderStateMixin {
       clipBehavior: Clip.antiAlias,
       child: url.isEmpty
           ? ColoredBox(color: context.scheme.s3)
-          : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+          : CachedNetworkImage(
               imageUrl: url,
+              httpHeaders: imageHeadersOf(context, url),
               fit: BoxFit.cover,
               placeholder: (_, _) => ColoredBox(color: context.scheme.s2),
               errorWidget: (_, _, _) => ColoredBox(color: context.scheme.s3),

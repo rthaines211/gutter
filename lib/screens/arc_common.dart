@@ -63,8 +63,9 @@ class ArcCover extends ConsumerWidget {
   });
 
   Widget _image(BuildContext context, String resolved, Widget placeholder) {
-    final image = CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+    final image = CachedNetworkImage(
       imageUrl: resolved,
+      httpHeaders: imageHeadersOf(context, resolved),
       width: width,
       height: height,
       fit: BoxFit.cover,

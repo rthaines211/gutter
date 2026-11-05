@@ -129,8 +129,9 @@ class SeriesDetailHeader extends ConsumerWidget {
                     scale: 1.3,
                     child: Opacity(
                       opacity: backdropOpacity,
-                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                      child: CachedNetworkImage(
                         imageUrl: coverImageUrl!,
+                        httpHeaders: imageHeadersOf(context, coverImageUrl!),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s1),
                         errorWidget: (_, _, _) => Container(color: context.scheme.s1),
@@ -302,8 +303,9 @@ class SeriesDetailHeader extends ConsumerWidget {
                 width: 150,
                 height: 225,
                 child: coverImageUrl != null
-                    ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                    ? CachedNetworkImage(
                         imageUrl: coverImageUrl!,
+                        httpHeaders: imageHeadersOf(context, coverImageUrl!),
                         fit: BoxFit.cover,
                       )
                     : Container(color: context.scheme.s1),
@@ -374,8 +376,9 @@ class SeriesDetailHeader extends ConsumerWidget {
                   width: LayoutBreakpoint.isTablet(context) ? 200 : 128,
                   height: LayoutBreakpoint.isTablet(context) ? 300 : 192,
                   child: coverImageUrl != null
-                      ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                      ? CachedNetworkImage(
                           imageUrl: coverImageUrl!,
+                          httpHeaders: imageHeadersOf(context, coverImageUrl!),
                           fit: BoxFit.cover,
                         )
                       : Container(color: context.scheme.s1),

@@ -39,8 +39,9 @@ class SeriesListTile extends StatelessWidget {
                 width: 40,
                 height: 56,
                 child: series.coverUrl.isNotEmpty
-                    ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                    ? CachedNetworkImage(
                         imageUrl: '$serverUrl${series.coverUrl}',
+                        httpHeaders: imageHeadersOf(context, '$serverUrl${series.coverUrl}'),
                         fit: BoxFit.cover,
                         placeholder: (context, url) =>
                             Container(color: context.scheme.s1),

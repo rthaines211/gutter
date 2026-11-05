@@ -32,13 +32,28 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   );
 });
 
-/// Auth headers for cover and page images from the active source.
-final imageHeadersProvider = Provider<Map<String, String>>(
-    (ref) => ref.watch(activeSourceProvider).authHeaders);
+/// Auth headers for an image at [url]: the active source's credentials when
+/// [url] is on that source's server, nothing otherwise. Creator, review and
+/// volume sheets show raw ComicVine/Metron image URLs, which must not get the
+/// server password. The boundary check stops `https://my.server.evil.com`
+/// passing as `https://my.server`.
+Map<String, String> imageHeadersFor(ServerSource source, String url) {
+  var base = source.baseUrl;
+  while (base.endsWith('/')) {
+    base = base.substring(0, base.length - 1);
+  }
+  if (base.isEmpty) return const {};
+  final sameOrigin = url == base ||
+      url.startsWith('$base/') ||
+      url.startsWith('$base?');
+  return sameOrigin ? source.authHeaders : const {};
+}
 
-/// [imageHeadersProvider] for widgets without a `ref` (read once per build).
-Map<String, String> imageHeadersOf(BuildContext context) =>
-    ProviderScope.containerOf(context).read(imageHeadersProvider);
+/// [imageHeadersFor] the active source, for widgets without a `ref` (read once
+/// per build).
+Map<String, String> imageHeadersOf(BuildContext context, String url) =>
+    imageHeadersFor(
+        ProviderScope.containerOf(context).read(activeSourceProvider), url);
 
 /// Client for the panel label server, proxied at `<baseUrl>/labeller/`.
 final labelClientProvider = Provider<LabelClient>((ref) {

@@ -159,8 +159,9 @@ class _HistoryRow extends StatelessWidget {
                     width: 40,
                     height: 56,
                     child: coverUrl != null
-                        ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                        ? CachedNetworkImage(
                             imageUrl: coverUrl,
+                            httpHeaders: imageHeadersOf(context, coverUrl),
                             fit: BoxFit.cover,
                             placeholder: (context, url) => const ShimmerBox(
                               width: 40,

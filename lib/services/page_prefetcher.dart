@@ -11,7 +11,8 @@ class PagePrefetcher {
 
   final int totalPages;
   final String Function(int page) pageUrlBuilder;
-  final Map<String, String> headers;
+  /// Auth headers for a page URL (`imageHeadersFor` the active source).
+  final Map<String, String> Function(String url) headersFor;
 
   int _prefetchCount = _defaultPrefetchCount;
   final List<DateTime> _recentPageTimes = [];
@@ -21,7 +22,7 @@ class PagePrefetcher {
   PagePrefetcher({
     required this.totalPages,
     required this.pageUrlBuilder,
-    this.headers = const {},
+    this.headersFor = _noHeaders,
   });
 
   List<int> prefetchRange({required int currentPage, required bool rtl}) {
@@ -48,8 +49,12 @@ class PagePrefetcher {
   }
 
   /// Same URL and headers the page widget uses, so both share one cache entry.
-  CachedNetworkImageProvider providerFor(int page) =>
-      CachedNetworkImageProvider(pageUrlBuilder(page), headers: headers);
+  CachedNetworkImageProvider providerFor(int page) {
+    final url = pageUrlBuilder(page);
+    return CachedNetworkImageProvider(url, headers: headersFor(url));
+  }
+
+  static Map<String, String> _noHeaders(String _) => const {};
 
   void _precachePages(List<int> pages, BuildContext context) {
     for (final page in pages) {

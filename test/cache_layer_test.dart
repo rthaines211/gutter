@@ -74,7 +74,7 @@ void main() {
     final fetched = PagePrefetcher(
       totalPages: 3,
       pageUrlBuilder: (_) => url,
-      headers: h,
+      headersFor: (_) => h,
     ).providerFor(0);
     expect(fetched, display);
     expect(fetched.cacheKey, display.cacheKey);

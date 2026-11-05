@@ -176,8 +176,9 @@ class _FilmstripScrubberState extends State<FilmstripScrubber> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: _localThumb(context, page) ?? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                  child: _localThumb(context, page) ?? CachedNetworkImage(
                     imageUrl: widget.pageUrlBuilder(page),
+                    httpHeaders: imageHeadersOf(context, widget.pageUrlBuilder(page)),
                     fit: BoxFit.cover,
                     // Decode at thumb size: full pages would evict the
                     // reader's own pages from the image cache on a fling.

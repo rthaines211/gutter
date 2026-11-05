@@ -51,8 +51,9 @@ class JustAddedCard extends ConsumerWidget {
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
                     child: coverUrl != null
-                        ? CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                        ? CachedNetworkImage(
                             imageUrl: coverUrl,
+                            httpHeaders: imageHeadersOf(context, coverUrl),
                             fit: BoxFit.cover,
                             placeholder: (_, _) =>
                                 Container(color: context.scheme.s1),

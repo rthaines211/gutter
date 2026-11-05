@@ -9,7 +9,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/providers.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/screens/label_screen.dart';
 import 'package:comic_reader_app/services/label_client.dart';
 import 'package:comic_reader_app/widgets/label_canvas.dart';
@@ -100,7 +102,7 @@ Future<void> _pump(WidgetTester tester, _Server server, Widget home) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        imageHeadersProvider.overrideWithValue(const {}),
+        activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: '')),
         labelClientProvider.overrideWithValue(server.client())],
       child: MaterialApp(home: home),
     ),

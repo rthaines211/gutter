@@ -64,8 +64,9 @@ class IssueGridTile extends StatelessWidget {
                       comicId: issue.id,
                       imageUrl: coverUrl,
                       radius: AppTheme.r12,
-                      child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+                      child: CachedNetworkImage(
                         imageUrl: coverUrl,
+                        httpHeaders: imageHeadersOf(context, coverUrl),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s1),
                         errorWidget: (_, _, _) => Container(

@@ -4,13 +4,13 @@
 // finger gestures (see the design doc's finger mapping). Pointer handling is
 // a raw Listener so one/two-finger rules come from label_gestures.dart, not
 // from the gesture arena.
-import '../providers/providers.dart';
 import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import '../providers/providers.dart';
 import '../services/display_rect_calculator.dart';
 import '../services/label_client.dart';
 import '../services/label_editor.dart';
@@ -361,7 +361,7 @@ class _LabelCanvasState extends State<LabelCanvas> {
                     child: Image(
                       image: CachedNetworkImageProvider(
                         widget.imageUrl,
-                        headers: imageHeadersOf(context),
+                        headers: imageHeadersOf(context, widget.imageUrl),
                       ),
                       fit: BoxFit.contain,
                       gaplessPlayback: true,

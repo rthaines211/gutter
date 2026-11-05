@@ -83,7 +83,7 @@ class NextUpCard extends ConsumerWidget {
                         comicId: issue.id,
                         imageUrl: coverImageUrl!,
                         radius: AppTheme.r8,
-                        child: CachedNetworkImage(httpHeaders: imageHeadersOf(context), imageUrl: coverImageUrl!, fit: BoxFit.cover),
+                        child: CachedNetworkImage(imageUrl: coverImageUrl!, httpHeaders: imageHeadersOf(context, coverImageUrl!), fit: BoxFit.cover),
                       )
                     : Container(color: context.scheme.s2),
               ),

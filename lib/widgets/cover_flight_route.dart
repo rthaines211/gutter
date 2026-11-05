@@ -133,7 +133,7 @@ Route<T> readerRoute<T>(
   final reveal = CoverReveal();
   final image = CachedNetworkImageProvider(
     anchor.widget.imageUrl,
-    headers: imageHeadersOf(anchor.context),
+    headers: imageHeadersOf(anchor.context, anchor.widget.imageUrl),
   );
   return PageRouteBuilder<T>(
     settings: settings,

@@ -158,8 +158,9 @@ class _RemoteBodyState extends ConsumerState<_RemoteBody> {
     final url = ref
         .watch(apiClientProvider)
         .pageUrl(widget.snapshot.comicId, _shownPage);
-    return CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+    return CachedNetworkImage(
       imageUrl: url,
+      httpHeaders: imageHeadersOf(context, url),
       fit: BoxFit.contain,
       memCacheWidth: _decodeWidth,
       // No crossfade: a page turn should register immediately, and a fade

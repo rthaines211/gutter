@@ -232,8 +232,9 @@ class PageReaderState extends State<PageReader>
   Widget _buildPageImage(int index) {
     return widget.localPagesPath != null
         ? _buildLocalPage(index)
-        : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+        : CachedNetworkImage(
             imageUrl: widget.pageUrlBuilder(index),
+            httpHeaders: imageHeadersOf(context, widget.pageUrlBuilder(index)),
             fit: BoxFit.contain,
             width: double.infinity,
             height: double.infinity,

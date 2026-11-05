@@ -127,8 +127,9 @@ class _HitRow extends StatelessWidget {
           height: 66,
           child: hit.coverUrl.isEmpty
               ? ColoredBox(color: s.s2)
-              : CachedNetworkImage(httpHeaders: imageHeadersOf(context), 
+              : CachedNetworkImage(
                   imageUrl: hit.coverUrl,
+                  httpHeaders: imageHeadersOf(context, hit.coverUrl),
                   fit: BoxFit.cover,
                   placeholder: (_, _) => const ShimmerBox(),
                   errorWidget: (_, _, _) => ColoredBox(color: s.s2),

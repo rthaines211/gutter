@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:comic_reader_app/providers/providers.dart';
+import 'package:comic_reader_app/models/server_source.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/widgets/page_reader.dart';
@@ -86,6 +87,6 @@ void main() {
 
 /// Cover images ask for auth headers; these tests have no source.
 Widget noImgAuth(Widget child) => ProviderScope(
-      overrides: [imageHeadersProvider.overrideWithValue(const {})],
+      overrides: [activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: ''))],
       child: child,
     );
