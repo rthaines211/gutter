@@ -13,7 +13,7 @@ point at the real collection.
 
 ```
 <demo-root>/
-  config/            # Komga's database
+
   comics/
     Phantom Lady/Phantom Lady 013.cbz
     ...
@@ -28,14 +28,22 @@ Add to the media-servers stack (adjust paths and the network to match it):
     image: gotson/komga:1.30.0
     container_name: komga-demo
     restart: unless-stopped
-    user: "1000:1000"
+    deploy:
+      resources:
+        limits:
+          memory: 640M
     environment:
       - TZ=America/New_York
+      - JAVA_TOOL_OPTIONS=-Xmx320m
     volumes:
-      - <demo-root>/config:/config
+      # Komga's SQLite on a named volume: WAL over a virtiofs bind mount
+      # can corrupt it.
+      - komga-demo-config:/config
       - <demo-root>/comics:/data:ro
     # No host port: the reverse proxy reaches it on the stack network (:25600).
 ```
+
+(Declare `komga-demo-config:` under the top-level `volumes:`.)
 
 Then in the reverse proxy: a new HTTPS host for the demo, forwarded to
 `komga-demo:25600`.
