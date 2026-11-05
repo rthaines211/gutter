@@ -6,6 +6,7 @@ import '../config/flavor.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
 import '../widgets/privacy_sheet.dart';
+import 'onboarding_screen.dart' show normalizeServerUrl;
 import '../widgets/longbox_mark.dart';
 import '../widgets/reader_settings_form.dart' show sleepSettingsRows;
 import '../providers/accent_provider.dart';
@@ -78,9 +79,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       );
-      if (result != null && result.isNotEmpty) {
-        await ref.read(serverConfigProvider).setServerUrl(result);
-        ref.read(sourceListProvider.notifier).updateDefaultUrl(result);
+      // Same cleanup as onboarding: `nas.local:8080/` saved raw has no host.
+      if (result != null && result.trim().isNotEmpty) {
+        final url = normalizeServerUrl(result);
+        await ref.read(serverConfigProvider).setServerUrl(url);
+        ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
         ref.read(connectivityProvider.notifier).check();
       }
     } finally {
