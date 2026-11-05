@@ -12,9 +12,11 @@ import '../providers/download_provider.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/read_tab_provider.dart';
 import '../providers/providers.dart';
+import '../providers/scan_status_provider.dart';
 import '../widgets/just_added_card.dart';
 import '../widgets/recommendation_card.dart';
 import '../widgets/resume_hero_card.dart';
+import '../widgets/scan_banner.dart';
 import '../widgets/shimmer_box.dart';
 import '../widgets/streak_chip.dart';
 import '../widgets/this_week_card.dart';
@@ -57,6 +59,9 @@ class ReadScreen extends ConsumerWidget {
   ) {
     final comic = ComicTokens.watch(ref, context, AppTheme.accent);
     final offline = !ref.watch(connectivityProvider);
+    final scan = ref.watch(scanStatusProvider);
+    final firstScan =
+        ref.watch(isCustomSourceProvider) && FirstScanProgress.shows(scan);
     if (offline) {
       // Offline, the shelves hold only what can open: comics on the device,
       // and series with at least one.
@@ -169,8 +174,16 @@ class ReadScreen extends ConsumerWidget {
               )).toList(),
             ),
 
-          // Empty state
-          if (data.heroProgress == null && data.justAdded.isEmpty)
+          // Empty state: during the server's first scan, its progress (the
+          // Library tab, always mounted in the IndexedStack, starts the watch).
+          if (data.heroProgress == null &&
+              data.justAdded.isEmpty &&
+              firstScan)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+              child: FirstScanProgress(scan: scan),
+            )
+          else if (data.heroProgress == null && data.justAdded.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               child: Center(
