@@ -319,6 +319,9 @@ class MirrorDatabase extends _$MirrorDatabase {
                 t.comicId.isNotIn(protectedComicIds.toList())))
           .go();
 
+      // Komga has no queues or arcs: its empty id lists mean "none of
+      // mine", not "delete yours".
+      if (!resp.serverHasQueues) return;
       final keepQueueIds = [...resp.queueIds, ...protectedQueueIds];
       await (delete(queueRows)..where((t) => t.id.isNotIn(keepQueueIds))).go();
       await (delete(queueItemRows)

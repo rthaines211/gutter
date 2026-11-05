@@ -218,11 +218,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   Widget build(BuildContext context) {
     final isOnline = ref.watch(connectivityProvider);
     final isCustom = ref.watch(isCustomSourceProvider);
-    final libraryAsync = isCustom
+    final usesMirror = ref.watch(hasMirrorProvider);
+    final libraryAsync = usesMirror
         ? ref.watch(libraryProvider)
         : ref.watch(opdsLibraryProvider);
     final source = ref.watch(activeSourceProvider);
-    final serverUrl = isCustom ? source.baseUrl : '';
+    final serverUrl = usesMirror ? source.baseUrl : '';
     final filter = ref.watch(libraryFilterProvider);
     final viewMode = ref.watch(libraryViewModeProvider);
     final activeCollection = ref.watch(activeCollectionProvider);
@@ -254,7 +255,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       if (!ref.read(connectivityProvider)) {
                         HapticFeedback.mediumImpact();
                         ref.invalidate(downloadedLibraryProvider);
-                      } else if (!isCustom) {
+                      } else if (!usesMirror) {
                         HapticFeedback.mediumImpact();
                         return ref.refresh(opdsLibraryProvider.future);
                       } else {
@@ -318,7 +319,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                     if (!ref.read(connectivityProvider)) {
                       HapticFeedback.mediumImpact();
                       ref.invalidate(downloadedLibraryProvider);
-                    } else if (!isCustom) {
+                    } else if (!usesMirror) {
                       HapticFeedback.mediumImpact();
                       return ref.refresh(opdsLibraryProvider.future);
                     } else {
@@ -843,7 +844,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         ?.sync()
                         .catchError((_) {}) ??
                     Future.value());
-                if (ref.read(isCustomSourceProvider)) {
+                if (ref.read(hasMirrorProvider)) {
                   ref.invalidate(libraryProvider);
                 } else {
                   ref.invalidate(opdsLibraryProvider);

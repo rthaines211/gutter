@@ -164,7 +164,7 @@ class ConnectivityNotifier extends Notifier<bool> {
     // container is disposed (tests, source switches); ref.read would throw.
     if (!ref.mounted) return;
     // OPDS sources have no /sync endpoint — only custom backends mirror.
-    if (!ref.read(isCustomSourceProvider)) return;
+    if (!ref.read(hasMirrorProvider)) return;
     final engine = ref.read(syncEngineProvider);
     if (engine == null) return;
     if (_currentDrain != null) return;
