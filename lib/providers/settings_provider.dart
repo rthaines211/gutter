@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/flavor.dart';
 import '../models/reader_settings.dart';
 import '../services/api_client.dart';
 import 'connectivity_provider.dart';
@@ -16,9 +17,20 @@ class SettingsNotifier extends AsyncNotifier<ReaderSettings> {
   // Set when a save didn't reach the server: the next online build pushes
   // the device copy rather than letting the server's stale one undo it.
   static const _dirtyKey = 'reader_settings_dirty';
+  // Store app: volume keys are opted into on this device. The Go backend's
+  // default sends volume_keys: true for every new device, and App Review
+  // 2.5.9 wants hardware-button hijacking off until the user turns it on.
+  static const _volumeOptInKey = 'volume_keys_opt_in';
 
   @override
   Future<ReaderSettings> build() async {
+    final s = await _load();
+    if (!isStore) return s;
+    final prefs = await SharedPreferences.getInstance();
+    return s.copyWith(volumeKeys: prefs.getBool(_volumeOptInKey) ?? false);
+  }
+
+  Future<ReaderSettings> _load() async {
     _client = ref.watch(apiClientProvider);
     // read, not watch: a connectivity flip rebuilt this mid-read, and the
     // reader swapped itself for a spinner while it reloaded.
@@ -47,6 +59,7 @@ class SettingsNotifier extends AsyncNotifier<ReaderSettings> {
     state = AsyncData(settings);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_cacheKey, jsonEncode(settings.toJson()));
+    if (isStore) await prefs.setBool(_volumeOptInKey, settings.volumeKeys);
     try {
       await _client.updateSettings(settings);
       await prefs.setBool(_dirtyKey, false);
