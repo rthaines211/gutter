@@ -337,6 +337,7 @@ class StatsDashboard extends ConsumerWidget {
                             ? Container(color: context.scheme.s2)
                             : CachedNetworkImage(
                                 imageUrl: coverUrl,
+                                httpHeaders: imageHeadersOf(context, coverUrl),
                                 fit: BoxFit.cover,
                                 placeholder: (_, _) =>
                                     Container(color: context.scheme.s2),

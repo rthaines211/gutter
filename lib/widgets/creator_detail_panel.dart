@@ -483,6 +483,7 @@ class _VolumeRowWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppTheme.r4),
             child: CachedNetworkImage(
               imageUrl: row.coverUrl,
+              httpHeaders: imageHeadersOf(context, row.coverUrl),
               width: 40,
               height: 60,
               fit: BoxFit.cover,

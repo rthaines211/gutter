@@ -41,17 +41,20 @@ class ApiClient {
   final String deviceId;
   final http.Client _httpClient;
   final RequestOutcomeCallback? onRequestOutcome;
+  final Map<String, String> authHeaders;
 
   ApiClient({
     required this.baseUrl,
     required this.deviceId,
     http.Client? httpClient,
     this.onRequestOutcome,
+    this.authHeaders = const {},
   }) : _httpClient = httpClient ?? http.Client();
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         'X-Device-ID': deviceId,
+        ...authHeaders,
       };
 
   Future<http.Response> _request({
@@ -500,7 +503,15 @@ class ApiClient {
         .toList();
   }
 
-  Future<bool> checkConnection() async {
+  Future<bool> checkConnection() async =>
+      switch (await probeStatus()) {
+        final s? when s >= 200 && s < 300 => true,
+        _ => false,
+      };
+
+  /// HTTP status of GET /browse, or null on a network error. A 401 means the
+  /// server was reached but rejected our credentials.
+  Future<int?> probeStatus() async {
     final stopwatch = Stopwatch()..start();
     try {
       final response = await _request(
@@ -519,7 +530,7 @@ class ApiClient {
           'durationMs': stopwatch.elapsedMilliseconds,
         },
       );
-      return ok;
+      return response.statusCode;
     } catch (e) {
       stopwatch.stop();
       AppLogger.instance.connectivity(
@@ -531,7 +542,7 @@ class ApiClient {
           'error': e.toString(),
         },
       );
-      return false;
+      return null;
     }
   }
 

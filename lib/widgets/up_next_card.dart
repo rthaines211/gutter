@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -70,6 +71,7 @@ class UpNextCard extends ConsumerWidget {
                       radius: AppTheme.r18,
                       child: CachedNetworkImage(
                         imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
+                        httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${progress.comicId}/cover'),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s2),
                         errorWidget: (_, _, _) => Container(color: context.scheme.s2),

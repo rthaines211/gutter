@@ -83,6 +83,7 @@ class QueueDetailScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: CachedNetworkImage(
                         imageUrl: coverUrl,
+                        httpHeaders: imageHeadersOf(context, coverUrl),
                         width: 36,
                         height: 52,
                         fit: BoxFit.cover,

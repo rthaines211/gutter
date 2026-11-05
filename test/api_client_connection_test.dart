@@ -53,6 +53,51 @@ void main() {
     });
   });
 
+  group('ApiClient auth', () {
+    test('sends source auth headers', () async {
+      late http.BaseRequest seen;
+      final client = ApiClient(
+        baseUrl: 'http://localhost:8080',
+        deviceId: 'dev1',
+        authHeaders: {'Authorization': 'Basic abc'},
+        httpClient: MockClient((r) async {
+          seen = r;
+          return http.Response('[]', 200);
+        }),
+      );
+      await client.checkConnection();
+      expect(seen.headers['Authorization'], 'Basic abc');
+      expect(seen.headers['X-Device-ID'], 'dev1');
+    });
+
+    test('401 counts as server reached', () async {
+      final outcomes = <bool>[];
+      final client = ApiClient(
+        baseUrl: 'http://localhost:8080',
+        deviceId: 'test',
+        httpClient: MockClient((_) async => http.Response('no', 401)),
+        onRequestOutcome: outcomes.add,
+      );
+      expect(await client.checkConnection(), isFalse);
+      expect(outcomes, [true]);
+    });
+
+    test('probeStatus returns 401, null on SocketException', () async {
+      final unauthorized = ApiClient(
+        baseUrl: 'http://localhost:8080',
+        deviceId: 'test',
+        httpClient: MockClient((_) async => http.Response('no', 401)),
+      );
+      expect(await unauthorized.probeStatus(), 401);
+      final down = ApiClient(
+        baseUrl: 'http://localhost:8080',
+        deviceId: 'test',
+        httpClient: MockClient((_) async => throw const SocketException('x')),
+      );
+      expect(await down.probeStatus(), isNull);
+    });
+  });
+
   group('ApiClient.onRequestOutcome callback', () {
     test('fires true on 2xx', () async {
       final outcomes = <bool>[];

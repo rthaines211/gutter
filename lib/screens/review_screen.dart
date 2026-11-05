@@ -242,6 +242,7 @@ class _Cover extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             child: CachedNetworkImage(
               imageUrl: url!,
+              httpHeaders: imageHeadersOf(context, url!),
               fit: BoxFit.contain,
               placeholder: (_, _) => const ShimmerBox(height: double.infinity),
               errorWidget: (_, _, _) => box(null),

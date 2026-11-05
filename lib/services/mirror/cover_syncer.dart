@@ -15,12 +15,14 @@ class CoverSyncer {
   final String baseUrl;
   final String coversDir;
   final http.Client httpClient;
+  final Map<String, String> headers;
 
   CoverSyncer({
     required this.db,
     required this.baseUrl,
     required this.coversDir,
     http.Client? httpClient,
+    this.headers = const {},
   }) : httpClient = httpClient ?? http.Client();
 
   /// Sweep in progress per covers dir. Every drain (incl. the 60s periodic
@@ -47,7 +49,7 @@ class CoverSyncer {
           continue;
         }
         final resp = await httpClient
-            .get(Uri.parse('$baseUrl$coverUrl'))
+            .get(Uri.parse('$baseUrl$coverUrl'), headers: headers)
             .timeout(const Duration(seconds: 30));
         if (resp.statusCode != 200) continue;
         final path = p.join(coversDir, '${row.id}.jpg');

@@ -38,9 +38,11 @@ final syncEngineProvider = Provider<SyncEngine?>((ref) {
 final coverSyncerProvider = Provider<CoverSyncer?>((ref) {
   final dir = ref.watch(coversDirProvider);
   if (dir == null) return null;
+  final source = ref.watch(activeSourceProvider);
   return CoverSyncer(
     db: ref.watch(mirrorDbProvider),
-    baseUrl: ref.watch(activeSourceProvider).baseUrl,
+    baseUrl: source.baseUrl,
+    headers: source.authHeaders,
     coversDir: dir,
   );
 });

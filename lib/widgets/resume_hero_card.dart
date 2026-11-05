@@ -226,6 +226,7 @@ class ResumeHeroCard extends ConsumerWidget {
         child: CachedNetworkImage(
           // Full-res page 0: /cover is a 300px thumbnail.
           imageUrl: '$serverUrl/comics/${progress.comicId}/pages/0',
+          httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${progress.comicId}/pages/0'),
           memCacheWidth: 1200,
           fit: BoxFit.contain,
           placeholder: (_, _) => const SizedBox.expand(),

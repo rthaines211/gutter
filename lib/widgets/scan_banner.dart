@@ -30,6 +30,15 @@ class _ScanBannerState extends ConsumerState<ScanBanner> {
   Future<void> _onDone() async {
     _autoDismiss?.cancel();
     _reviewCount = 0; // never carry a stale count over from a previous scan
+    // Pull the rescan results into the local mirror before the dismiss timer
+    // starts: an empty Library shows "Loading your library…" until then, and
+    // must not fall to its empty state while the first sync is still running.
+    try {
+      await ref.read(syncEngineProvider)?.sync();
+    } catch (e) {
+      debugPrint('ScanBanner: sync after scan failed: $e');
+    }
+    if (!mounted) return;
     var n = 0;
     try {
       ref.invalidate(reviewQueueProvider);
@@ -55,11 +64,6 @@ class _ScanBannerState extends ConsumerState<ScanBanner> {
     ref.listen(scanStatusProvider, (prev, next) {
       if (prev?.phase != ScanPhase.done && next.phase == ScanPhase.done) {
         HapticFeedback.mediumImpact();
-        // Pull the rescan results into the local mirror; the mirror-backed
-        // library stream updates on its own.
-        unawaited(
-          ref.read(syncEngineProvider)?.sync().catchError((_) {}),
-        );
         unawaited(_onDone());
       }
     });
@@ -186,6 +190,47 @@ class _ScanBannerState extends ConsumerState<ScanBanner> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: content,
+    );
+  }
+}
+
+/// The empty Library's (and Read tab's) stand-in while the server's first scan
+/// runs: progress while [ScanPhase.scanning], then a neutral "Loading your
+/// library…" while [ScanPhase.done] (ScanBanner is syncing the mirror). Only
+/// once the banner dismisses (idle) does the caller show its empty state.
+class FirstScanProgress extends StatelessWidget {
+  final ScanStatusState scan;
+  const FirstScanProgress({super.key, required this.scan});
+
+  /// Whether [FirstScanProgress] should stand in for an empty state.
+  static bool shows(ScanStatusState scan) =>
+      scan.phase == ScanPhase.scanning || scan.phase == ScanPhase.done;
+
+  @override
+  Widget build(BuildContext context) {
+    final status = scan.status;
+    final scanning = scan.phase == ScanPhase.scanning;
+    return Center(
+      child: SizedBox(
+        width: 280,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(scanning ? 'Scanning your library…' : 'Loading your library…',
+                style: TextStyle(color: context.scheme.t2)),
+            const SizedBox(height: 12),
+            // Indeterminate while the server is still enumerating folders
+            // (total == 0), and while loading.
+            LinearProgressIndicator(
+                value: scanning && status.total > 0 ? status.progress : null),
+            if (scanning && status.total > 0) ...[
+              const SizedBox(height: 8),
+              Text('${status.scanned} of ${status.total}',
+                  style: TextStyle(color: context.scheme.t2)),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

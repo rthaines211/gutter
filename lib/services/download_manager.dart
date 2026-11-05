@@ -35,6 +35,10 @@ class DownloadManager {
   String get _downloadsRoot => p.join(_baseDir, 'downloads');
   String get _journalPath => p.join(_downloadsRoot, _journalName);
 
+  /// Auth headers for a source, merged in at fetch time. Never stored in
+  /// [_DownloadMeta] or the journal, so credentials stay out of queue.json.
+  final Map<String, String> Function(String sourceId)? authFor;
+
   /// Each comic is downloaded page by page from the server's page endpoint,
   /// so page N on disk is the server's page N. Every queued comic's pages are
   /// handed to [fetcher] up front (a background fetcher keeps them all going
@@ -44,6 +48,7 @@ class DownloadManager {
     required String baseDir,
     http.Client? httpClient,
     PageFetcher? fetcher,
+    this.authFor,
   })  : _baseDir = baseDir,
         _httpClient = httpClient ?? http.Client(),
         _fetcher = fetcher ?? HttpFetcher(httpClient ?? http.Client());
@@ -237,14 +242,16 @@ class DownloadManager {
     final dir = Directory(_comicDir(item));
     if (fresh && dir.existsSync()) dir.deleteSync(recursive: true);
     Directory(p.join(dir.path, 'pages')).createSync(recursive: true);
-    _starts[key] = _handOff(key, dir.path)..ignore();
+    _starts[key] = _handOff(key, item.sourceId, dir.path)..ignore();
   }
 
-  Future<void> _handOff(String key, String comicDir) async {
+  Future<void> _handOff(String key, String sourceId, String comicDir) async {
     var meta = _downloadMeta[key]!;
+    final auth = authFor?.call(sourceId) ?? const <String, String>{};
+    final headers = {...meta.headers, ...auth};
     if (meta.pageCount == null) {
       final res = await _httpClient
-          .get(Uri.parse('${meta.url}/info'), headers: meta.headers)
+          .get(Uri.parse('${meta.url}/info'), headers: headers)
           .timeout(const Duration(seconds: 30));
       if (res.statusCode != 200) {
         throw Exception('Comic info failed: ${res.statusCode}');
@@ -263,7 +270,7 @@ class DownloadManager {
           // content, so no extension is needed.
           dest: p.join(comicDir, 'pages', (i + 1).toString().padLeft(3, '0')),
         ),
-    ], meta.headers);
+    ], headers);
   }
 
   /// Clear failed entries. Finished downloads stay — they're files on disk
