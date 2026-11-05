@@ -13,7 +13,6 @@ point at the real collection.
 
 ```
 <demo-root>/
-
   comics/
     Phantom Lady/Phantom Lady 013.cbz
     ...
