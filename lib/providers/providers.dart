@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/local_session_store.dart';
+import 'cache_providers.dart';
 import '../services/source_auth_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/server_config.dart';
@@ -25,6 +27,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return clientFor(
     ref.watch(activeSourceProvider),
     deviceId: ref.watch(serverConfigProvider).deviceId,
+    sessions: ref.watch(localSessionStoreProvider),
     onRequestOutcome: (reachedServer) =>
         ref.read(connectivityProvider.notifier).reportOutcome(reachedServer),
   );
@@ -32,13 +35,16 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 
 /// The client for [source]'s server type, carrying its credentials.
 ApiClient clientFor(ServerSource source,
-        {required String deviceId, RequestOutcomeCallback? onRequestOutcome}) =>
+        {required String deviceId,
+        RequestOutcomeCallback? onRequestOutcome,
+        LocalSessionStore? sessions}) =>
     source.type == SourceType.komga
         ? KomgaClient(
             baseUrl: source.baseUrl,
             deviceId: deviceId,
             authHeaders: source.authHeaders,
             onRequestOutcome: onRequestOutcome,
+            sessions: sessions,
           )
         : ApiClient(
             baseUrl: source.baseUrl,

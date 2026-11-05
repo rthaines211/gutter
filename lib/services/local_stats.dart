@@ -1,3 +1,4 @@
+import '../models/reading_session.dart';
 import '../models/series.dart';
 import '../models/stats_summary.dart';
 import 'local_session_store.dart';
@@ -117,6 +118,31 @@ StatsSummary computeLocalStats(
     streak: StreakStats(current: current, longest: longest),
     hourHistogram: [
       for (var h = 0; h < 24; h++) HourPages(hour: h, pages: hours[h]),
+    ],
+  );
+}
+
+/// One page of on-device sessions, newest first, named from [library].
+({List<ReadingSession> sessions, int total}) localHistory(
+    List<LocalSession> sessions, Map<String, Series> library,
+    {int page = 1, int limit = 20}) {
+  final sorted = [...sessions]..sort((a, b) => b.startedAt.compareTo(a.startedAt));
+  var i = 0;
+  return (
+    total: sorted.length,
+    sessions: [
+      for (final s in sorted.skip((page - 1) * limit).take(limit))
+        ReadingSession(
+          id: i++,
+          comicId: s.comicId,
+          seriesId: s.seriesId,
+          seriesName: library[s.seriesId]?.name ?? '',
+          comicName: '',
+          coverUrl: library[s.seriesId]?.coverUrl ?? '',
+          startedAt: s.startedAt,
+          pagesRead: s.pagesRead,
+          durationS: s.durationS,
+        ),
     ],
   );
 }

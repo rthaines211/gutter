@@ -66,4 +66,16 @@ void main() {
     expect(back.map((e) => e.seriesId), ['a', 'b']);
     expect(back.first.startedAt, DateTime(2026, 11, 5, 20));
   });
+
+  test('history is newest first, paged, with names from the library', () {
+    final sessions = [
+      for (var d = 1; d <= 25; d++) s('a', DateTime(2026, 10, d, 20)),
+    ];
+    final page1 = localHistory(sessions, {'a': series('a')}, page: 1, limit: 20);
+    expect(page1.total, 25);
+    expect(page1.sessions, hasLength(20));
+    expect(page1.sessions.first.startedAt, DateTime(2026, 10, 25, 20));
+    expect(page1.sessions.first.seriesName, 'Series a');
+    expect(localHistory(sessions, const {}, page: 2, limit: 20).sessions, hasLength(5));
+  });
 }
