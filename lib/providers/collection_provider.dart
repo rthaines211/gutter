@@ -10,6 +10,8 @@ final collectionsProvider =
 class CollectionsNotifier extends AsyncNotifier<List<Collection>> {
   @override
   Future<List<Collection>> build() async {
+    // Collections are a Gutter-server feature.
+    if (!ref.watch(isCustomSourceProvider)) return const [];
     final client = ref.watch(apiClientProvider);
     return client.fetchCollections();
   }

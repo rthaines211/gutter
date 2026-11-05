@@ -266,7 +266,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                             await engine.sync();
                           } catch (_) {}
                         }
-                        _rescanLibrary();
+                        if (isCustom) _rescanLibrary();
                       }
                     },
                     child: _selectedSeriesId == null
@@ -330,7 +330,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                           await engine.sync();
                         } catch (_) {}
                       }
-                      _rescanLibrary();
+                      if (isCustom) _rescanLibrary();
                     }
                   },
                   child: _buildScrollView(tablet, columns, libraryAsync, serverUrl, filter, viewMode, activeCollection, collectionsAsync, isCustom, isOnline),

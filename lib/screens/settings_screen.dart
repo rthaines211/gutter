@@ -204,7 +204,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: '$density columns',
                       onTap: () => _cycleGridDensity(density),
                     ),
-                    _NavRow(
+                    if (ref.watch(isCustomSourceProvider)) _NavRow(
                       label: 'Rename Templates',
                       onTap: () => _push(
                           const RenameTemplatesScreen(), '/rename-templates'),
@@ -290,7 +290,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: isOnline ? 'Online' : 'Offline',
                       color: isOnline ? AppTheme.green : context.scheme.t3,
                     ),
-                    _NavRow(
+                    if (ref.watch(isCustomSourceProvider)) _NavRow(
                       label: 'Refresh Library',
                       onTap: _refreshLibrary,
                     ),

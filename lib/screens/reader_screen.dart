@@ -1386,7 +1386,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       onAdd: notifier.addChapter,
       onRename: notifier.renameChapter,
       onDelete: notifier.deleteChapter,
-      onDetect: () => _detectChapters(),
+      onDetect: ref.read(isCustomSourceProvider) ? _detectChapters : null,
     );
   }
 

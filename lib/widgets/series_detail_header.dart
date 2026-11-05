@@ -206,18 +206,22 @@ class SeriesDetailHeader extends ConsumerWidget {
                 GlassButton(
                   child: Icon(Icons.favorite_border, size: 16, color: context.scheme.tx),
                 ),
-                const SizedBox(width: 8),
-                GlassButton(
-                  onTap: onMore,
-                  child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
-                ),
+                if (onMore != null) ...[
+                  const SizedBox(width: 8),
+                  GlassButton(
+                    onTap: onMore,
+                    child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
+                  ),
+                ],
               ],
               if (isPanel) ...[
-                GlassButton(
-                  onTap: onMore,
-                  child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
-                ),
-                const SizedBox(width: 8),
+                if (onMore != null) ...[
+                  GlassButton(
+                    onTap: onMore,
+                    child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
+                  ),
+                  const SizedBox(width: 8),
+                ],
                 GlassButton(
                   onTap: onClose,
                   child: Icon(Icons.close, size: 16, color: context.scheme.tx),
@@ -510,6 +514,7 @@ class SeriesDetailHeader extends ConsumerWidget {
               child: _actionButton(context, Icons.bookmark_border, 'Favorite',
                   null, stacked, height),
             ),
+            if (onEditMetadata != null) ...[
             const SizedBox(width: 8),
             Tooltip(
               message: 'Edit Metadata',
@@ -523,6 +528,7 @@ class SeriesDetailHeader extends ConsumerWidget {
                 ),
               ),
             ),
+            ],
           ],
         );
       }),
