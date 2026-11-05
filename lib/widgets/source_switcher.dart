@@ -1,5 +1,6 @@
 // lib/widgets/source_switcher.dart
 import 'package:flutter/material.dart';
+import 'pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
@@ -159,10 +160,14 @@ class SourceSwitcher extends ConsumerWidget {
             Divider(color: ctx.scheme.s1),
             ListTile(
               leading: Icon(Icons.add, color: accent),
-              title: Text('Add OPDS Source',
+              title: Text('Add Server',
                   style: TextStyle(color: accent)),
               onTap: () {
                 Navigator.pop(ctx);
+                if (!requirePro(context, ref,
+                    reason: 'More than one server is part of Pro.')) {
+                  return;
+                }
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,
