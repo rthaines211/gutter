@@ -38,7 +38,7 @@ class IconRail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = ref.watch(navigationProvider);
-    final reviewCount = ref.watch(reviewCountProvider);
+    final reviewCount = isStore ? 0 : ref.watch(reviewCountProvider);
     final offline = !ref.watch(connectivityProvider);
 
     return Container(

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/creator_roles.dart';
 import '../config/scheme.dart';
 import '../models/creator_profile.dart';
@@ -50,6 +51,9 @@ Future<void> openCreator(
   required int id,
   required String name,
 }) async {
+  // Creators is personal-only (ComicVine data, backend-only endpoints). One
+  // guard for every credit link: search rows, series header, enrichment.
+  if (isStore) return;
   if (id > 0) {
     await Navigator.push(
       context,
