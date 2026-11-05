@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/app_theme.dart';
 import 'config/flavor.dart';
@@ -19,6 +20,7 @@ class ComicReaderApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(sourceAuthSyncProvider);
     final breadcrumbs = ref.read(appBreadcrumbsProvider.notifier);
     final scheme = ref.watch(schemeProvider).scheme;
     final needsServer =

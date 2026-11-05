@@ -261,6 +261,34 @@ void main() {
     manager.dispose();
   });
 
+  test('Komga layout: page count from the book, 1-based page URLs', () async {
+    final requests = <String>[];
+    final manager = DownloadManager(
+      baseDir: tempDir.path,
+      httpClient: MockClient((req) async {
+        requests.add(req.url.path);
+        if (req.url.path == '/api/v1/books/b1') {
+          return http.Response(jsonEncode({'media': {'pagesCount': 3}}), 200);
+        }
+        final m = RegExp(r'/api/v1/books/b1/pages/(\d+)$').firstMatch(req.url.path);
+        if (m == null) return http.Response('nope', 404);
+        return http.Response.bytes([int.parse(m.group(1)!)], 200);
+      }),
+    );
+    manager.enqueue(
+      comicId: 'b1', sourceId: 'src1', seriesId: 's1', seriesName: 'S',
+      comicName: 'B1', comicUrl: 'http://localhost/api/v1/books/b1',
+      headers: const {'X-API-Key': 'k'},
+    );
+    await pumpUntil(() => manager.isDownloaded('b1', 'src1'));
+    for (var n = 1; n <= 3; n++) {
+      final name = n.toString().padLeft(3, '0');
+      expect(File(p.join(comicDir('b1'), 'pages', name)).readAsBytesSync(), [n]);
+    }
+    expect(requests, isNot(contains('/api/v1/books/b1/pages/0')));
+    manager.dispose();
+  });
+
   test('a relaunch only fetches the pages still missing', () async {
     final managerA = DownloadManager(
         baseDir: tempDir.path,

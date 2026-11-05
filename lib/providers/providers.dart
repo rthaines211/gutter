@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/source_auth_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/server_config.dart';
 import '../models/server_source.dart';
@@ -49,6 +50,13 @@ final labelClientProvider = Provider<LabelClient>((ref) {
 final isCustomSourceProvider = Provider<bool>((ref) {
   final source = ref.watch(activeSourceProvider);
   return source.type == SourceType.custom;
+});
+
+/// Points [SourceAuthClient] (image loads, cover sync) at the active source
+/// and its credentials. Watched by the app root.
+final sourceAuthSyncProvider = Provider<void>((ref) {
+  final source = ref.watch(activeSourceProvider);
+  SourceAuthClient.use(source.baseUrl, source.authHeaders);
 });
 
 /// Whether the active source syncs into the mirror (Gutter server or Komga).

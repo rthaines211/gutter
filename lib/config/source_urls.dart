@@ -17,6 +17,17 @@ extension SourceUrls on ServerSource {
       ? '$baseUrl/api/v1/books/${Uri.encodeComponent(id)}/pages/${zeroBasedPage + 1}'
       : '$baseUrl/comics/${Uri.encodeComponent(id)}/pages/$zeroBasedPage';
 
+  /// Where [DownloadManager] fetches a comic from: the Gutter server's
+  /// `/comics/<id>` (it appends `/info` and `/pages/<n>`), or the Komga book.
+  String comicDownload(String id) => _komga
+      ? '$baseUrl/api/v1/books/${Uri.encodeComponent(id)}'
+      : '$baseUrl/comics/${Uri.encodeComponent(id)}';
+
+  /// The whole comic file; a HEAD gives its size.
+  String comicFile(String id) => _komga
+      ? '$baseUrl/api/v1/books/${Uri.encodeComponent(id)}/file'
+      : '$baseUrl/comics/${Uri.encodeComponent(id)}/download';
+
   /// Headers for image requests (covers, pages, downloads).
   Map<String, String> get imageHeaders => authHeaders;
 }

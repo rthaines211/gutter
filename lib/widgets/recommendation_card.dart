@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
 import '../config/string_utils.dart';
+import '../config/source_urls.dart';
 import '../models/recommendation.dart';
-import '../providers/providers.dart';
+import '../models/server_source.dart';
+import '../providers/source_provider.dart';
 import '../providers/recommendation_provider.dart';
 import '../screens/series_detail_screen.dart';
 import '../services/foundation_models_channel.dart';
@@ -104,7 +106,7 @@ class _Loaded extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final source = ref.watch(activeSourceProvider);
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
       child: Container(
@@ -116,7 +118,7 @@ class _Loaded extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Cover(rec: rec, serverUrl: serverUrl),
+            _Cover(rec: rec, source: source),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -172,9 +174,9 @@ class _Loaded extends ConsumerWidget {
 }
 
 class _Cover extends StatelessWidget {
-  const _Cover({required this.rec, required this.serverUrl});
+  const _Cover({required this.rec, required this.source});
   final Recommendation rec;
-  final String serverUrl;
+  final ServerSource source;
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +184,7 @@ class _Cover extends StatelessWidget {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: CachedNetworkImage(
-          imageUrl: '$serverUrl/library/${rec.seriesId}/cover',
+          imageUrl: source.seriesCover(rec.seriesId!),
           width: 80, height: 120, fit: BoxFit.cover,
           errorWidget: (_, _, _) => const _GenericCover(),
         ),

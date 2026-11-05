@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../providers/source_provider.dart';
+import '../config/source_urls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -66,10 +68,10 @@ class UpNextCard extends ConsumerWidget {
                   children: [
                     CoverAnchor(
                       comicId: progress.comicId,
-                      imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
+                      imageUrl: ref.watch(activeSourceProvider).comicCover(progress.comicId),
                       radius: AppTheme.r18,
                       child: CachedNetworkImage(
-                        imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
+                        imageUrl: ref.watch(activeSourceProvider).comicCover(progress.comicId),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s2),
                         errorWidget: (_, _, _) => Container(color: context.scheme.s2),

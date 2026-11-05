@@ -1,5 +1,6 @@
 // lib/widgets/series_detail_panel.dart
 import 'dart:async';
+import '../config/source_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -271,7 +272,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
           NextUpCard(
             issue: resumeIssue,
             accent: widget.accent,
-            coverImageUrl: '$serverUrl/comics/${resumeIssue.id}/cover',
+            coverImageUrl: ref.watch(activeSourceProvider).comicCover(resumeIssue.id),
             onTap: () => _openIssue(detail, resumeIssue),
           ),
           const SizedBox(height: 12),
@@ -584,11 +585,12 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
     final headers = {
       'Content-Type': 'application/json',
       'X-Device-ID': ref.read(serverConfigProvider).deviceId,
+      ...source.authHeaders,
     };
     final picked = await showSeriesDownloadSheet(
       context,
       detail: detail,
-      baseUrl: source.baseUrl,
+      source: source,
       headers: headers,
       onDevice: ref.read(onDeviceProvider).comicIds,
       accent: widget.accent,
@@ -601,7 +603,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
         seriesId: detail.id,
         seriesName: detail.name,
         comicName: issue.name,
-        comicUrl: '${source.baseUrl}/comics/${issue.id}',
+        comicUrl: source.comicDownload(issue.id),
         headers: headers,
       );
     }

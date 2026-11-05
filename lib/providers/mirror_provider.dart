@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/source_auth_client.dart';
 import 'package:path/path.dart' as p;
 
 import '../services/mirror/cover_syncer.dart';
@@ -42,6 +43,7 @@ final coverSyncerProvider = Provider<CoverSyncer?>((ref) {
     db: ref.watch(mirrorDbProvider),
     baseUrl: ref.watch(activeSourceProvider).baseUrl,
     coversDir: dir,
+    httpClient: SourceAuthClient(),
   );
 });
 
