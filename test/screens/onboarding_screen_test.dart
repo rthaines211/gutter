@@ -145,4 +145,45 @@ void main() {
     expect(find.text('Wrong username or password'), findsOneWidget);
     expect(c.read(activeSourceProvider).baseUrl, isEmpty);
   });
+
+  testWidgets('editing the URL after a 401 probes the new address', (t) async {
+    final probed = <String>[];
+    final c = await _pump(t, (u, h) async {
+      probed.add(u);
+      return u.contains('a.example.com') ? 401 : 200;
+    });
+    await t.enterText(find.byType(TextField), 'a.example.com');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(find.text('Password'), findsOneWidget);
+    await t.enterText(
+        find.widgetWithText(TextField, 'Server address'), 'b.example.com');
+    await t.pump();
+    expect(find.text('Password'), findsNothing);
+    expect(find.textContaining('needs a password'), findsNothing);
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(probed.last, 'https://b.example.com');
+    expect(c.read(activeSourceProvider).baseUrl, 'https://b.example.com');
+  });
+
+  testWidgets('first probe sends the default source\'s existing auth',
+      (t) async {
+    builtInApiKey = 'baked';
+    addTearDown(() => builtInApiKey = '');
+    final c = await _pump(t, (_, h) async =>
+        h['Authorization'] == 'Bearer baked' ? 200 : 401);
+    await typeUrlAndConnect(t);
+    expect(find.text('Password'), findsNothing);
+    final s = c.read(activeSourceProvider);
+    expect(s.baseUrl, 'https://comics.example.com');
+    expect(s.authHeaders, {'Authorization': 'Bearer baked'});
+  });
+
+  testWidgets('username field explains any name works', (t) async {
+    await _pump(t, (_, _) async => 401);
+    await typeUrlAndConnect(t);
+    expect(find.text('Any name works for Gutter Server'), findsOneWidget);
+  });
 }

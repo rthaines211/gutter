@@ -76,6 +76,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final user = _userCtrl.text;
     final pass = _passCtrl.text;
     final withAuth = _authUrl != null;
+    // First try: whatever auth the default source already has (the personal
+    // build's built-in key), so a server that accepts it connects unprompted.
     final headers = withAuth
         ? ServerSource(
             id: '',
@@ -86,7 +88,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             username: user,
             password: pass,
           ).authHeaders
-        : const <String, String>{};
+        : ref.read(activeSourceProvider).authHeaders;
     setState(() {
       _probing = true;
       _error = null;
@@ -165,6 +167,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           autocorrect: false,
                           enableSuggestions: false,
                           textInputAction: TextInputAction.go,
+                          // A new address starts over: drop the credential
+                          // prompt and error left from the last one.
+                          onChanged: (_) {
+                            if (_authUrl != null || _error != null) {
+                              setState(() {
+                                _authUrl = null;
+                                _error = null;
+                              });
+                            }
+                          },
                           onSubmitted: (_) =>
                               value.text.trim().isEmpty || _probing
                                   ? null
@@ -181,8 +193,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             autocorrect: false,
                             enableSuggestions: false,
                             autofillHints: const [AutofillHints.username],
-                            decoration:
-                                const InputDecoration(labelText: 'Username'),
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                              helperText: 'Any name works for Gutter Server',
+                            ),
                           ),
                           const SizedBox(height: 16),
                           TextField(
