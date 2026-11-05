@@ -217,6 +217,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // A new client (server URL or credentials changed, e.g. after onboarding)
+    // gets its own first-scan check: the last one may have hit a 401.
+    ref.listen(apiClientProvider, (_, _) {
+      if (_scanWatched) setState(() => _scanWatched = false);
+    });
     final isOnline = ref.watch(connectivityProvider);
     final isCustom = ref.watch(isCustomSourceProvider);
     final libraryAsync = isCustom
@@ -569,34 +574,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 });
               }
               final scan = ref.watch(scanStatusProvider);
-              if (scan.phase == ScanPhase.scanning) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: SizedBox(
-                      width: 280,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Scanning your library…',
-                              style: TextStyle(color: context.scheme.t2)),
-                          const SizedBox(height: 12),
-                          // Indeterminate while the server is still
-                          // enumerating folders (total == 0).
-                          LinearProgressIndicator(
-                              value: scan.status.total > 0
-                                  ? scan.status.progress
-                                  : null),
-                          if (scan.status.total > 0) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                                '${scan.status.scanned} of ${scan.status.total}',
-                                style: TextStyle(color: context.scheme.t2)),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                );
+              if (FirstScanProgress.shows(scan)) {
+                return SliverFillRemaining(child: FirstScanProgress(scan: scan));
               }
             }
             return SliverFillRemaining(

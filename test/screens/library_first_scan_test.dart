@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:comic_reader_app/models/scan_status.dart';
 import 'package:comic_reader_app/models/series.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
@@ -32,7 +34,13 @@ class _FakeSync implements SyncEngine {
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
 
-Future<void> pump(WidgetTester t, _FakeApi api, _FakeSync sync) async {
+class _SlowSync extends _FakeSync {
+  final done = Completer<void>();
+  @override
+  Future<void> sync() => done.future;
+}
+
+Future<void> _pump(WidgetTester t, _FakeApi api, SyncEngine sync) async {
   t.view.physicalSize = const Size(1366, 1024);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.reset);
@@ -57,7 +65,7 @@ void main() {
   testWidgets('empty library while scanning shows progress', (t) async {
     final api = _FakeApi()
       ..status = const ScanStatus(isScanning: true, scanned: 120, total: 583);
-    await pump(t, api, _FakeSync());
+    await _pump(t, api, _FakeSync());
     expect(find.text('Scanning your library…'), findsOneWidget);
     expect(find.text('120 of 583'), findsOneWidget);
     expect(find.byType(LinearProgressIndicator), findsWidgets);
@@ -68,7 +76,7 @@ void main() {
     final api = _FakeApi()
       ..status = const ScanStatus(isScanning: true, scanned: 1, total: 5);
     final sync = _FakeSync();
-    await pump(t, api, sync);
+    await _pump(t, api, sync);
     expect(sync.calls, 0);
     api.status = const ScanStatus();
     await t.pump(const Duration(seconds: 2));
@@ -80,14 +88,42 @@ void main() {
   testWidgets('scan finished with zero series shows empty state', (t) async {
     final api = _FakeApi()
       ..status = const ScanStatus(isScanning: true, scanned: 0, total: 0);
-    await pump(t, api, _FakeSync());
+    await _pump(t, api, _FakeSync());
     expect(find.text('Scanning your library…'), findsOneWidget);
     expect(find.textContaining(' of '), findsNothing);
     api.status = const ScanStatus();
     await t.pump(const Duration(seconds: 2));
     await t.pump(const Duration(milliseconds: 100));
-    expect(find.textContaining('No comics found'), findsOneWidget);
+    // Done, but the banner is still syncing/showing: no empty state yet.
+    expect(find.text('Loading your library…'), findsOneWidget);
+    expect(find.textContaining('No comics found'), findsNothing);
+    // Banner dismisses (idle) with still no series: the empty state.
+    await t.pump(const Duration(seconds: 4));
+    await t.pump();
+    expect(find.text('No comics found in your library folder yet.'),
+        findsOneWidget);
+    expect(find.text('Loading your library…'), findsNothing);
     expect(find.text('Scanning your library…'), findsNothing);
+    await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('dismiss timer waits for the post-scan sync', (t) async {
+    final api = _FakeApi()
+      ..status = const ScanStatus(isScanning: true, scanned: 0, total: 0);
+    final sync = _SlowSync();
+    await _pump(t, api, sync);
+    api.status = const ScanStatus();
+    await t.pump(const Duration(seconds: 2));
+    await t.pump(const Duration(milliseconds: 100));
+    // Well past the 3s dismiss, but the sync hasn't finished.
+    await t.pump(const Duration(seconds: 5));
+    expect(find.text('Loading your library…'), findsOneWidget);
+    sync.done.complete();
+    await t.pump();
+    await t.pump(const Duration(seconds: 4));
+    await t.pump();
+    expect(find.text('No comics found in your library folder yet.'),
+        findsOneWidget);
     await t.pumpWidget(const SizedBox());
   });
 }

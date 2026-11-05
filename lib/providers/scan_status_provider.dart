@@ -31,10 +31,14 @@ class ScanStatusState {
 
 class ScanStatusNotifier extends Notifier<ScanStatusState> {
   Timer? _pollTimer;
+  Timer? _retryTimer;
 
   @override
   ScanStatusState build() {
-    ref.onDispose(() => _pollTimer?.cancel());
+    ref.onDispose(() {
+      _pollTimer?.cancel();
+      _retryTimer?.cancel();
+    });
     return const ScanStatusState();
   }
 
@@ -60,14 +64,27 @@ class ScanStatusNotifier extends Notifier<ScanStatusState> {
   }
 
   /// One poll; if the server is busy (e.g. its first scan), keep polling and
-  /// ScanBanner syncs the mirror on done. Idle stays idle.
+  /// ScanBanner syncs the mirror on done. Idle stays idle. A failed check
+  /// (server still starting, flaky network) retries once, 5s later.
   Future<void> watchIfBusy() async {
+    _retryTimer?.cancel();
+    if (!await _checkBusy()) {
+      _retryTimer = Timer(const Duration(seconds: 5), () => _checkBusy());
+    }
+  }
+
+  /// False when the status request failed.
+  Future<bool> _checkBusy() async {
     try {
       final status = await ref.read(apiClientProvider).getScanStatus();
-      if (!status.isBusy) return;
-      state = state.copyWith(phase: ScanPhase.scanning, status: status);
-      _startPolling();
-    } catch (_) {}
+      if (status.isBusy) {
+        state = state.copyWith(phase: ScanPhase.scanning, status: status);
+        _startPolling();
+      }
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   void _startPolling() {
