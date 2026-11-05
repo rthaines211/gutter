@@ -42,16 +42,21 @@ class ApiClient {
   final http.Client _httpClient;
   final RequestOutcomeCallback? onRequestOutcome;
 
+  /// The source's credentials, sent on every request.
+  final Map<String, String> authHeaders;
+
   ApiClient({
     required this.baseUrl,
     required this.deviceId,
     http.Client? httpClient,
     this.onRequestOutcome,
+    this.authHeaders = const {},
   }) : _httpClient = httpClient ?? http.Client();
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
         'X-Device-ID': deviceId,
+        ...authHeaders,
       };
 
   Future<http.Response> _request({

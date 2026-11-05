@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-enum SourceType { custom, opds }
+enum SourceType { custom, opds, komga }
 
 enum AuthType { none, basic, apiKey }
 
@@ -48,7 +48,9 @@ class ServerSource {
         );
         return {'Authorization': 'Basic $encoded'};
       case AuthType.apiKey:
-        return {'Authorization': 'Bearer ${apiKey ?? ''}'};
+        return type == SourceType.komga
+            ? {'X-API-Key': apiKey ?? ''}
+            : {'Authorization': 'Bearer ${apiKey ?? ''}'};
     }
   }
 

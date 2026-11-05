@@ -24,6 +24,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(
     baseUrl: source.baseUrl,
     deviceId: config.deviceId,
+    authHeaders: source.authHeaders,
     onRequestOutcome: (reachedServer) {
       ref.read(connectivityProvider.notifier).reportOutcome(reachedServer);
     },
@@ -39,4 +40,9 @@ final labelClientProvider = Provider<LabelClient>((ref) {
 final isCustomSourceProvider = Provider<bool>((ref) {
   final source = ref.watch(activeSourceProvider);
   return source.type == SourceType.custom;
+});
+
+/// Whether the active source syncs into the mirror (Gutter server or Komga).
+final hasMirrorProvider = Provider<bool>((ref) {
+  return ref.watch(activeSourceProvider).type != SourceType.opds;
 });
