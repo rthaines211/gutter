@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
@@ -144,7 +145,7 @@ class _LongboxSplashState extends ConsumerState<LongboxSplash>
                               child: Transform.translate(
                                 offset: Offset(0, 6 * (1 - word)),
                                 child: Text(
-                                  'LONGBOX',
+                                  appName.toUpperCase(),
                                   textDirection: TextDirection.ltr,
                                   style: AppTheme.displayTextStyle(comic, fontSize: wordSize)
                                       .copyWith(
