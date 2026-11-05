@@ -20,6 +20,14 @@ String normalizeServerUrl(String input) {
   return url;
 }
 
+/// What to probe, in order. A typed scheme is taken as is; without one try
+/// https, then plain http, which most LAN servers speak.
+List<String> serverUrlCandidates(String input) {
+  final url = normalizeServerUrl(input);
+  if (input.trim().contains('://')) return [url];
+  return [url, 'http://${url.substring('https://'.length)}'];
+}
+
 /// First launch with no server (every store install): ask for the server URL,
 /// check it answers, then save it as the default source. `app.dart` swaps to
 /// the shell once the active source has a URL, so this never pushes.
@@ -51,14 +59,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ).checkConnection();
 
   Future<void> _connect() async {
-    final url = normalizeServerUrl(_urlCtrl.text);
+    final candidates = serverUrlCandidates(_urlCtrl.text);
     setState(() {
       _probing = true;
       _error = null;
     });
-    final ok = await (widget.probe ?? _defaultProbe)(url);
+    String? url;
+    for (final c in candidates) {
+      if (await (widget.probe ?? _defaultProbe)(c)) {
+        url = c;
+        break;
+      }
+    }
     if (!mounted) return;
-    if (ok) {
+    if (url != null) {
       // Both, as Settings → Server URL does: covers and series detail build
       // URLs from ServerConfig, the API client from the source.
       await ref.read(serverConfigProvider).setServerUrl(url);
@@ -67,7 +81,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     } else {
       setState(() {
         _probing = false;
-        _error = "Couldn't reach a server at $url. "
+        _error = "Couldn't reach a server at ${candidates.first}. "
             'Check the address and that the server is running.';
       });
     }

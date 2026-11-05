@@ -66,4 +66,25 @@ void main() {
     // Covers and series detail build URLs from ServerConfig, not the source.
     expect(c.read(serverConfigProvider).serverUrl, 'https://comics.example.com');
   });
+
+  test('serverUrlCandidates: no scheme tries https, then http', () {
+    expect(serverUrlCandidates('nas.local:8080/'),
+        ['https://nas.local:8080', 'http://nas.local:8080']);
+    expect(serverUrlCandidates('http://nas.local:8080'), ['http://nas.local:8080']);
+  });
+
+  testWidgets('plain-http LAN server typed without a scheme connects',
+      (t) async {
+    final probed = <String>[];
+    final c = await _pump(t, (url) async {
+      probed.add(url);
+      return url.startsWith('http://');
+    });
+    await t.enterText(find.byType(TextField), '192.168.1.5:8080');
+    await t.pump(); // enable Connect
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(probed, ['https://192.168.1.5:8080', 'http://192.168.1.5:8080']);
+    expect(c.read(activeSourceProvider).baseUrl, 'http://192.168.1.5:8080');
+  });
 }
