@@ -78,4 +78,23 @@ void main() {
     expect(page1.sessions.first.seriesName, 'Series a');
     expect(localHistory(sessions, const {}, page: 2, limit: 20).sessions, hasLength(5));
   });
+
+  test('concurrent appends keep every session', () async {
+    final dir = await Directory.systemTemp.createTemp('sessions_');
+    addTearDown(() => dir.delete(recursive: true));
+    final store = LocalSessionStore('${dir.path}/sessions.json');
+    await Future.wait([
+      for (var i = 0; i < 10; i++) store.append(s('s$i', DateTime(2026, 11, 1, i))),
+    ]);
+    expect(await store.all(), hasLength(10));
+  });
+
+  test('a corrupt file is not overwritten by the next append', () async {
+    final dir = await Directory.systemTemp.createTemp('sessions_');
+    addTearDown(() => dir.delete(recursive: true));
+    final f = File('${dir.path}/sessions.json')..writeAsStringSync('[{"comic_id": ');
+    final store = LocalSessionStore(f.path);
+    await expectLater(store.append(s('a', DateTime(2026))), throwsFormatException);
+    expect(f.readAsStringSync(), '[{"comic_id": ');
+  });
 }

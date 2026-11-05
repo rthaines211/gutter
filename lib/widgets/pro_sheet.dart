@@ -43,6 +43,35 @@ class _ProSheetState extends ConsumerState<ProSheet> {
   late final Future<ProductDetails?> _product =
       ref.read(proProvider.notifier).product;
 
+  void _say(ScaffoldMessengerState messenger, String text) =>
+      messenger.showSnackBar(SnackBar(content: Text(text)));
+
+  Future<void> _buy() async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await ref.read(proProvider.notifier).buy();
+    } catch (_) {
+      _say(messenger, "Couldn't start the purchase. Try Restore Purchases.");
+    }
+  }
+
+  /// StoreKit sends nothing when there's nothing to restore, so give it a
+  /// few seconds and say so.
+  Future<void> _restore() async {
+    final messenger = ScaffoldMessenger.of(context);
+    // The sheet may close (unlocked) before the wait ends.
+    final container = ProviderScope.containerOf(context);
+    try {
+      await container.read(proProvider.notifier).restore();
+    } catch (_) {
+      _say(messenger, "Couldn't reach the App Store. Try again later.");
+      return;
+    }
+    await Future<void>.delayed(const Duration(seconds: 5));
+    if (container.read(proProvider)) return;
+    _say(messenger, 'No purchase to restore.');
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(proProvider, (_, pro) {
@@ -81,7 +110,7 @@ class _ProSheetState extends ConsumerState<ProSheet> {
                   style: FilledButton.styleFrom(backgroundColor: accent),
                   onPressed: pro || product == null
                       ? null
-                      : () => ref.read(proProvider.notifier).buy(),
+                      : _buy,
                   child: Text(pro
                       ? 'Unlocked'
                       : product != null
@@ -93,7 +122,7 @@ class _ProSheetState extends ConsumerState<ProSheet> {
               },
             ),
             TextButton(
-              onPressed: () => ref.read(proProvider.notifier).restore(),
+              onPressed: _restore,
               child: const Text('Restore Purchases'),
             ),
           ],

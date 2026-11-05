@@ -26,6 +26,9 @@ Map<String, Series> _byId(List<MirrorSeries> library) =>
 class StatsHistoryNotifier extends Notifier<StatsHistoryState> {
   @override
   StatsHistoryState build() {
+    // Start over when the source changes (the iPad keeps Stats mounted).
+    ref.watch(apiClientProvider);
+    ref.watch(localSessionStoreProvider);
     // Keeps the mirror library alive for local (Komga) history names.
     ref.listen(mirrorLibraryProvider, (_, _) {});
     // ponytail: _loadPage writes state, so it cannot run until build() returns.

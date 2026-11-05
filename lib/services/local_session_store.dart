@@ -41,23 +41,47 @@ class LocalSessionStore {
   final String path;
   LocalSessionStore(this.path);
 
+  /// Appends per file run one at a time (a reader session can end while the
+  /// outbox replays a queued one).
+  static final Map<String, Future<void>> _chains = {};
+
   Future<List<LocalSession>> all() async {
-    final f = File(path);
-    if (!await f.exists()) return [];
     try {
-      return (jsonDecode(await f.readAsString()) as List<dynamic>)
-          .map((e) => LocalSession.fromJson(e as Map<String, dynamic>))
-          .toList();
+      return await _read();
     } catch (_) {
       return [];
     }
   }
 
-  Future<void> append(LocalSession session) async {
-    final sessions = [...await all(), session];
+  /// Throws [FormatException] for an unreadable file rather than replacing
+  /// years of history with one session.
+  Future<List<LocalSession>> _read() async {
     final f = File(path);
-    await f.parent.create(recursive: true);
-    final tmp = File('$path.tmp');
+    if (!await f.exists()) return [];
+    final raw = await f.readAsString();
+    try {
+      return (jsonDecode(raw) as List<dynamic>)
+          .map((e) => LocalSession.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on FormatException {
+      rethrow;
+    } catch (e) {
+      throw FormatException('sessions.json: $e');
+    }
+  }
+
+  Future<void> append(LocalSession session) {
+    final next = (_chains[path] ?? Future.value())
+        .catchError((_) {})
+        .then((_) => _append(session));
+    _chains[path] = next;
+    return next;
+  }
+
+  Future<void> _append(LocalSession session) async {
+    final sessions = [...await _read(), session];
+    await File(path).parent.create(recursive: true);
+    final tmp = File('$path.${DateTime.now().microsecondsSinceEpoch}.tmp');
     await tmp.writeAsString(jsonEncode([for (final s in sessions) s.toJson()]));
     await tmp.rename(path);
   }

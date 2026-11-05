@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
+import '../config/flavor.dart';
 import 'pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -134,6 +136,10 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
             _s.pageFit,
             (v) => _s.copyWith(pageFit: v),
           ),
+          // Panel and balloon data come from the Gutter server; on Komga
+          // they need on-device detection (Phase 2), so the store build
+          // offers nothing to buy there yet.
+          if (!isStore || ref.watch(isCustomSourceProvider)) ...[
           gap,
           seg(
             'ZOOM',
@@ -145,6 +151,7 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
                 ? _s.copyWith(zoomMode: v)
                 : null,
           ),
+          ],
           gap,
           section(
             'BACKGROUND',

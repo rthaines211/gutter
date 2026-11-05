@@ -48,6 +48,8 @@ void main() {
     store.controller.add([purchase(PurchaseStatus.restored)]);
     await t.pumpAndSettle();
     expect(find.text('Restore Purchases'), findsNothing);
+    await t.pump(const Duration(seconds: 6)); // let the restore check finish
+    expect(find.text('No purchase to restore.'), findsNothing);
   });
 
   testWidgets('requirePro: personal build passes without a sheet', (t) async {
@@ -75,5 +77,15 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('Unlocked'), findsOneWidget);
     expect(find.textContaining('Unlock for'), findsNothing);
+  });
+
+  testWidgets('store: Restore with nothing to restore says so', (t) async {
+    isStore = true;
+    await pumpHost(t, (c, _) => showProSheet(c));
+    await t.tap(find.text('go'));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Restore Purchases'));
+    await t.pump(const Duration(seconds: 6));
+    expect(find.text('No purchase to restore.'), findsOneWidget);
   });
 }

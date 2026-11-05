@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/models/reader_settings.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
-import 'package:comic_reader_app/providers/providers.dart' show sharedPrefsProvider;
+import 'package:comic_reader_app/providers/providers.dart' show isCustomSourceProvider, sharedPrefsProvider;
 import 'package:comic_reader_app/widgets/reader_aa_panel.dart';
 
 import '../providers/pro_provider_test.dart' show FakeProStore;
@@ -18,6 +18,7 @@ void main() {
     WidgetTester t, {
     Size size = const Size(360, 700),
     ReaderSettings settings = const ReaderSettings(),
+    bool gutterServer = true,
   }) async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
@@ -31,6 +32,7 @@ void main() {
         overrides: [
           sharedPrefsProvider.overrideWithValue(prefs),
           proStoreProvider.overrideWithValue(FakeProStore()),
+          isCustomSourceProvider.overrideWithValue(gutterServer),
         ],
         child: MaterialApp(
           home: Scaffold(
@@ -73,6 +75,14 @@ void main() {
     await t.pumpAndSettle();
     expect(changed, isNull);
     expect(find.text('Restore Purchases'), findsOneWidget);
+  });
+
+  testWidgets('store on Komga: no ZOOM choice until on-device panels', (t) async {
+    isStore = true;
+    addTearDown(() => isStore = false);
+    await pump(t, gutterServer: false);
+    expect(find.text('Panels'), findsNothing);
+    expect(find.text('ZOOM'), findsNothing);
   });
 
   testWidgets('Paper sets theme to white', (t) async {

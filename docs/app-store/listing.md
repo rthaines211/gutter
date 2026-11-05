@@ -36,7 +36,6 @@ whole library shows up: series, covers, and where you left off.
 
 READING
 • Fit to screen, width or height, with smooth page turns
-• Two-page spreads detected automatically
 • Progress syncs both ways with your server
 
 YOUR LIBRARY
@@ -46,7 +45,7 @@ YOUR LIBRARY
 
 GUTTER PRO (one-time purchase, no subscription)
 • Offline downloads: take issues with you
-• Guided zoom through two-page spreads
+• Two-page spreads detected and zoomed half by half
 • More than one server
 • Reading stats: streaks, pages per day, top series
 
