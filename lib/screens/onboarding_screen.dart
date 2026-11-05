@@ -93,7 +93,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .checkConnection();
 
   Future<void> _connect() async {
-    final candidates = serverUrlCandidates(_urlCtrl.text);
+    // A login is never retried over plain http unless typed: a blocked 443
+    // would otherwise send the password in the clear.
+    final candidates = serverUrlCandidates(_urlCtrl.text).take(_komga ? 1 : 2).toList();
     setState(() {
       _probing = true;
       _error = null;

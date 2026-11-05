@@ -35,7 +35,10 @@ class KomgaClient extends ApiClient {
   Future<SyncResponse> fetchSync({required int since}) async {
     final data = await requestJson('POST', '/api/v1/series/list?unpaged=true',
         body: {}, timeout: const Duration(minutes: 4)) as Map<String, dynamic>;
-    final series = (data['content'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final series = (data['content'] as List<dynamic>)
+        .cast<Map<String, dynamic>>()
+        .where((s) => s['deleted'] != true)
+        .toList();
     final books = await _books();
     final bySeries = <String, List<Map<String, dynamic>>>{};
     for (final b in books) {
@@ -177,7 +180,9 @@ int _pages(Map<String, dynamic> book) =>
     (book['media'] as Map<String, dynamic>?)?['pagesCount'] as int? ?? 0;
 
 bool _readable(Map<String, dynamic> book) =>
-    book['deleted'] != true && _pages(book) > 0;
+    book['deleted'] != true &&
+    (book['media'] as Map<String, dynamic>?)?['status'] == 'READY' &&
+    _pages(book) > 0;
 
 String? _author(List<dynamic>? authors, String role) {
   for (final a in authors ?? const []) {

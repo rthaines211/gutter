@@ -139,4 +139,19 @@ void main() {
     await t.pump();
     expect(c.read(activeSourceProvider).authHeaders, {'X-API-Key': 'k1'});
   });
+
+  testWidgets('Komga login never falls back to plain http on its own', (t) async {
+    final probed = <String>[];
+    await _pump(t, (url) async {
+      probed.add(url);
+      return false;
+    }, gutter: false);
+    await t.enterText(_url, 'komga.example.com');
+    await t.enterText(find.widgetWithText(TextField, 'Username'), 'reader');
+    await t.enterText(find.widgetWithText(TextField, 'Password'), 'pw');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(probed, ['https://komga.example.com']);
+  });
 }

@@ -140,7 +140,7 @@ class ResumeHeroCard extends ConsumerWidget {
     final tablet = LayoutBreakpoint.isTablet(context);
     final info = ref.watch(heroComicInfoProvider(progress.comicId)).value;
 
-    final path = comicIdToPath(progress.comicId);
+    final path = progress.issueName ?? comicIdToPath(progress.comicId);
     final fileName = stripComicExtension(
       path.split('/').where((s) => s.isNotEmpty).lastOrNull ?? path,
     );

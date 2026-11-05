@@ -37,7 +37,7 @@ class UpNextCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final comic = ComicTokens.watch(ref, context, AppTheme.accent);
-    final path = comicIdToPath(progress.comicId);
+    final path = progress.issueName ?? comicIdToPath(progress.comicId);
     final name = stripComicExtension(
         path.contains('/') ? path.split('/').last : path);
     final pageLabel = 'P.${progress.currentPage + 1}/${progress.totalPages}';

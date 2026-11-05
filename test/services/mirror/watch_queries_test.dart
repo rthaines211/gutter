@@ -99,6 +99,8 @@ void main() {
     expect(list.map((p) => p.comicId).toList(), ['c3', 'c2']);
     expect(list[0].seriesId, 's2');
     expect(list[1].seriesId, 's1');
+    // The issue's display name, for sources whose ids aren't paths (Komga).
+    expect(list[1].issueName, 'Issue 2.cbz');
   });
 
   test('watchArcs computes read count, coverUrl fallback, and lastReadAt across all members',

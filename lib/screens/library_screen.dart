@@ -263,7 +263,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         final engine = ref.read(syncEngineProvider);
                         if (engine != null) {
                           try {
-                            await engine.sync();
+                            await engine.sync(force: true);
                           } catch (_) {}
                         }
                         if (isCustom) _rescanLibrary();
@@ -327,7 +327,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       final engine = ref.read(syncEngineProvider);
                       if (engine != null) {
                         try {
-                          await engine.sync();
+                          await engine.sync(force: true);
                         } catch (_) {}
                       }
                       if (isCustom) _rescanLibrary();
@@ -841,7 +841,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 // error only clears after a sync pull, so kick one off too.
                 unawaited(ref
                         .read(syncEngineProvider)
-                        ?.sync()
+                        ?.sync(force: true)
                         .catchError((_) {}) ??
                     Future.value());
                 if (ref.read(hasMirrorProvider)) {

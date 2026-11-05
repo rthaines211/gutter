@@ -79,7 +79,7 @@ class ReadScreen extends ConsumerWidget {
         final engine = ref.read(syncEngineProvider);
         if (engine != null) {
           try {
-            await engine.sync();
+            await engine.sync(force: true);
           } catch (_) {}
         }
         return ref.refresh(readTabProvider.future);
@@ -280,7 +280,12 @@ class ReadScreen extends ConsumerWidget {
   }
 
   void _openReader(BuildContext context, WidgetRef ref, ReadingProgress progress) {
-    final path = comicIdToPath(progress.comicId);
+    // Gutter ids decode to a path (folder = series); Komga's don't, so its
+    // issue name stands in.
+    final decoded = comicIdToPath(progress.comicId);
+    final path = decoded != progress.comicId
+        ? decoded
+        : progress.issueName ?? decoded;
     Navigator.push(context, readerRoute(
       context,
       comicId: progress.comicId,

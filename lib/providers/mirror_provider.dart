@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../models/server_source.dart';
 import '../services/source_auth_client.dart';
 import 'package:path/path.dart' as p;
 
@@ -33,6 +34,10 @@ final syncEngineProvider = Provider<SyncEngine?>((ref) {
     db: ref.watch(mirrorDbProvider),
     client: ref.watch(apiClientProvider),
     queue: queue,
+    // Each Komga pull re-reads the whole library.
+    minPullInterval: ref.watch(activeSourceProvider).type == SourceType.komga
+        ? const Duration(minutes: 10)
+        : Duration.zero,
   );
 });
 

@@ -150,4 +150,16 @@ void main() {
         comicId: 'b1', seriesId: 's1', startedAt: DateTime(2024), pagesRead: 3, durationS: 60);
     expect(requests, isEmpty);
   });
+
+  test('books that are not READY and deleted series are left out', () async {
+    final broken = book('b9', sort: 9)..['media'] = {'pagesCount': 12, 'status': 'ERROR'};
+    final r = await client({
+      'POST /api/v1/series/list': {
+        'content': [series, {...series, 'id': 's2', 'deleted': true}],
+      },
+      'POST /api/v1/books/list': {'content': [book('b1'), broken]},
+    }).fetchSync(since: 0);
+    expect(r.seriesIds, ['s1']);
+    expect((r.series.single['issues'] as List).map((i) => i['id']), ['b1']);
+  });
 }

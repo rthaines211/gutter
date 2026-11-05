@@ -5,12 +5,16 @@ class ReadingProgress {
   final DateTime? updatedAt;
   final String? seriesId;
 
+  /// The issue's name from the mirror; Komga ids don't decode to a path.
+  final String? issueName;
+
   const ReadingProgress({
     required this.comicId,
     required this.currentPage,
     required this.totalPages,
     this.updatedAt,
     this.seriesId,
+    this.issueName,
   });
 
   factory ReadingProgress.fromJson(Map<String, dynamic> json) {
