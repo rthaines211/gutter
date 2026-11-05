@@ -118,6 +118,27 @@ void main() {
     expect(remaining.first['payload']['comic_id'], 'a');
   });
 
+  for (final status in [401, 403]) {
+    test('entry returning $status stays queued and stops the drain', () async {
+      await queue.enqueue(progressEntry('a', 1));
+      await queue.enqueue(progressEntry('b', 2));
+
+      var calls = 0;
+      final drainer = SyncQueueDrainer(
+        queue: queue,
+        client: clientWith((_) async {
+          calls++;
+          return http.Response('{"error":"unauthorized"}', status);
+        }),
+      );
+      await drainer.drain();
+      expect(calls, 1);
+      expect(await queue.pendingCount, 2);
+      final remaining = await queue.readAll();
+      expect(remaining.first['payload']['comic_id'], 'a');
+    });
+  }
+
   test('entry throwing SocketException breaks drain', () async {
     await queue.enqueue(progressEntry('a', 1));
     await queue.enqueue(progressEntry('b', 2));

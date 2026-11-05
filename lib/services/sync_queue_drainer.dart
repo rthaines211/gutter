@@ -17,7 +17,9 @@ import 'sync_queue.dart';
 ///   The entry stays at the head and will be retried on the next drain.
 /// - **5xx HTTP response**: break the loop. Server is reachable but
 ///   degraded; retry later.
-/// - **408 / 429**: break like a 5xx; they're "try again later", not terminal.
+/// - **401 / 403 / 408 / 429**: break like a 5xx; they're "try again later"
+///   (wrong or missing credentials get fixed, then the entry replays), not
+///   terminal.
 /// - **Anything else thrown** (a bad cast on a malformed payload): drop, like
 ///   a 4xx. Breaking on it would stall every later entry behind it forever.
 /// - **Other 4xx HTTP response**: drop the entry (it will never succeed) and
@@ -67,6 +69,8 @@ class SyncQueueDrainer {
       } on ApiException catch (e) {
         if (e.statusCode >= 400 &&
             e.statusCode < 500 &&
+            e.statusCode != 401 &&
+            e.statusCode != 403 &&
             e.statusCode != 408 &&
             e.statusCode != 429) {
           AppLogger.instance.sync(
