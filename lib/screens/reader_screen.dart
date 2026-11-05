@@ -4,6 +4,8 @@ import '../config/source_urls.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -139,6 +141,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
 
   final PanSequenceController _panController = PanSequenceController();
   BubbleRepository? _bubbleRepo;
+  bool _serverBubbles = false;
   final Map<int, PageBubbles> _bubbles = {};
   final Map<int, Map<int, BubbleMask>> _bubbleMasks = {};
 
@@ -337,14 +340,14 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
         if (mounted) setState(() => _showSleepWarning = true);
       },
     );
-    // Panel and balloon data come from a Gutter server; other sources have
-    // none, so don't ask them on every page.
-    _bubbleRepo = ref.read(isCustomSourceProvider)
-        ? BubbleRepository(
-            client: ref.read(apiClientProvider),
-            queue: ref.read(syncQueueProvider),
-          )
-        : null;
+    // Sidecars come from a Gutter server; other sources have none, so don't
+    // ask them on every page. Panels mode still finds panels on the device.
+    _serverBubbles = ref.read(isCustomSourceProvider);
+    _bubbleRepo = BubbleRepository(
+      client: ref.read(apiClientProvider),
+      queue: ref.read(syncQueueProvider),
+      mirror: ref.read(mirrorDbProvider),
+    );
     // Fires at once when settings are already loaded (every reader after the first),
     // and again when they arrive or change. Only bubble-relevant changes act.
     ref.listenManual<AsyncValue<ReaderSettings>>(settingsProvider, (prev, next) {
@@ -866,7 +869,10 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     if (settings.zoomMode == 'off' || settings.zoomLock || repo == null) return;
     if (!_bubbleLoading.add(page)) return;
     try {
-      final pb = _bubbles[page] ?? await repo.forPage(_comicId, page);
+      var pb = _bubbles[page] ?? (_serverBubbles ? await repo.forPage(_comicId, page) : null);
+      if (pb == null && settings.zoomMode == 'panels') {
+        pb = await repo.detectedPanels(_comicId, page, () => _pageImageFor(page));
+      }
       if (!mounted || pb == null || (pb.bubbles.isEmpty && pb.panels.isEmpty)) return;
       final isNew = !_bubbles.containsKey(page);
       _bubbles[page] = pb;
@@ -938,6 +944,21 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   }
 
   /// The decoded page behind [provider] (an image-cache hit for the page on screen).
+  /// The decoded page for on-device panels: the provider the page view built,
+  /// else the network page under the prefetcher's cache key. Null for a
+  /// downloaded page the view hasn't built yet ([onPageProvider] retries it).
+  Future<ui.Image?> _pageImageFor(int page) async {
+    final provider = _pageProviders[page] ??
+        (_localPagesPath == null ? CachedNetworkImageProvider(ref.read(apiClientProvider).pageUrl(_comicId, page)) : null);
+    if (provider == null) return null;
+    try {
+      return await _resolvePageImage(provider).timeout(const Duration(seconds: 10));
+    } catch (e) {
+      debugPrint('panels: page $page image unavailable: $e');
+      return null;
+    }
+  }
+
   Future<ui.Image> _resolvePageImage(ImageProvider provider) {
     final done = Completer<ui.Image>();
     final stream = provider.resolve(ImageConfiguration.empty);
@@ -2302,6 +2323,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
               _pageProviders[page] = provider;
               // Called during build: start the cut-outs once the frame is done.
               if (_bubbles[page]?.bubbles.isNotEmpty ?? false) scheduleMicrotask(() => _ensureMasks(page));
+              // A downloaded page's image is only known now: on-device panels can run.
+              if (!_bubbles.containsKey(page)) scheduleMicrotask(() => _loadBubbles(page));
             },
             transformationController: _transformController,
             displayRectForPage: _displayRectFor,
