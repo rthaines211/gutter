@@ -63,5 +63,7 @@ void main() {
     await t.pump();
     expect(probed, 'https://comics.example.com');
     expect(c.read(activeSourceProvider).baseUrl, 'https://comics.example.com');
+    // Covers and series detail build URLs from ServerConfig, not the source.
+    expect(c.read(serverConfigProvider).serverUrl, 'https://comics.example.com');
   });
 }

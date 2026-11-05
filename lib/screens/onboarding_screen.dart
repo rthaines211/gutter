@@ -59,6 +59,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final ok = await (widget.probe ?? _defaultProbe)(url);
     if (!mounted) return;
     if (ok) {
+      // Both, as Settings → Server URL does: covers and series detail build
+      // URLs from ServerConfig, the API client from the source.
+      await ref.read(serverConfigProvider).setServerUrl(url);
+      if (!mounted) return;
       ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
     } else {
       setState(() {
