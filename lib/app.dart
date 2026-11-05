@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/app_theme.dart';
+import 'config/flavor.dart';
 import 'providers/app_breadcrumbs.dart';
 import 'providers/scheme_provider.dart';
 import 'services/breadcrumb_route_observer.dart';
@@ -20,7 +21,7 @@ class ComicReaderApp extends ConsumerWidget {
     final scheme = ref.watch(schemeProvider).scheme;
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'Longbox',
+      title: appName,
       theme: AppTheme.themeData(scheme),
       navigatorObservers: [
         BreadcrumbRouteObserver(onRoute: breadcrumbs.setRoute),

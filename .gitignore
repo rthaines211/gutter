@@ -69,3 +69,6 @@ flutter_tools.*/
 # Personal build settings and deploy notes (never committed)
 Makefile.local
 CLAUDE.local.md
+
+# Written by the Makefile before every build (personal vs store)
+ios/Flutter/Flavor.xcconfig
