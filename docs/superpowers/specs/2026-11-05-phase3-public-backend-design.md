@@ -74,12 +74,15 @@ progress, then open and read a comic.
 - Auth: only `/_admin` has it (Basic, any username, `admin_password` in config,
   `server/admin/auth.go`). The rest of the API is open. CORS `Allow-Headers` lacks
   `Authorization`.
-- The app already sends `Authorization: Basic …` or `Bearer <apiKey>` per source
-  (`lib/models/server_source.dart`) for API calls, downloads and `page_fetcher`.
-  **But ~20 `CachedNetworkImage` / `CachedNetworkImageProvider` call sites send no
-  headers** (covers, pages in `scroll_reader`, `page_prefetcher`, `cover_flight_route`,
-  filmstrip, etc.). Once auth is on, covers and pages would 401. The Komga adapter
-  (Phase 1b) needs the same fix.
+- **The app sends no auth to the Go backend.** `ServerSource.authHeaders` exists
+  (`lib/models/server_source.dart`), but only OPDS and push use it. `ApiClient` sends only
+  `X-Device-ID`. Downloads build their own headers without auth (`series_detail_panel`,
+  `issue_list_view`), and so does `CoverSyncer`. About 20 `CachedNetworkImage` /
+  `CachedNetworkImageProvider` call sites send no headers either. Once auth is on, all of
+  these would get 401s. The Komga adapter (Phase 1b) needs the same plumbing.
+- The personal build's default source already carries an API key (the built-in push
+  key, used as `Bearer` for `/devices`). If the owner sets `GUTTER_API_KEY` to the push
+  register secret, the iPad authenticates with no app-side settings change.
 - Startup: the scan is deliberately skipped at startup (the homelab's external drive can
   block). The scheduler's first tick is one `scan_interval` later (default 30m). **A fresh
   install shows an empty library for 30 minutes.**
@@ -123,6 +126,8 @@ progress, then open and read a comic.
   `GUTTER_METRON_USER` / `GUTTER_METRON_PASS`, `GUTTER_WRITEBACK`, `GUTTER_SCAN_INTERVAL`.
   Anything more exotic stays file-only.
 - Container defaults: library at `/comics`, DB/covers/cache under `/data`, port 8081.
+  The config file lives at `/data/config.yaml`, which is optional. That way, saves from the
+  admin console (add a dir, change the schedule) persist in the data volume.
 - Rename `admin_password` → `password` in the file. *(No fallback alias. The owner
   migrates once.)*
 
@@ -161,8 +166,13 @@ progress, then open and read a comic.
   instead of the empty state. It reuses `scanStatusProvider` polling, and when the scan
   finishes it triggers a mirror sync so series appear without a manual refresh.
 
-### 6. App: send auth with images
+### 6. App: send auth everywhere
 
+- `ApiClient` takes the active source's `authHeaders` and sends them on every request.
+  Downloads and `CoverSyncer` do too. Downloads add `Authorization` at request time and
+  never write it into the download journal on disk.
+- A 401 counts as "server reached" for connectivity, so a wrong password never shows the
+  app as offline.
 - Every `CachedNetworkImage` / `CachedNetworkImageProvider` that loads from a source sends
   that source's `authHeaders` (`httpHeaders:`). Use one small helper so call sites don't
   each rebuild headers. The cache key stays the URL, so the prefetcher and display widgets
@@ -171,12 +181,15 @@ progress, then open and read a comic.
 - Onboarding (on `feat/store-flavor`) probes `GET /browse` via `ApiClient.checkConnection`
   before it asks for credentials, and that probe will get a 401 once auth is on. Change
   the flow to URL, then credentials (password, optional API key), then probe. A 401 on
-  the probe means "ask for or re-ask for credentials", not "server unreachable".
+  the probe means "ask for or re-ask for credentials", not "server unreachable". So the
+  flow is: URL, probe, then on a 401 show username and password fields and probe again
+  with Basic auth. A server without auth (Komga with no auth) connects in one step. An API
+  key stays a Settings → source option and isn't part of onboarding. *(My call.)*
 
 ### 7. Rename
 
 - Module → `github.com/rthaines211/gutter-server`, binary → `gutter`, config dir →
-  `/etc/gutter/`, admin realm and log prefix → Gutter. One mechanical commit, kept apart
+  `/data/config.yaml`, admin realm and log prefix → Gutter. One mechanical commit, kept apart
   from behavior changes.
 
 ### 8. Off-by-default owner features
@@ -212,7 +225,7 @@ progress, then open and read a comic.
 ### 11. Owner migration
 
 A checklist in the plan, not in the public docs: update the homelab compose (new image or
-build path, `/etc/gutter`, `GUTTER_PASSWORD`, `GUTTER_API_KEY`, keep the library rw and
+build path, `/data/config.yaml`, `GUTTER_PASSWORD`, `GUTTER_API_KEY`, keep the library rw and
 writeback on), add credentials to the iPad's source, and update the hostjob/pushwatch/
 proxy callers. Also update app `CLAUDE.md` "Backend API" for auth, and the stale "endpoints
 won't respond until scan completes" line.
