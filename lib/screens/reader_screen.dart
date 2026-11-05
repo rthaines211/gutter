@@ -28,6 +28,7 @@ import '../services/zoom_math.dart';
 import '../services/pan_sequence_controller.dart';
 import '../widgets/volume_key_listener.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../widgets/ambient_progress_rail.dart';
 import '../widgets/floating_page_pill.dart';
 import '../widgets/filmstrip_scrubber.dart';
@@ -1752,7 +1753,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
             child: ReaderMoreMenu(
               onChapters: _openChapterList,
               onAllPages: _openPageGrid,
-              onRecap: hasSeries ? _openRecap : null,
+              onRecap: hasSeries && !isStore ? _openRecap : null,
               // Clipping crops a paged page; scroll mode has none to crop.
               onClipPanel: scrollMode ? null : _armClip,
               onIssueDetails: hasSeries ? _openIssueDetails : null,
@@ -1787,6 +1788,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   /// The page a flag would name: only with panel or bubble zoom on, in paged
   /// mode, on a real page (not the end card). Null when flagging is off.
   int? _flaggablePage() {
+    if (isStore) return null; // flags feed the labeller: personal only
     final settings = ref.read(settingsProvider).value ?? const ReaderSettings();
     if (settings.zoomMode == 'off' || settings.readingMode != 'page') return null;
     final reader = ref.read(readerProvider(_readerKey)).value;
@@ -2175,8 +2177,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       sleepRemaining: () => SleepTimer.instance.remaining,
       onSleepTimer: _onMoonTap,
       claudeMode: _claudeMode,
-      // The Claude panel needs the server: no button offline.
-      onClaude: ref.watch(connectivityProvider)
+      // The Claude panel needs the server: no button offline. Personal only.
+      onClaude: !isStore && ref.watch(connectivityProvider)
           ? () => setState(() {
                 _claudeOpened = true;
                 _claudeMode = _claudeMode.next;

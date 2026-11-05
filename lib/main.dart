@@ -16,6 +16,7 @@ import 'services/crash_detector.dart';
 import 'services/error_capture.dart';
 import 'services/heartbeat_writer.dart';
 import 'services/memory_pressure_watcher.dart';
+import 'config/flavor.dart';
 import 'services/push_service.dart';
 
 void main() async {
@@ -75,6 +76,8 @@ void main() async {
   container.read(connectivityProvider);
 
   // After the first frame so a cold-start tap can push onto a live navigator.
+  // Push is personal-only: the store app has no aps-environment entitlement.
+  if (!isStore) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     final push = PushService(
       channel: const MethodChannel('app.comic_reader/push'),
@@ -89,4 +92,5 @@ void main() async {
     });
     push.start();
   });
+  }
 }

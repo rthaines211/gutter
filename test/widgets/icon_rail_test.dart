@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/navigation_provider.dart';
 import 'package:comic_reader_app/widgets/icon_rail.dart';
@@ -149,5 +150,16 @@ void main() {
   testWidgets('rail is 76pt wide', (t) async {
     await t.pumpWidget(_host());
     expect(t.getSize(find.byType(IconRail)).width, 76);
+  });
+
+  testWidgets('store: no Creators, Review or Arcs in the rail', (t) async {
+    isStore = true;
+    addTearDown(() => isStore = false);
+    await t.pumpWidget(_host());
+    expect(find.text('Creators'), findsNothing);
+    expect(find.text('Review'), findsNothing);
+    // Arcs come from Mylar via the personal backend: empty for strangers.
+    expect(find.text('Arcs'), findsNothing);
+    expect(find.text('Library'), findsOneWidget);
   });
 }

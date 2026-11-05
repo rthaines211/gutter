@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/providers/navigation_provider.dart';
 import 'package:comic_reader_app/screens/creators_screen.dart';
 import 'package:comic_reader_app/screens/review_screen.dart';
@@ -38,5 +39,21 @@ void main() {
         isA<ReviewScreen>());
     expect(AppShell.tabletScreens[NavDestination.creators.index],
         isA<CreatorsScreen>());
+  });
+
+  test('store: going to a hidden destination lands on Read', () {
+    isStore = true;
+    addTearDown(() => isStore = false);
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    final n = c.read(navigationProvider.notifier);
+    n.go(NavDestination.library);
+    n.go(NavDestination.review);
+    expect(c.read(navigationProvider), NavDestination.read);
+    n.go(NavDestination.library);
+    n.setTabIndex(2);
+    expect(c.read(navigationProvider), NavDestination.read);
+    n.go(NavDestination.arcs);
+    expect(c.read(navigationProvider), NavDestination.read);
   });
 }

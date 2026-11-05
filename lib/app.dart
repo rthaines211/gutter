@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/app_theme.dart';
+import 'config/flavor.dart';
 import 'providers/app_breadcrumbs.dart';
 import 'providers/scheme_provider.dart';
+import 'providers/source_provider.dart';
+import 'screens/onboarding_screen.dart';
 import 'services/breadcrumb_route_observer.dart';
 import 'widgets/app_shell.dart';
 import 'widgets/connectivity_overlay.dart';
@@ -18,18 +21,24 @@ class ComicReaderApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final breadcrumbs = ref.read(appBreadcrumbsProvider.notifier);
     final scheme = ref.watch(schemeProvider).scheme;
+    final needsServer =
+        ref.watch(activeSourceProvider.select((s) => s.baseUrl.isEmpty));
     return MaterialApp(
       navigatorKey: navigatorKey,
-      title: 'Longbox',
+      title: appName,
       theme: AppTheme.themeData(scheme),
       navigatorObservers: [
         BreadcrumbRouteObserver(onRoute: breadcrumbs.setRoute),
         RootRouteObserver(),
       ],
-      builder: (context, child) => ConnectivityOverlay(
-        child: LongboxSplash(child: child ?? const SizedBox.shrink()),
-      ),
-      home: const AppShell(),
+      // No server yet (every fresh store install) reads as offline: skip the
+      // offline strip while onboarding.
+      builder: (context, child) {
+        final splash = LongboxSplash(child: child ?? const SizedBox.shrink());
+        return needsServer ? splash : ConnectivityOverlay(child: splash);
+      },
+      // Saving a URL in onboarding rebuilds this into the shell.
+      home: needsServer ? const OnboardingScreen() : const AppShell(),
     );
   }
 }

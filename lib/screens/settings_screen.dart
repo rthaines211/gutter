@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
+import '../widgets/privacy_sheet.dart';
+import 'onboarding_screen.dart' show normalizeServerUrl;
 import '../widgets/longbox_mark.dart';
 import '../widgets/reader_settings_form.dart' show sleepSettingsRows;
 import '../providers/accent_provider.dart';
@@ -76,9 +79,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ],
         ),
       );
-      if (result != null && result.isNotEmpty) {
-        await ref.read(serverConfigProvider).setServerUrl(result);
-        ref.read(sourceListProvider.notifier).updateDefaultUrl(result);
+      // Same cleanup as onboarding: `nas.local:8080/` saved raw has no host.
+      if (result != null && result.trim().isNotEmpty) {
+        final url = normalizeServerUrl(result);
+        await ref.read(serverConfigProvider).setServerUrl(url);
+        ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
         ref.read(connectivityProvider.notifier).check();
       }
     } finally {
@@ -204,7 +209,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onTap: () => _push(
                           const RenameTemplatesScreen(), '/rename-templates'),
                     ),
-                    _NavRow(
+                    if (!isStore) _NavRow(
                       label: 'Label pages',
                       onTap: () => _push(const LabelScreen(), 'label'),
                     ),
@@ -274,7 +279,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: serverConfig.serverUrl,
                       onTap: () => _editServerUrl(serverConfig.serverUrl),
                     ),
-                    _NavRow(
+                    // The key registers push, which is personal-only.
+                    if (!isStore) _NavRow(
                       label: 'API Key',
                       value: apiKey.isEmpty ? 'Not set' : 'Set',
                       onTap: () => _editApiKey(apiKey),
@@ -314,24 +320,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('LONGBOX',
+                              Text(appName.toUpperCase(),
                                   style: AppTheme.displayTextStyle(
                                     ComicTokens.watch(ref, context, accent),
                                     fontSize: 22,
                                   ).copyWith(color: context.scheme.tx)),
                               const SizedBox(height: 2),
-                              Text('Your longbox, online.',
+                              Text(
+                                  isStore
+                                      ? 'Your comics, your server.'
+                                      : 'Your longbox, online.',
                                   style: context.monoCaption),
                             ],
                           ),
                         ],
                       ),
                     ),
+                    _NavRow(
+                      label: 'Privacy',
+                      onTap: () => showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: context.scheme.s2,
+                        builder: (_) => const PrivacySheet(),
+                      ),
+                    ),
                   ],
                 ),
 
-                // Diagnostics
-                Builder(builder: (context) {
+                // Diagnostics (personal only: the log names servers and paths)
+                if (!isStore) Builder(builder: (context) {
                   return _Section(
                     icon: Icons.bug_report_outlined,
                     iconColor: context.scheme.t2,

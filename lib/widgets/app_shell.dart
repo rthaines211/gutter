@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
 import '../providers/navigation_provider.dart';
@@ -108,12 +109,14 @@ class AppShell extends ConsumerWidget {
     final tabIndex = ref.read(navigationProvider.notifier).tabIndex;
     final isOffline = !ref.watch(connectivityProvider);
 
-    const screens = [
-      ReadScreen(),
-      LibraryScreen(),
-      CreatorsScreen(),
-      ReviewScreen(),
-      MoreScreen(),
+    // Store: the hidden tabs' slots stay empty. IndexedStack builds every
+    // child, so a hidden screen would still mount and hit its endpoints.
+    final screens = [
+      const ReadScreen(),
+      const LibraryScreen(),
+      isStore ? const SizedBox.shrink() : const CreatorsScreen(),
+      isStore ? const SizedBox.shrink() : const ReviewScreen(),
+      const MoreScreen(),
     ];
 
     return Scaffold(
@@ -135,7 +138,7 @@ class AppShell extends ConsumerWidget {
             currentIndex: tabIndex,
             accent: accent,
             offline: isOffline,
-            reviewCount: ref.watch(reviewCountProvider),
+            reviewCount: isStore ? 0 : ref.watch(reviewCountProvider),
             onTap: (i) => ref.read(navigationProvider.notifier).setTabIndex(i),
           ),
         ],
@@ -163,7 +166,12 @@ class AppShell extends ConsumerWidget {
                 Expanded(
                   child: IndexedStack(
                     index: nav.index,
-                    children: tabletScreens,
+                    children: [
+                      for (final d in NavDestination.values)
+                        isStore && storeHiddenDestinations.contains(d)
+                            ? const SizedBox.shrink()
+                            : tabletScreens[d.index],
+                    ],
                   ),
                 ),
                 const ScanIndicator(),

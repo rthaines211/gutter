@@ -1,4 +1,5 @@
 import '../services/sleep_timer.dart' show snapStartingMin;
+import '../config/flavor.dart';
 
 class ReaderSettings {
   final String readingMode;
@@ -29,7 +30,7 @@ class ReaderSettings {
     this.sleepWarningSec = 60,
     this.keepScreenOn = true,
     this.pageFit = 'fitScreen',
-    this.volumeKeys = true,
+    this.volumeKeys = false,
     this.pageAnimation = 'slide',
     this.zoomLock = false,
   });
@@ -60,7 +61,9 @@ class ReaderSettings {
           : json['sleep_warning_sec'] as int,
       keepScreenOn: json['keep_screen_on'] as bool? ?? true,
       pageFit: pageFit,
-      volumeKeys: json['volume_keys'] as bool? ?? true,
+      // Off in the store app (App Review 2.5.9: hijacking the volume buttons
+      // must be opt-in); personal keeps on for a server that never saved it.
+      volumeKeys: json['volume_keys'] as bool? ?? !isStore,
       pageAnimation: json['page_animation'] as String? ?? 'slide',
       zoomLock: json['zoom_lock'] as bool? ?? false,
     );

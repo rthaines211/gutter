@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/download_provider.dart';
 import '../providers/providers.dart';
+import '../widgets/privacy_sheet.dart';
 import 'arcs_screen.dart';
 import 'downloads_screen.dart';
 import 'queues_screen.dart';
@@ -116,14 +118,14 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   sub: 'Plan your next reads',
                   onTap: () => _push(context, const QueuesScreen(), '/queues'),
                 ),
-                if (online) _MoreRow(
+                if (online && !isStore) _MoreRow(
                   icon: Icons.settings_remote_rounded,
                   iconColor: AppTheme.blue,
                   label: 'Remote',
                   sub: 'Control the iPad reader',
                   onTap: () => _push(context, const RemoteScreen(), '/remote'),
                 ),
-                _MoreRow(
+                if (!isStore) _MoreRow(
                   icon: Icons.account_tree_rounded,
                   iconColor: AppTheme.violet,
                   label: 'Story Arcs',
@@ -150,13 +152,13 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   sub: 'Streaks, sessions, genres',
                   onTap: () => _push(context, const StatsScreen(), '/stats'),
                 ),
-                _MoreRow(
+                if (!isStore) _MoreRow(
                   icon: Icons.bookmark_rounded,
                   iconColor: AppTheme.amber,
                   label: 'Bookmarks',
                   onTap: () {},
                 ),
-                _MoreRow(
+                if (!isStore) _MoreRow(
                   icon: Icons.access_time_rounded,
                   iconColor: context.scheme.t2,
                   label: 'Recently Read',
@@ -175,13 +177,24 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   onTap: () => _push(context, const SettingsScreen(), '/settings'),
                 ),
                 _MoreRow(
+                  icon: Icons.privacy_tip_outlined,
+                  iconColor: context.scheme.t2,
+                  label: 'Privacy',
+                  onTap: () => showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: context.scheme.s2,
+                    builder: (_) => const PrivacySheet(),
+                  ),
+                ),
+                if (!isStore) _MoreRow(
                   icon: Icons.info_outline_rounded,
                   iconColor: context.scheme.t2,
                   label: 'About LCS',
                   value: 'v2.0',
                   onTap: () {},
                 ),
-                _MoreRow(
+                if (!isStore) _MoreRow(
                   icon: Icons.favorite_rounded,
                   iconColor: accent,
                   label: 'Rate LCS',

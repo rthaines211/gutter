@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../config/flavor.dart';
 import '../config/app_theme.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
@@ -73,7 +74,7 @@ class ReadingStamp extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(11),
           child: CornerBox(
-            band: 'Longbox Reading Stamp',
+            band: '$appName Reading Stamp',
             bandTrailing: 'No. ${month.month}',
             bandColor: accent,
             big: groupThousands(m.pagesRead),

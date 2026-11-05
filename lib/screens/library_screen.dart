@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
 import '../config/library_sections.dart';
@@ -498,7 +499,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
         if (!pinned) SliverToBoxAdapter(child: header),
 
         if (filter.query.trim().isNotEmpty)
-          SliverToBoxAdapter(child: CreatorSearchRows(query: filter.query)),
+          if (!isStore)
+            SliverToBoxAdapter(child: CreatorSearchRows(query: filter.query)),
 
         // Content based on view mode
         if (_viewMode.startsWith('smart:'))

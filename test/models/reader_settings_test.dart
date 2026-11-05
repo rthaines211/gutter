@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/models/reader_settings.dart';
 
 void main() {
@@ -152,6 +153,25 @@ void main() {
       final updated = settings.copyWith(sleepWarningSec: 30);
       expect(updated.sleepWarningSec, 30);
       expect(updated.readingMode, 'page');
+    });
+  });
+
+  group('volume keys (guideline 2.5.9: opt-in in the store app)', () {
+    tearDown(() => isStore = false);
+
+    test('default off: const and store fromJson', () {
+      isStore = true;
+      expect(const ReaderSettings().volumeKeys, isFalse);
+      expect(ReaderSettings.fromJson({}).volumeKeys, isFalse);
+    });
+
+    test('personal: a server with no stored volume_keys still means on', () {
+      expect(ReaderSettings.fromJson({}).volumeKeys, isTrue);
+    });
+
+    test('a stored value always wins', () {
+      isStore = true;
+      expect(ReaderSettings.fromJson({'volume_keys': true}).volumeKeys, isTrue);
     });
   });
 }

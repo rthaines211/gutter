@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/models/reader_settings.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
@@ -88,5 +89,27 @@ void main() {
     c.read(connectivityProvider.notifier).state = false;
     await Future<void>.delayed(Duration.zero);
     expect(reloads, 0);
+  });
+
+  group('store: volume keys are a device-local opt-in', () {
+    setUp(() => isStore = true);
+    tearDown(() => isStore = false);
+
+    test("the server's default true does not turn them on", () async {
+      // gutter-server's DefaultSettings sends volume_keys: true for every
+      // new device; App Review 2.5.9 needs them off until the user opts in.
+      server = {'page_fit': 'fitHeight', 'volume_keys': true};
+      final s = await make(online: true).read(settingsProvider.future);
+      expect(s.volumeKeys, isFalse);
+    });
+
+    test('opting in sticks across launches', () async {
+      server = {'volume_keys': true};
+      final c = make(online: true);
+      final s = await c.read(settingsProvider.future);
+      await c.read(settingsProvider.notifier).save(s.copyWith(volumeKeys: true));
+      final next = await make(online: true).read(settingsProvider.future);
+      expect(next.volumeKeys, isTrue);
+    });
   });
 }

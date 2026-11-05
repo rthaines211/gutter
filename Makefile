@@ -12,14 +12,25 @@ COMPOSE_DIR ?=
 PUSH_API_KEY ?=
 APP = build/ios/iphoneos/Runner.app
 
-DART_DEFINES = $(if $(PUSH_API_KEY),--dart-define=PUSH_API_KEY=$(PUSH_API_KEY)) \
+DART_DEFINES = --dart-define=FLAVOR=personal \
+	$(if $(PUSH_API_KEY),--dart-define=PUSH_API_KEY=$(PUSH_API_KEY)) \
 	$(if $(BACKEND_URL),--dart-define=DEFAULT_SERVER_URL=$(BACKEND_URL))
 
-.PHONY: ipad ipad-release ipad-debug iphone iphone-release iphone-debug clean devices backend-check backend-deploy unlock check
+.PHONY: ipad ipad-release ipad-debug iphone iphone-release iphone-debug store-ipad store-ipa clean devices backend-check backend-deploy unlock check
 
 ## Install over the existing app instead of `flutter install`, which uninstalls
 ## first and wipes the app's data (server URL, mirror DB, downloads) every time.
 install_to = xcrun devicectl device install app --device $(1) $(APP)
+
+## Two apps from one codebase, installed side by side. The Runner target reads
+## its bundle id, home-screen name and entitlements from Flavor.xcconfig
+## (untracked), written before every build. The pbxproj has no fallback, so a
+## build without it fails at signing instead of shipping the wrong bundle id.
+## Personal keeps BUNDLE_ID so `make ipad` upgrades in place and keeps its data.
+STORE_BUNDLE_ID = com.ryanhaines.gutter
+write_flavor = printf 'GUTTER_BUNDLE_ID = %s\nGUTTER_DISPLAY_NAME = %s\nGUTTER_ENTITLEMENTS = %s\n' $(1) $(2) $(3) > ios/Flutter/Flavor.xcconfig
+personal_flavor = $(call write_flavor,$(BUNDLE_ID),Longbox,Runner/Runner.entitlements)
+store_flavor = $(call write_flavor,$(STORE_BUNDLE_ID),Gutter,Runner/Store.entitlements)
 
 ## First codesigning identity in the keychain, read at build time rather than
 ## hardcoded: keeps the cert's email and team ID out of the repo, and survives
@@ -57,6 +68,7 @@ check:
 ipad: ipad-release
 
 ipad-release: check unlock backend-check
+	$(personal_flavor)
 	flutter build ios --release $(DART_DEFINES)
 	$(call install_to,$(IPAD_DEVICE_ID))
 
@@ -79,6 +91,7 @@ backend-deploy:
 
 ## Install debug build to iPad over WiFi
 ipad-debug: unlock backend-check
+	$(personal_flavor)
 	flutter build ios --debug $(DART_DEFINES)
 	$(call install_to,$(IPAD_DEVICE_ID))
 
@@ -86,13 +99,27 @@ ipad-debug: unlock backend-check
 iphone: iphone-release
 
 iphone-release: check unlock backend-check
+	$(personal_flavor)
 	flutter build ios --release $(DART_DEFINES)
 	$(call install_to,$(IPHONE_DEVICE_ID))
 
 ## Install debug build to iPhone
 iphone-debug: unlock backend-check
+	$(personal_flavor)
 	flutter build ios --debug $(DART_DEFINES)
 	$(call install_to,$(IPHONE_DEVICE_ID))
+
+## The App Store app on the iPad, next to the personal one: no FLAVOR (store is
+## the default), no default server, no push key.
+store-ipad: check unlock
+	$(store_flavor)
+	flutter build ios --release
+	$(call install_to,$(IPAD_DEVICE_ID))
+
+## Archive the store app for App Store Connect (build/ios/ipa).
+store-ipa: check unlock
+	$(store_flavor)
+	flutter build ipa --release
 
 ## List connected devices
 devices:
