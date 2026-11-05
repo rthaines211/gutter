@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/scheme.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
@@ -59,7 +60,8 @@ class IconRail extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 4),
               children: [
                 for (final d in _destinations)
-                  if (!offline || !onlineOnlyDestinations.contains(d.dest))
+                  if ((!offline || !onlineOnlyDestinations.contains(d.dest)) &&
+                      !(isStore && storeHiddenDestinations.contains(d.dest)))
                   _RailTile(
                     icon: d.icon,
                     label: d.label,

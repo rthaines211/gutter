@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/scheme.dart';
 import 'liquid_glass.dart';
 import 'offline_dot.dart';
@@ -44,7 +45,7 @@ class FloatingTabBar extends StatelessWidget {
             child: Row(
               // Offline, Creators (2) and Review (3) need the server: hidden.
               children: [0, 1, 2, 3, 4]
-                  .where((i) => !offline || (i != 2 && i != 3))
+                  .where((i) => !(offline || isStore) || (i != 2 && i != 3))
                   .map((i) {
                 final tab = _tabs[i];
                 final active = i == currentIndex;

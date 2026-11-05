@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
@@ -116,7 +117,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   sub: 'Plan your next reads',
                   onTap: () => _push(context, const QueuesScreen(), '/queues'),
                 ),
-                if (online) _MoreRow(
+                if (online && !isStore) _MoreRow(
                   icon: Icons.settings_remote_rounded,
                   iconColor: AppTheme.blue,
                   label: 'Remote',

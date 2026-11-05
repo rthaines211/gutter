@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/widgets/floating_tab_bar.dart';
 
 Widget _host(int count) => MaterialApp(
@@ -28,5 +29,16 @@ void main() {
     final reviewX = t.getCenter(find.text('Review')).dx;
     expect(creatorsX, greaterThan(libraryX));
     expect(creatorsX, lessThan(reviewX));
+  });
+
+  testWidgets('store: three tabs, Read Library More', (t) async {
+    isStore = true;
+    addTearDown(() => isStore = false);
+    await t.pumpWidget(_host(0));
+    expect(find.text('Creators'), findsNothing);
+    expect(find.text('Review'), findsNothing);
+    expect(find.text('Read'), findsOneWidget);
+    expect(find.text('Library'), findsOneWidget);
+    expect(find.text('More'), findsOneWidget);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../config/flavor.dart';
 
 /// Represents which screen is showing in the app shell.
 /// Phone: 0=Read, 1=Library, 2=Creators, 3=Review, 4=More
@@ -15,6 +16,13 @@ enum NavDestination {
   creators,   // appended last so existing indices don't shift (phone: tab 2)
 }
 
+/// Personal-only destinations: hidden in the store app (backend-only Creators,
+/// the match Review deck).
+const storeHiddenDestinations = {
+  NavDestination.creators,
+  NavDestination.review,
+};
+
 /// Destinations that need the server; hidden while offline.
 const onlineOnlyDestinations = {
   NavDestination.creators,
@@ -26,7 +34,11 @@ class NavigationNotifier extends Notifier<NavDestination> {
   @override
   NavDestination build() => NavDestination.read;
 
-  void go(NavDestination dest) => state = dest;
+  /// Every navigation goes through here (rail, tabs, scan banner, push taps),
+  /// so this is the one guard: a hidden destination in the store app lands on
+  /// Read instead of an empty screen.
+  void go(NavDestination dest) => state =
+      isStore && storeHiddenDestinations.contains(dest) ? NavDestination.read : dest;
 
   /// Map NavDestination to the phone tab bar index (0-4).
   int get tabIndex {
@@ -52,9 +64,9 @@ class NavigationNotifier extends Notifier<NavDestination> {
       case 1:
         state = NavDestination.library;
       case 2:
-        state = NavDestination.creators;
+        go(NavDestination.creators);
       case 3:
-        state = NavDestination.review;
+        go(NavDestination.review);
       case 4:
         // Only switch to More if we're not already on a More sub-screen
         if (tabIndex != 4) state = NavDestination.downloads;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/scheme.dart';
 import '../providers/collection_provider.dart';
 import '../providers/connectivity_provider.dart';
@@ -72,7 +73,7 @@ class _SidebarV2State extends ConsumerState<SidebarV2> {
               children: [
                 _NavRow(icon: Icons.play_arrow_rounded, label: 'Read', active: current == NavDestination.read, onTap: () => _navigate(NavDestination.read)),
                 _NavRow(icon: Icons.auto_stories_rounded, label: 'Library', active: current == NavDestination.library, onTap: () => _navigate(NavDestination.library)),
-                _NavRow(icon: Icons.people_alt_outlined, label: 'Creators', active: current == NavDestination.creators, onTap: () => _navigate(NavDestination.creators)),
+                if (!isStore) _NavRow(icon: Icons.people_alt_outlined, label: 'Creators', active: current == NavDestination.creators, onTap: () => _navigate(NavDestination.creators)),
                 _NavRow(icon: Icons.download_rounded, label: 'Downloads', active: current == NavDestination.downloads, onTap: () => _navigate(NavDestination.downloads)),
                 _NavRow(icon: Icons.playlist_play_rounded, label: 'Queues', active: current == NavDestination.queues, onTap: () => _navigate(NavDestination.queues)),
                 _NavRow(icon: Icons.account_tree_rounded, label: 'Arcs', active: current == NavDestination.arcs, onTap: () => _navigate(NavDestination.arcs)),

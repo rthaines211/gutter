@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
 import '../widgets/longbox_mark.dart';
@@ -204,7 +205,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onTap: () => _push(
                           const RenameTemplatesScreen(), '/rename-templates'),
                     ),
-                    _NavRow(
+                    if (!isStore) _NavRow(
                       label: 'Label pages',
                       onTap: () => _push(const LabelScreen(), 'label'),
                     ),
@@ -330,8 +331,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   ],
                 ),
 
-                // Diagnostics
-                Builder(builder: (context) {
+                // Diagnostics (personal only: the log names servers and paths)
+                if (!isStore) Builder(builder: (context) {
                   return _Section(
                     icon: Icons.bug_report_outlined,
                     iconColor: context.scheme.t2,
