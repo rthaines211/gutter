@@ -22,24 +22,30 @@ final serverConfigProvider = Provider<ServerConfig>((ref) {
 /// server's [ApiClient].
 /// Rebuilds when active source changes.
 final apiClientProvider = Provider<ApiClient>((ref) {
-  final source = ref.watch(activeSourceProvider);
-  final config = ref.watch(serverConfigProvider);
-  void onOutcome(bool reachedServer) =>
-      ref.read(connectivityProvider.notifier).reportOutcome(reachedServer);
-  return source.type == SourceType.komga
-      ? KomgaClient(
-          baseUrl: source.baseUrl,
-          deviceId: config.deviceId,
-          authHeaders: source.authHeaders,
-          onRequestOutcome: onOutcome,
-        )
-      : ApiClient(
-          baseUrl: source.baseUrl,
-          deviceId: config.deviceId,
-          authHeaders: source.authHeaders,
-          onRequestOutcome: onOutcome,
-        );
+  return clientFor(
+    ref.watch(activeSourceProvider),
+    deviceId: ref.watch(serverConfigProvider).deviceId,
+    onRequestOutcome: (reachedServer) =>
+        ref.read(connectivityProvider.notifier).reportOutcome(reachedServer),
+  );
 });
+
+/// The client for [source]'s server type, carrying its credentials.
+ApiClient clientFor(ServerSource source,
+        {required String deviceId, RequestOutcomeCallback? onRequestOutcome}) =>
+    source.type == SourceType.komga
+        ? KomgaClient(
+            baseUrl: source.baseUrl,
+            deviceId: deviceId,
+            authHeaders: source.authHeaders,
+            onRequestOutcome: onRequestOutcome,
+          )
+        : ApiClient(
+            baseUrl: source.baseUrl,
+            deviceId: deviceId,
+            authHeaders: source.authHeaders,
+            onRequestOutcome: onRequestOutcome,
+          );
 
 /// Client for the panel label server, proxied at `<baseUrl>/labeller/`.
 final labelClientProvider = Provider<LabelClient>((ref) {

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/screens/onboarding_screen.dart';
@@ -10,8 +11,12 @@ import 'package:comic_reader_app/screens/onboarding_screen.dart';
 const _secureStorage =
     MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
 
-Future<ProviderContainer> _pump(
-    WidgetTester t, Future<bool> Function(String) probe) async {
+final _url = find.widgetWithText(TextField, 'Server address');
+
+/// Pumps onboarding; [gutter] picks the Gutter server type first. [probe]
+/// sees each candidate URL.
+Future<ProviderContainer> _pump(WidgetTester t, Future<bool> Function(String) probe,
+    {bool gutter = true, void Function(ServerSource)? onProbe}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   // No plugin implementation under flutter_test.
@@ -26,8 +31,16 @@ Future<ProviderContainer> _pump(
   addTearDown(container.dispose);
   await t.pumpWidget(UncontrolledProviderScope(
     container: container,
-    child: MaterialApp(home: OnboardingScreen(probe: probe)),
+    child: MaterialApp(
+        home: OnboardingScreen(probe: (source) {
+      onProbe?.call(source);
+      return probe(source.baseUrl);
+    })),
   ));
+  if (gutter) {
+    await t.tap(find.text('Gutter server'));
+    await t.pump();
+  }
   return container;
 }
 
@@ -43,7 +56,7 @@ void main() {
 
   testWidgets('unreachable server: error shown, URL not saved', (t) async {
     final c = await _pump(t, (_) async => false);
-    await t.enterText(find.byType(TextField), 'nope.example.com');
+    await t.enterText(_url, 'nope.example.com');
     await t.pump(); // enable Connect
     await t.tap(find.text('Connect'));
     await t.pump();
@@ -57,7 +70,7 @@ void main() {
       probed = url;
       return true;
     });
-    await t.enterText(find.byType(TextField), 'comics.example.com/');
+    await t.enterText(_url, 'comics.example.com/');
     await t.pump(); // enable Connect
     await t.tap(find.text('Connect'));
     await t.pump();
@@ -80,11 +93,50 @@ void main() {
       probed.add(url);
       return url.startsWith('http://');
     });
-    await t.enterText(find.byType(TextField), '192.168.1.5:8080');
+    await t.enterText(_url, '192.168.1.5:8080');
     await t.pump(); // enable Connect
     await t.tap(find.text('Connect'));
     await t.pump();
     expect(probed, ['https://192.168.1.5:8080', 'http://192.168.1.5:8080']);
     expect(c.read(activeSourceProvider).baseUrl, 'http://192.168.1.5:8080');
+  });
+
+  testWidgets('Komga is the default and needs a login', (t) async {
+    await _pump(t, (_) async => true, gutter: false);
+    await t.enterText(_url, 'komga.example.com');
+    await t.pump();
+    expect(t.widget<FilledButton>(find.byType(FilledButton)).onPressed, isNull,
+        reason: 'no username/password yet');
+  });
+
+  testWidgets('Komga connect saves a komga source with basic auth', (t) async {
+    ServerSource? probed;
+    final c = await _pump(t, (_) async => true,
+        gutter: false, onProbe: (s) => probed = s);
+    await t.enterText(_url, 'https://komga.example.com');
+    await t.enterText(find.widgetWithText(TextField, 'Username'), 'reader');
+    await t.enterText(find.widgetWithText(TextField, 'Password'), 'pw');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(probed!.type, SourceType.komga);
+    expect(probed!.authHeaders['Authorization'], startsWith('Basic '));
+    final saved = c.read(activeSourceProvider);
+    expect(saved.type, SourceType.komga);
+    expect(saved.baseUrl, 'https://komga.example.com');
+    expect(saved.username, 'reader');
+    expect(saved.password, 'pw');
+  });
+
+  testWidgets('Komga with an API key', (t) async {
+    final c = await _pump(t, (_) async => true, gutter: false);
+    await t.enterText(_url, 'https://komga.example.com');
+    await t.tap(find.text('Use an API key'));
+    await t.pump();
+    await t.enterText(find.widgetWithText(TextField, 'API key'), 'k1');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(c.read(activeSourceProvider).authHeaders, {'X-API-Key': 'k1'});
   });
 }
