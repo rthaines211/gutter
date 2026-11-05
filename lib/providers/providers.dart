@@ -24,6 +24,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   return ApiClient(
     baseUrl: source.baseUrl,
     deviceId: config.deviceId,
+    authHeaders: source.authHeaders,
     onRequestOutcome: (reachedServer) {
       ref.read(connectivityProvider.notifier).reportOutcome(reachedServer);
     },
@@ -32,7 +33,8 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 
 /// Client for the panel label server, proxied at `<baseUrl>/labeller/`.
 final labelClientProvider = Provider<LabelClient>((ref) {
-  return LabelClient(baseUrl: ref.watch(apiClientProvider).baseUrl);
+  final api = ref.watch(apiClientProvider);
+  return LabelClient(baseUrl: api.baseUrl, authHeaders: api.authHeaders);
 });
 
 /// Whether the active source is a custom backend (vs OPDS).

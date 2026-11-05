@@ -589,7 +589,9 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
       context,
       detail: detail,
       baseUrl: source.baseUrl,
-      headers: headers,
+      // Auth only for the size probe; enqueue gets [headers] so the journal
+      // never stores credentials (DownloadManager adds auth at fetch time).
+      headers: {...headers, ...source.authHeaders},
       onDevice: ref.read(onDeviceProvider).comicIds,
       accent: widget.accent,
     );

@@ -10,6 +10,7 @@ import '../models/series.dart';
 import '../services/page_fetcher.dart';
 import '../services/download_manager.dart';
 import 'providers.dart';
+import 'source_provider.dart';
 import 'cache_providers.dart';
 
 /// Provides the app documents directory path.
@@ -28,6 +29,12 @@ final downloadManagerProvider = Provider<DownloadManager?>((ref) {
     httpClient: client,
     // Keeps downloading while the app is suspended.
     fetcher: BackgroundFetcher(docsDir, client),
+    authFor: (sourceId) {
+      for (final s in ref.read(sourceListProvider)) {
+        if (s.id == sourceId) return s.authHeaders;
+      }
+      return const {};
+    },
   );
   ref.onDispose(() => manager.dispose());
   // Restores the queue journal and sweeps half-finished downloads.
