@@ -1,0 +1,42 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/providers/navigation_provider.dart';
+import 'package:comic_reader_app/screens/creators_screen.dart';
+import 'package:comic_reader_app/screens/review_screen.dart';
+import 'package:comic_reader_app/widgets/app_shell.dart';
+
+void main() {
+  test('phone tab 3 is review, downloads maps to More (4)', () {
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    final n = c.read(navigationProvider.notifier);
+    n.setTabIndex(3);
+    expect(c.read(navigationProvider), NavDestination.review);
+    expect(n.tabIndex, 3);
+    n.go(NavDestination.downloads);
+    expect(n.tabIndex, 4);
+    n.setTabIndex(4); // already under More: stay put
+    expect(c.read(navigationProvider), NavDestination.downloads);
+    n.setTabIndex(0);
+    n.setTabIndex(4);
+    expect(c.read(navigationProvider), NavDestination.downloads);
+  });
+
+  test('tab 2 is creators', () {
+    final c = ProviderContainer();
+    addTearDown(c.dispose);
+    final n = c.read(navigationProvider.notifier);
+    n.setTabIndex(2);
+    expect(c.read(navigationProvider), NavDestination.creators);
+    expect(n.tabIndex, 2);
+  });
+
+  test('creators is appended last and has a tablet screen', () {
+    expect(NavDestination.values.last, NavDestination.creators);
+    expect(AppShell.tabletScreens.length, NavDestination.values.length);
+    expect(AppShell.tabletScreens[NavDestination.review.index],
+        isA<ReviewScreen>());
+    expect(AppShell.tabletScreens[NavDestination.creators.index],
+        isA<CreatorsScreen>());
+  });
+}

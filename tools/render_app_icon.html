@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>
+  html, body { margin: 0; padding: 0; background: transparent; overflow: hidden; }
+  #root { width: 1024px; height: 1024px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin></script>
+<script type="text/babel">
+function shade(hex, percent) {
+  const h = hex.replace('#','');
+  const num = parseInt(h, 16);
+  const r = Math.max(0, Math.min(255, (num >> 16) + Math.round(2.55 * percent)));
+  const g = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + Math.round(2.55 * percent)));
+  const b = Math.max(0, Math.min(255, (num & 0xff) + Math.round(2.55 * percent)));
+  return '#' + (r << 16 | g << 8 | b).toString(16).padStart(6, '0');
+}
+
+function LCSIconGlyphStyled({ size = 90, accent = '#fff', pageColor = '#fff', variant = 'default' }) {
+  const s = size;
+  const pageW = s * 0.82;
+  const pageH = s * 0.64;
+  const pageR = s * 0.13;
+  const offset = s * 0.065;
+  const pageFill = variant === 'light' ? '#fff' : pageColor;
+  const panelStroke = accent;
+  return (
+    <svg width={s} height={s} viewBox={`0 0 ${s} ${s}`} style={{ display: 'block', overflow: 'visible' }}>
+      <defs>
+        <linearGradient id={`tp-${variant}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={pageFill} stopOpacity={variant === 'light' ? 1 : 0.98}/>
+          <stop offset="100%" stopColor={pageFill} stopOpacity={variant === 'light' ? 0.92 : 0.85}/>
+        </linearGradient>
+      </defs>
+      <g transform={`translate(${s/2 - pageW/2 + offset*1.4}, ${s/2 - pageH/2 - offset*1.4})`}>
+        <rect width={pageW} height={pageH} rx={pageR} fill={pageFill} opacity="0.38"
+              stroke={pageFill} strokeWidth={s*0.008} strokeOpacity="0.18"/>
+      </g>
+      <g transform={`translate(${s/2 - pageW/2 + offset*0.6}, ${s/2 - pageH/2 - offset*0.6})`}>
+        <rect width={pageW} height={pageH} rx={pageR} fill={pageFill} opacity="0.62"
+              stroke={pageFill} strokeWidth={s*0.008} strokeOpacity="0.25"/>
+      </g>
+      <g transform={`translate(${s/2 - pageW/2 - offset*0.2}, ${s/2 - pageH/2 + offset*0.2})`}>
+        <rect width={pageW} height={pageH} rx={pageR} fill={`url(#tp-${variant})`}
+              stroke="rgba(0,0,0,0.08)" strokeWidth={s*0.004}/>
+        <rect x={pageW*0.13} y={pageH*0.24} width={pageW*0.74} height={s*0.038} rx={s*0.019}
+              fill={panelStroke}/>
+        <rect x={pageW*0.13} y={pageH*0.44} width={pageW*0.50} height={s*0.038} rx={s*0.019}
+              fill={panelStroke} opacity="0.72"/>
+        <rect x={pageW*0.13} y={pageH*0.64} width={pageW*0.62} height={s*0.038} rx={s*0.019}
+              fill={panelStroke} opacity="0.48"/>
+      </g>
+    </svg>
+  );
+}
+
+function AppIcon({ size = 1024, accent = '#0A84FF' }) {
+  const radius = size * 0.2237;
+  const bg = `linear-gradient(150deg, ${accent} 0%, ${shade(accent, -28)} 100%)`;
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: radius,
+      position: 'relative', overflow: 'hidden', background: bg,
+    }}>
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '55%',
+        background: 'radial-gradient(ellipse at 50% -20%, rgba(255,255,255,0.18) 0%, transparent 60%)',
+        pointerEvents: 'none',
+      }}/>
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        <LCSIconGlyphStyled size={size * 0.72} accent="#fff" pageColor="#fff" variant="default"/>
+      </div>
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: radius,
+        boxShadow: 'inset 0 0 0 0.5px rgba(255,255,255,0.15)',
+        pointerEvents: 'none',
+      }}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<AppIcon size={1024} accent="#0A84FF"/>);
+</script>
+</body>
+</html>
