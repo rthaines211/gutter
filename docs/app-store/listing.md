@@ -1,7 +1,8 @@
 # App Store Listing
 
 Copy for App Store Connect. Only describe what the build actually does;
-recheck this file after any feature change.
+recheck this file after any feature change. Panel zoom on Komga arrives with
+on-device detection (Phase 2): add it to the copy then, not before.
 
 ## App Information
 
@@ -19,12 +20,12 @@ recheck this file after any feature change.
 - **Type:** Non-consumable · **Product ID:** `com.ryanhaines.gutter.pro`
 - **Reference name:** Gutter Pro · **Price:** $12.99 (tier closest)
 - **Display name:** Gutter Pro
-- **Description (55):** Downloads, guided zoom, more servers and stats.
+- **Description (55):** Downloads, spread zoom, more servers and stats.
 - Attach it to the first version you submit; it needs its own review screenshot (the Pro sheet).
 
 ## Promotional text (170)
 
-Read the comics on your own Komga server, with guided zoom, offline downloads and progress that stays in sync.
+Read the comics on your own Komga server, with spread zoom, offline downloads and progress that stays in sync.
 
 ## Description
 
@@ -45,7 +46,7 @@ YOUR LIBRARY
 
 GUTTER PRO (one-time purchase, no subscription)
 • Offline downloads: take issues with you
-• Guided zoom through spreads and panels
+• Guided zoom through two-page spreads
 • More than one server
 • Reading stats: streaks, pages per day, top series
 

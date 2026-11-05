@@ -19,8 +19,8 @@ Connect. The library loads; tap any series, then an issue to read. Swipe
 or tap the page edges to turn pages; swipe up for the reader controls.
 
 **In-app purchase.** "Gutter Pro" is a one-time, non-consumable unlock
-($12.99). It adds offline downloads, guided panel and spread zoom, more
-than one server, and reading stats. To see it: tap the download icon on
+($12.99). It adds offline downloads, guided zoom through two-page spreads,
+more than one server, and reading stats. To see it: tap the download icon on
 any issue, or Settings → Gutter Pro. Restore Purchases is on the same
 sheet. Reading, streaming and progress sync are free.
 

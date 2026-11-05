@@ -9,7 +9,7 @@ import '../providers/pro_provider.dart';
 
 const _features = [
   (Icons.download_for_offline_outlined, 'Offline downloads'),
-  (Icons.center_focus_strong_outlined, 'Guided panel and spread zoom'),
+  (Icons.center_focus_strong_outlined, 'Guided spread zoom'),
   (Icons.dns_outlined, 'More than one server'),
   (Icons.insights_outlined, 'Reading stats'),
 ];
