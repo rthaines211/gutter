@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 /// reading order the server's `panel_order.py` gives its sidecars.
 
 /// Bump when the bundled model or the rules below change, so cached boxes redo.
-const panelModel = 'yolox-s-1';
+const panelModel = 'yolox-s-2';
 
 const panelInput = 640; // the model's square input
 const panelCutoff = 0.4; // panel score (objectness x class) a box needs
