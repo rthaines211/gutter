@@ -267,6 +267,26 @@ Future<void> settleImages(WidgetTester tester, {int rounds = 20}) async {
   }
 }
 
+/// Under a loaded machine (the full suite runs files in parallel) a fixed
+/// number of settle rounds isn't always enough: wait for the condition itself.
+Future<void> settleUntil(
+  WidgetTester tester,
+  bool Function() done, {
+  int maxRounds = 300,
+}) async {
+  for (var i = 0; i < maxRounds && !done(); i++) {
+    await settleImages(tester, rounds: 1);
+  }
+}
+
+/// The page on screen has loaded its image and computed its steps (the
+/// reader keeps a page at opacity 0 until then).
+bool pageReady(WidgetTester tester) => tester
+    .widgetList<Opacity>(
+      find.ancestor(of: find.byType(Image), matching: find.byType(Opacity)),
+    )
+    .any((o) => o.opacity == 1);
+
 /// Tear the reader down and burn residual timers (
 /// progress debounce, HTTP keepalive, _saveProgress timeout) so
 /// flutter_test's pending-timer check passes.

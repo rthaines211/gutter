@@ -398,7 +398,8 @@ void main() {
     //   fitWidth  scale = viewportW / containRect.w = 800/400 = 2.0  ← after switch
     server.settings = {'page_fit': 'fitHeight'};
     final h = await pumpReader(tester, server: server, tempDir: env);
-    await settleImages(tester);
+    // The page must be in first: identity reads 1.0 before it loads too.
+    await settleUntil(tester, () => pageReady(tester));
 
     double scale() => tester
         .widget<InteractiveViewer>(find.byType(InteractiveViewer).first)
@@ -414,7 +415,7 @@ void main() {
           .read(settingsProvider.notifier)
           .save(current.copyWith(pageFit: 'fitWidth')),
     );
-    await settleImages(tester, rounds: 10);
+    await settleUntil(tester, () => (scale() - 2.0).abs() < 0.1);
 
     expect(
       scale(),
