@@ -441,11 +441,18 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 loading: () => const SizedBox.shrink(),
                 error: (_, _) => const SizedBox.shrink(),
               ),
+              // Expanded + Align, not Flexible + Spacer: those split the free
+              // space and left the mode pill and sort button mid-row.
               if (libraryAsync.value?.isNotEmpty ?? false) ...[
                 const SizedBox(width: 10),
-                const Flexible(child: SyncIndicator()),
-              ],
-              const Spacer(),
+                const Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: SyncIndicator(),
+                  ),
+                ),
+              ] else
+                const Spacer(),
               const LibraryModePill(),
               const SizedBox(width: 8),
               GestureDetector(
