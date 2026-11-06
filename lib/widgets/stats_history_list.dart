@@ -6,6 +6,7 @@ import '../config/scheme.dart';
 import '../models/reading_session.dart';
 import '../providers/stats_provider.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../screens/series_detail_screen.dart';
 import 'shimmer_box.dart';
 
@@ -33,7 +34,7 @@ class StatsHistoryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyState = ref.watch(statsHistoryProvider);
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
 
     final sessions = historyState.sessions;
     final hasMore = historyState.hasMore;

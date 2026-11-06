@@ -13,6 +13,7 @@ import '../models/series.dart';
 import '../providers/creator_provider.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../screens/creator_detail_screen.dart';
 import '../screens/series_detail_screen.dart';
 import '../services/creator_view.dart';
@@ -188,7 +189,7 @@ class _CreatorDetailPanelState extends ConsumerState<CreatorDetailPanel> {
     final key = (id: widget.creatorId, name: widget.name);
     final profileAsync = ref.watch(creatorProfileProvider(key));
     final mirror = ref.watch(mirrorLibraryProvider).value ?? const <MirrorSeries>[];
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
 
     return ColoredBox(
       color: context.scheme.bg,

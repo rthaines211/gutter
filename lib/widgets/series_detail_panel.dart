@@ -83,7 +83,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
   @override
   Widget build(BuildContext context) {
     final detailAsync = ref.watch(seriesDetailProvider(widget.seriesId));
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
 
     return Container(
       color: context.scheme.bg,

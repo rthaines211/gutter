@@ -7,6 +7,7 @@ import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
 import '../models/stats_summary.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../screens/series_detail_screen.dart';
 import 'calendar_heatmap.dart';
 import 'reading_stamp.dart';
@@ -18,7 +19,7 @@ class StatsDashboard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
