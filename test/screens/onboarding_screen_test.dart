@@ -20,7 +20,10 @@ final _url = find.widgetWithText(TextField, 'Server address');
 /// sees each candidate URL.
 Future<ProviderContainer> _pump(
     WidgetTester t, Future<int?> Function(String, Map<String, String>) probe,
-    {bool gutter = true, void Function(ServerSource)? onProbe}) async {
+    {bool gutter = true,
+    void Function(ServerSource)? onProbe,
+    ServerSource? initial,
+    Future<void> Function(ServerSource)? onConnected}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   // No plugin implementation under flutter_test.
@@ -36,12 +39,15 @@ Future<ProviderContainer> _pump(
   await t.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
-        home: OnboardingScreen(probe: (source) {
-      onProbe?.call(source);
-      return probe(source.baseUrl, source.authHeaders);
-    })),
+        home: OnboardingScreen(
+            initial: initial,
+            onConnected: onConnected,
+            probe: (source) {
+              onProbe?.call(source);
+              return probe(source.baseUrl, source.authHeaders);
+            })),
   ));
-  if (gutter) {
+  if (gutter && initial == null) {
     await t.tap(find.text('Gutter server'));
     await t.pump();
   }
@@ -253,5 +259,64 @@ void main() {
     await _pump(t, (_, _) async => 401);
     await typeUrlAndConnect(t);
     expect(find.text('Any name works for Gutter Server'), findsOneWidget);
+  });
+
+  group('edit / add mode', () {
+    const komga = ServerSource(
+        id: 'k',
+        name: 'Komga',
+        type: SourceType.komga,
+        baseUrl: 'https://komga.example.com',
+        authType: AuthType.basic,
+        username: 'reader',
+        password: 'old');
+
+    testWidgets('edit mode prefills Komga login', (t) async {
+      await _pump(t, (_, _) async => 200,
+          initial: komga, onConnected: (_) async {});
+      expect(find.text('Edit server'), findsOneWidget);
+      expect(find.text('https://komga.example.com'), findsOneWidget);
+      expect(find.text('reader'), findsOneWidget);
+      expect(t.widget<FilledButton>(find.byType(FilledButton)).onPressed,
+          isNotNull);
+    });
+
+    testWidgets('edit mode shows Gutter login fields for a basic-auth source',
+        (t) async {
+      const gutter = ServerSource(
+          id: 'g',
+          name: 'My Server',
+          type: SourceType.custom,
+          baseUrl: 'https://comics.example.com',
+          authType: AuthType.basic,
+          username: 'me',
+          password: 'pw');
+      await _pump(t, (_, _) async => 200,
+          initial: gutter, onConnected: (_) async {});
+      expect(find.widgetWithText(TextField, 'Username'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Password'), findsOneWidget);
+    });
+
+    testWidgets('onConnected receives the probed source; default source '
+        'untouched', (t) async {
+      ServerSource? got;
+      final c = await _pump(t, (_, _) async => 200,
+          initial: komga, onConnected: (s) async => got = s);
+      final before = c.read(sourceListProvider);
+      await t.enterText(find.widgetWithText(TextField, 'Password'), 'new');
+      await t.pump();
+      await t.ensureVisible(find.text('Connect'));
+      await t.tap(find.text('Connect'));
+      await t.pump();
+      expect(got!.password, 'new');
+      expect(got!.type, SourceType.komga);
+      expect(c.read(sourceListProvider), same(before));
+    });
+
+    testWidgets('add mode is titled Add server', (t) async {
+      await _pump(t, (_, _) async => 200,
+          gutter: false, onConnected: (_) async {});
+      expect(find.text('Add server'), findsOneWidget);
+    });
   });
 }
