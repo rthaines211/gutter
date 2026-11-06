@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/scheme.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/navigation_provider.dart';
+import '../providers/providers.dart';
 import '../providers/review_provider.dart';
 import '../providers/scan_status_provider.dart';
 import 'sync_progress_view.dart';
@@ -41,11 +42,14 @@ class _ScanBannerState extends ConsumerState<ScanBanner> {
     }
     if (!mounted) return;
     var n = 0;
-    try {
-      ref.invalidate(reviewQueueProvider);
-      n = (await ref.read(reviewQueueProvider.future)).items.length;
-    } catch (e) {
-      debugPrint('ScanBanner: review load failed: $e'); // plain auto-dismiss
+    // Only a Gutter server has a match Review queue.
+    if (ref.read(gutterFeaturesProvider)) {
+      try {
+        ref.invalidate(reviewQueueProvider);
+        n = (await ref.read(reviewQueueProvider.future)).items.length;
+      } catch (e) {
+        debugPrint('ScanBanner: review load failed: $e'); // plain auto-dismiss
+      }
     }
     if (!mounted) return;
     if (n > 0) {
