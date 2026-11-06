@@ -3,6 +3,7 @@ import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/library_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/screens/library_screen.dart';
+import 'package:comic_reader_app/widgets/library_mode_pill.dart';
 import 'package:comic_reader_app/widgets/library_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,6 +45,20 @@ Future<void> pumpLibrary(WidgetTester t) async {
 }
 
 void main() {
+  testWidgets('mode pill and sort button sit at the right edge with a library',
+      (t) async {
+    t.view.physicalSize = const Size(1024, 1366); // iPad portrait
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    await pumpLibrary(t);
+    final sort = find.ancestor(of: find.byIcon(Icons.sort), matching: find.byType(Container)).first;
+    expect(find.byType(LibraryModePill), findsOneWidget);
+    // Header padding is 20 on the right.
+    expect(t.getTopRight(sort).dx, moreOrLessEquals(1024 - 20, epsilon: 1));
+    expect(t.getTopRight(find.byType(LibraryModePill)).dx,
+        moreOrLessEquals(t.getTopLeft(sort).dx - 8, epsilon: 1));
+  });
+
   // Phone layout (<768). At 390 the title row overflows 129px under the
   // Ahem test font (true on main too; real fonts fit), so 600 stands in.
   for (final size in const [Size(1366, 1024), Size(600, 900)]) {

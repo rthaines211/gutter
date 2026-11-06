@@ -112,8 +112,9 @@ class SeriesGridTile extends ConsumerWidget {
               right: 6,
               child: CaptionBox(text: 'NEW', comic: comic, rightSide: true),
             ),
-          // Newly added badge (from library rescan)
-          if (series.isRecentlyAdded && !series.isCompleted)
+          // Newly added badge (from library rescan), once started: an unread
+          // new series already has NEW, and the two overlapped on the tile.
+          if (series.isRecentlyAdded && !series.isCompleted && !series.isUnread)
             Positioned(
               top: 6,
               left: 6,
