@@ -15,7 +15,6 @@ import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../providers/scan_status_provider.dart';
 import '../widgets/just_added_card.dart';
-import '../widgets/recommendation_card.dart';
 import '../widgets/resume_hero_card.dart';
 import '../widgets/scan_banner.dart';
 import '../widgets/shimmer_box.dart';
@@ -157,9 +156,6 @@ class ReadScreen extends ConsumerWidget {
               comic: comic,
               accent: AppTheme.accent,
             ),
-
-          // AI recommendation card (top of shelves)
-          if (!offline) const RecommendationCard(), // needs the server
 
           // Up Next shelf
           if (data.upNext.isNotEmpty)
