@@ -39,22 +39,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 350));
   }
 
-  Future<void> settleUntil(
-    WidgetTester tester,
-    bool Function() done, {
-    int maxRounds = 300,
-  }) async {
-    for (var i = 0; i < maxRounds && !done(); i++) {
-      await settleImages(tester, rounds: 1);
-    }
-  }
-
-  bool pageReady(WidgetTester tester) => tester
-      .widgetList<Opacity>(
-        find.ancestor(of: find.byType(Image), matching: find.byType(Opacity)),
-      )
-      .any((o) => o.opacity == 1);
-
   Future<void> waitForBubbles(
     WidgetTester tester, {
     String comic = 'c1',
