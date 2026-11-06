@@ -74,9 +74,9 @@ class _SeriesDownloadSheetState extends State<_SeriesDownloadSheet> {
   Future<void> _measure() async {
     final client = http.Client();
     final sizes = <String, int>{};
-    // Komga's file endpoint may stream the whole book to answer a HEAD, so
-    // its issues go unsized.
-    final sized = widget.source.type != SourceType.komga;
+    // Komga's file endpoint may stream the whole book to answer a HEAD and
+    // Kavita's refuses one, so only Gutter server issues are sized.
+    final sized = widget.source.type == SourceType.custom;
     try {
       // ponytail: 8 at a time; a 300-issue series is ~40 quick round trips.
       for (var i = 0; sized && i < _all.length; i += 8) {

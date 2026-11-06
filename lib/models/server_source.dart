@@ -1,6 +1,16 @@
 import 'dart:convert';
 
-enum SourceType { custom, opds, komga }
+enum SourceType {
+  custom('Gutter'),
+  opds('OPDS'),
+  komga('Komga'),
+  kavita('Kavita');
+
+  const SourceType(this.label);
+
+  /// The server software's name, as the Servers list shows it.
+  final String label;
+}
 
 enum AuthType { none, basic, apiKey }
 
@@ -48,7 +58,7 @@ class ServerSource {
         );
         return {'Authorization': 'Basic $encoded'};
       case AuthType.apiKey:
-        return type == SourceType.komga
+        return type == SourceType.komga || type == SourceType.kavita
             ? {'X-API-Key': apiKey ?? ''}
             : {'Authorization': 'Bearer ${apiKey ?? ''}'};
     }

@@ -23,6 +23,7 @@ Future<ProviderContainer> _pump(
     {bool gutter = true,
     void Function(ServerSource)? onProbe,
     ServerSource? initial,
+    Future<String?> Function(ServerSource)? kavitaLogin,
     Future<void> Function(ServerSource)? onConnected}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
@@ -42,6 +43,7 @@ Future<ProviderContainer> _pump(
         home: OnboardingScreen(
             initial: initial,
             onConnected: onConnected,
+            kavitaLogin: kavitaLogin,
             probe: (source) {
               onProbe?.call(source);
               return probe(source.baseUrl, source.authHeaders);
@@ -163,6 +165,74 @@ void main() {
     await t.tap(find.text('Connect'));
     await t.pump();
     expect(probed, ['https://komga.example.com']);
+  });
+
+  testWidgets('Kavita login is traded for the auth key, which is saved',
+      (t) async {
+    ServerSource? loggedIn, probed;
+    final c = await _pump(t, (_, _) async => 200,
+        gutter: false,
+        onProbe: (s) => probed = s,
+        kavitaLogin: (s) async {
+          loggedIn = s;
+          return 'ak';
+        });
+    await t.tap(find.text('Kavita'));
+    await t.pump();
+    await t.enterText(_url, 'https://kavita.example.com');
+    await t.enterText(find.widgetWithText(TextField, 'Username'), 'reader');
+    await t.enterText(find.widgetWithText(TextField, 'Password'), 'pw');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(loggedIn!.username, 'reader');
+    expect(loggedIn!.password, 'pw');
+    expect(probed!.authHeaders, {'X-API-Key': 'ak'});
+    final saved = c.read(activeSourceProvider);
+    expect(saved.type, SourceType.kavita);
+    expect(saved.name, 'Kavita');
+    expect(saved.authType, AuthType.apiKey);
+    expect(saved.password, isNull);
+  });
+
+  testWidgets('Kavita refused login shows an error and probes nothing',
+      (t) async {
+    var probes = 0;
+    final c = await _pump(t, (_, _) async => 200,
+        gutter: false,
+        onProbe: (_) => probes++,
+        kavitaLogin: (_) async => null);
+    await t.tap(find.text('Kavita'));
+    await t.pump();
+    await t.enterText(_url, 'kavita.example.com');
+    await t.enterText(find.widgetWithText(TextField, 'Username'), 'reader');
+    await t.enterText(find.widgetWithText(TextField, 'Password'), 'bad');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(probes, 0);
+    expect(find.textContaining("Couldn't sign in to Kavita"), findsOneWidget);
+    expect(c.read(activeSourceProvider).baseUrl, isEmpty);
+  });
+
+  testWidgets('Kavita with an auth key skips the login', (t) async {
+    var logins = 0;
+    final c = await _pump(t, (_, _) async => 200,
+        gutter: false, kavitaLogin: (_) async {
+      logins++;
+      return null;
+    });
+    await t.tap(find.text('Kavita'));
+    await t.pump();
+    await t.enterText(_url, 'https://kavita.example.com');
+    await t.tap(find.text('Use an API key'));
+    await t.pump();
+    await t.enterText(find.widgetWithText(TextField, 'API key'), 'k1');
+    await t.pump();
+    await t.tap(find.text('Connect'));
+    await t.pump();
+    expect(logins, 0);
+    expect(c.read(activeSourceProvider).authHeaders, {'X-API-Key': 'k1'});
   });
 
   testWidgets('200 connects without asking for credentials', (t) async {

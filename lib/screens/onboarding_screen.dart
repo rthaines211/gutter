@@ -7,13 +7,14 @@ import '../providers/accent_provider.dart';
 import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../models/server_source.dart';
+import '../services/kavita_client.dart';
 import '../widgets/longbox_mark.dart';
 import '../config/server_url.dart';
 
 export '../config/server_url.dart';
 
 /// First launch with no server (every store install): ask for the server
-/// type, URL and (Komga) login, check it answers, then save it as the default
+/// type, URL and (Komga/Kavita) login, check it answers, then save it as the default
 /// source. `app.dart` swaps to the shell once the active source has a URL, so
 /// this never pushes.
 ///
@@ -25,6 +26,10 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   /// null when unreachable. Defaults to the source's client `probeStatus`.
   final Future<int?> Function(ServerSource candidate)? probe;
 
+  /// Kavita's auth key for the candidate's username and password, null when
+  /// refused. Defaults to [KavitaClient.login].
+  final Future<String?> Function(ServerSource candidate)? kavitaLogin;
+
   /// The server being edited: prefills type, address and login.
   final ServerSource? initial;
 
@@ -32,7 +37,7 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   final Future<void> Function(ServerSource found)? onConnected;
 
   const OnboardingScreen(
-      {super.key, this.probe, this.initial, this.onConnected});
+      {super.key, this.probe, this.kavitaLogin, this.initial, this.onConnected});
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -57,7 +62,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.initState();
     final s = widget.initial;
     if (s == null) return;
-    _type = s.type == SourceType.komga ? SourceType.komga : SourceType.custom;
+    _type = s.type == SourceType.komga || s.type == SourceType.kavita
+        ? s.type
+        : SourceType.custom;
     _urlCtrl.text = s.baseUrl;
     _userCtrl.text = s.username ?? '';
     _passCtrl.text = s.password ?? '';
@@ -74,7 +81,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.dispose();
   }
 
-  bool get _komga => _type == SourceType.komga;
+  /// Komga or Kavita: a login form up front (vs the Gutter server's prompt
+  /// on a 401).
+  bool get _komga => _type != SourceType.custom;
 
   bool get _canConnect =>
       !_probing &&
@@ -106,7 +115,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final basic = !_komga || !_useKey;
     return ServerSource(
       id: 'default',
-      name: _komga ? 'Komga' : 'My Server',
+      name: _komga ? _type.label : 'My Server',
       type: _type,
       baseUrl: url,
       authType: basic ? AuthType.basic : AuthType.apiKey,
@@ -114,6 +123,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       password: basic ? _passCtrl.text : null,
       apiKey: basic ? null : _keyCtrl.text.trim(),
       isDefault: true,
+    );
+  }
+
+  Future<String?> _defaultKavitaLogin(ServerSource s) => KavitaClient(
+          baseUrl: s.baseUrl, deviceId: ref.read(serverConfigProvider).deviceId)
+      .login(s.username ?? '', s.password ?? '');
+
+  /// Kavita has no basic auth: trade the login for the account's auth key,
+  /// which is what gets saved.
+  Future<ServerSource?> _withKavitaKey(ServerSource s) async {
+    if (s.type != SourceType.kavita || s.authType != AuthType.basic) return s;
+    final key = await (widget.kavitaLogin ?? _defaultKavitaLogin)(s);
+    if (key == null) return null;
+    return ServerSource(
+      id: s.id,
+      name: s.name,
+      type: s.type,
+      baseUrl: s.baseUrl,
+      authType: AuthType.apiKey,
+      apiKey: key,
+      isDefault: s.isDefault,
     );
   }
 
@@ -137,7 +167,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     ServerSource? found;
     String? needsAuth;
     for (final c in candidates) {
-      final source = _candidate(c);
+      final source = await _withKavitaKey(_candidate(c));
+      if (source == null) continue;
       final status = await (widget.probe ?? _defaultProbe)(source);
       if (_ok(status)) {
         found = source;
@@ -170,7 +201,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       setState(() {
         _probing = false;
         _error = _komga
-            ? "Couldn't sign in to Komga at ${candidates.first}. "
+            ? "Couldn't sign in to ${_type.label} at ${candidates.first}. "
                 'Check the address and your login.'
             : "Couldn't reach a server at ${candidates.first}. "
                 'Check the address and that the server is running.';
@@ -230,6 +261,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ButtonSegment(
                           value: SourceType.komga, label: Text('Komga')),
                       ButtonSegment(
+                          value: SourceType.kavita, label: Text('Kavita')),
+                      ButtonSegment(
                           value: SourceType.custom,
                           label: Text('Gutter server')),
                     ],
@@ -248,9 +281,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         _field(_urlCtrl, 'Server address',
-                            hint: _komga
-                                ? 'komga.example.com:25600'
-                                : 'comics.example.com',
+                            hint: switch (_type) {
+                              SourceType.komga => 'komga.example.com:25600',
+                              SourceType.kavita => 'kavita.example.com:5000',
+                              _ => 'comics.example.com',
+                            },
                             keyboard: TextInputType.url,
                             // A new address starts over: drop the credential
                             // prompt and error left from the last one.

@@ -1,6 +1,6 @@
 Gutter is a comic reader for the comics you already keep on your own server.
 
-Connect to Komga with your username and password or an API key, or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
+Connect to Komga or Kavita with your username and password or an API key, or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
 
 READING
 • Page mode or vertical scroll mode
@@ -20,7 +20,7 @@ YOUR LIBRARY
 GUTTER PRO
 A one-time purchase, not a subscription. You will never pay for a version upgrade: one purchase covers every future version.
 • Offline downloads: take issues with you
-• Guided zoom: step through a page panel by panel (panels are found on your device, so it works with Komga), and through two-page spreads half by half
+• Guided zoom: step through a page panel by panel (panels are found on your device, so it works with Komga and Kavita), and through two-page spreads half by half
 • More than one server
 • Reading stats: pages per day, streaks and more
 
@@ -29,4 +29,4 @@ Reading, streaming and progress sync are free.
 PRIVACY
 Gutter collects nothing. No accounts, analytics, ads or tracking. It talks only to the servers you add.
 
-Gutter does not include or sell comics. You need your own Komga server or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server
+Gutter does not include or sell comics. You need your own Komga, Kavita or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server
