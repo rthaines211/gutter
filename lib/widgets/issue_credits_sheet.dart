@@ -27,14 +27,15 @@ class IssueCreditsSheet extends ConsumerWidget {
   final String comicId;
   final ComicInfo? info;
   final String title;
-  final void Function(int id, String name) onOpen;
+  /// Null when there's no creator page to open (a Komga source).
+  final void Function(int id, String name)? onOpen;
 
   const IssueCreditsSheet({
     super.key,
     required this.comicId,
     required this.info,
     required this.title,
-    required this.onOpen,
+    this.onOpen,
   });
 
   String get _heading {
@@ -113,7 +114,8 @@ class IssueCreditsSheet extends ConsumerWidget {
 
   Widget _row(BuildContext context, Creator c) {
     final roles = c.role.split(',').map((r) => r.trim()).where((r) => r.isNotEmpty);
-    final tappable = roles.any((r) => roleGroup(r) != null);
+    final open = onOpen;
+    final tappable = open != null && roles.any((r) => roleGroup(r) != null);
     final roleLabel = roles
         .map((r) => r[0].toUpperCase() + r.substring(1))
         .join(' · ');
@@ -123,7 +125,7 @@ class IssueCreditsSheet extends ConsumerWidget {
           ? () {
               HapticFeedback.selectionClick();
               Navigator.of(context).pop();
-              onOpen(c.id, c.name);
+              open(c.id, c.name);
             }
           : null,
       child: Padding(

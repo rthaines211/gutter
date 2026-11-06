@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import '../config/scheme.dart';
 import 'liquid_glass.dart';
 
+/// One More-menu entry: icon, label, action.
+typedef MoreItem = (IconData, String, VoidCallback);
+
 /// The reader's "…" menu. Shown as a route (the reader anchors it under the
-/// button); each item pops the menu, then runs its action.
+/// button); each item pops the menu, then runs its action. With [inlineMax]
+/// items or fewer the reader skips the menu and puts [items] on its bar.
 class ReaderMoreMenu extends StatelessWidget {
   final VoidCallback? onChapters;
   final VoidCallback onAllPages;
@@ -40,9 +44,10 @@ class ReaderMoreMenu extends StatelessWidget {
     this.onCredits,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final items = <(IconData, String, VoidCallback)>[
+  /// The most items worth a bar button each instead of a menu.
+  static const inlineMax = 3;
+
+  List<MoreItem> get items => [
       if (onChapters case final chapters?) (Icons.toc, 'Chapters', chapters),
       (Icons.grid_view, 'All pages', onAllPages),
       if (onRecap case final recap?) (Icons.history, 'Recap so far', recap),
@@ -55,7 +60,11 @@ class ReaderMoreMenu extends StatelessWidget {
         (Icons.info_outline, 'Issue details', details),
       if (onCredits case final credits?)
         (Icons.people_alt_outlined, 'Credits', credits),
-    ];
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    final items = this.items;
     final scheme = context.scheme;
     return Material(
       type: MaterialType.transparency,

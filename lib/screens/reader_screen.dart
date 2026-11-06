@@ -1745,16 +1745,33 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   }
 
 
-  void _showMoreMenu() {
-    setState(() => _moreOpen = true);
+  ReaderMoreMenu _moreMenu() {
     final hasSeries = _seriesId != null && _seriesId!.isNotEmpty;
     final scrollMode =
         ref.read(settingsProvider).value?.readingMode == 'scroll';
     final flagPage = _flaggablePage();
     final fixPage = _fixablePage();
-    // Chapters, clipping and credits need a Gutter server's detection and
-    // credits index.
+    // Chapters and clipping need a Gutter server's detection.
     final gutter = ref.read(isCustomSourceProvider);
+    return ReaderMoreMenu(
+      onChapters: gutter ? _openChapterList : null,
+      onAllPages: _openPageGrid,
+      onRecap: hasSeries && !isStore ? _openRecap : null,
+      // Clipping crops a paged page; scroll mode has none to crop.
+      onClipPanel: scrollMode || !gutter ? null : _armClip,
+      onIssueDetails: hasSeries ? _openIssueDetails : null,
+      onFlagPage: flagPage == null ? null : () => _flagPage(flagPage),
+      onFixPanels:
+          fixPage == null ? null : () => _fixPage(fixPage, LabelMode.panels),
+      onFixBalloons:
+          fixPage == null ? null : () => _fixPage(fixPage, LabelMode.balloons),
+      onCredits: _showCredits,
+    );
+  }
+
+  void _showMoreMenu() {
+    setState(() => _moreOpen = true);
+    final menu = _moreMenu();
     // A route we hold, so hideChrome can close it (showGeneralDialog's
     // RawDialogRoute, built directly).
     final route = _moreRoute = RawDialogRoute<void>(
@@ -1768,22 +1785,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
             top: _popoverTop,
             left: _popoverLeft,
             right: _popoverRight,
-            child: ReaderMoreMenu(
-              onChapters: gutter ? _openChapterList : null,
-              onAllPages: _openPageGrid,
-              onRecap: hasSeries && !isStore ? _openRecap : null,
-              // Clipping crops a paged page; scroll mode has none to crop.
-              onClipPanel: scrollMode || !gutter ? null : _armClip,
-              onIssueDetails: hasSeries ? _openIssueDetails : null,
-              onFlagPage: flagPage == null ? null : () => _flagPage(flagPage),
-              onFixPanels: fixPage == null
-                  ? null
-                  : () => _fixPage(fixPage, LabelMode.panels),
-              onFixBalloons: fixPage == null
-                  ? null
-                  : () => _fixPage(fixPage, LabelMode.balloons),
-              onCredits: gutter ? _showCredits : null,
-            ),
+            child: menu,
           ),
         ],
       ),
@@ -1806,7 +1808,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   /// The page a flag would name: only with panel or bubble zoom on, in paged
   /// mode, on a real page (not the end card). Null when flagging is off.
   int? _flaggablePage() {
-    if (isStore) return null; // flags feed the labeller: personal only
+    // Flags feed a Gutter server's labeller: personal builds only.
+    if (isStore || !ref.read(isCustomSourceProvider)) return null;
     final settings = ref.read(settingsProvider).value ?? const ReaderSettings();
     if (settings.zoomMode == 'off' || settings.readingMode != 'page') return null;
     final reader = ref.read(readerProvider(_readerKey)).value;
@@ -1838,7 +1841,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   /// The page a Fix… item would act on: like [_flaggablePage] but without
   /// the zoom-mode requirement — fixing doesn't need panel/bubble zoom on.
   int? _fixablePage() {
-    if (isStore) return null; // the labeller is personal only
+    // The labeller is a Gutter server's, and personal builds only.
+    if (isStore || !ref.read(isCustomSourceProvider)) return null;
     final settings = ref.read(settingsProvider).value ?? const ReaderSettings();
     if (settings.readingMode != 'page') return null;
     final reader = ref.read(readerProvider(_readerKey)).value;
@@ -1959,7 +1963,10 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
             comicId: _comicId,
             info: reader?.info,
             title: fallbackTitle,
-            onOpen: (id, name) => _openCreatorFromSheet(id, name),
+            // Creator pages come from a Gutter server's credits index.
+            onOpen: ref.read(isCustomSourceProvider)
+                ? (id, name) => _openCreatorFromSheet(id, name)
+                : null,
           ),
         ),
       ),
@@ -2195,6 +2202,11 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
         }
       },
       onMore: _showMoreMenu,
+      // A short menu isn't worth a tap: its items go straight on the bar.
+      inlineMore: switch (_moreMenu().items) {
+        final items when items.length <= ReaderMoreMenu.inlineMax => items,
+        _ => null,
+      },
       sleepRemaining: () => SleepTimer.instance.remaining,
       onSleepTimer: _onMoonTap,
       claudeMode: _claudeMode,

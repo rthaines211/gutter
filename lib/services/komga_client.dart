@@ -1,4 +1,5 @@
 import '../models/comic_info.dart';
+import '../models/creator.dart';
 import '../models/bookmark.dart';
 import '../models/chapter.dart';
 import '../models/reader_settings.dart';
@@ -147,6 +148,22 @@ class KomgaClient extends ApiClient {
     for (final id in comicIds) {
       await requestJson('DELETE', '/api/v1/books/${_enc(id)}/read-progress');
     }
+  }
+
+  /// The book's own authors: one row per person, roles joined the way the
+  /// credits sheet splits them.
+  @override
+  Future<List<Creator>?> fetchIssueCredits(String comicId) async {
+    final b = await requestJson('GET', '/api/v1/books/$comicId') as Map;
+    final roles = <String, List<String>>{};
+    for (final a in (b['metadata'] as Map?)?['authors'] as List? ?? const []) {
+      final name = (a['name'] as String? ?? '').trim();
+      if (name.isEmpty) continue;
+      roles.putIfAbsent(name, () => []).add(a['role'] as String? ?? '');
+    }
+    return [
+      for (final e in roles.entries) Creator(name: e.key, role: e.value.join(', ')),
+    ];
   }
 
   @override

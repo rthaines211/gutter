@@ -68,6 +68,21 @@ void main() {
     );
   }
 
+  test('fetchIssueCredits lists the book authors, one row per person', () async {
+    final b = book('b1');
+    (b['metadata'] as Map)['authors'] = [
+      {'name': 'Brian K. Vaughan', 'role': 'writer'},
+      {'name': 'Fiona Staples', 'role': 'penciller'},
+      {'name': 'Fiona Staples', 'role': 'cover'},
+    ];
+    final c = client({'GET /api/v1/books/b1': b});
+    final credits = await c.fetchIssueCredits('b1');
+    expect(credits!.map((x) => (x.id, x.name, x.role)).toList(), [
+      (0, 'Brian K. Vaughan', 'writer'),
+      (0, 'Fiona Staples', 'penciller, cover'),
+    ]);
+  });
+
   test('fetchSync maps series, issues and progress', () async {
     final c = client({
       'POST /api/v1/series/list': {'content': [series]},

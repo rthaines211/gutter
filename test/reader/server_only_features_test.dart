@@ -4,6 +4,7 @@ import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/screens/reader_screen.dart';
+import 'package:comic_reader_app/widgets/issue_credits_sheet.dart';
 
 import 'fake_comic_server.dart';
 import 'harness.dart';
@@ -45,14 +46,25 @@ void main() {
     }
   }
 
-  testWidgets('Komga: More has no Chapters, Clip a panel or Credits',
+  testWidgets('store Komga: no More menu; its few items sit on the bar',
       (tester) async {
+    isStore = true;
+    addTearDown(() => isStore = false);
     await open(tester, gutter: false);
-    await openMore(tester);
-    expect(find.text('All pages'), findsOneWidget);
+    tester.state<ReaderScreenState>(find.byType(ReaderScreen)).showChrome();
+    await tester.pump(const Duration(milliseconds: 260));
+    await tester.pump(const Duration(milliseconds: 350));
+    expect(find.bySemanticsLabel('More'), findsNothing);
+    expect(find.bySemanticsLabel('All pages'), findsOneWidget);
+    expect(find.bySemanticsLabel('Credits'), findsOneWidget);
     expect(find.text('Chapters'), findsNothing);
     expect(find.text('Clip a panel'), findsNothing);
-    expect(find.text('Credits'), findsNothing);
+    await tester.tap(find.bySemanticsLabel('Credits'));
+    for (var i = 0; i < 8; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(find.byType(IssueCreditsSheet), findsOneWidget);
+    await settleImages(tester); // the credits fetch is real HTTP
     await disposeReader(tester);
   });
 
