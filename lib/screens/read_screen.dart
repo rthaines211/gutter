@@ -40,7 +40,11 @@ class ReadScreen extends ConsumerWidget {
       body: SafeArea(
         bottom: false,
         child: dataAsync.when(
-          loading: () => _buildShimmer(tablet),
+          // A first sync can start before the shelves' first read lands:
+          // show its progress card, not bare placeholders that look stuck.
+          loading: () => FirstSyncCard.shows(ref.watch(syncProgressProvider))
+              ? const Center(child: SizedBox(height: 440, child: FirstSyncCard()))
+              : _buildShimmer(tablet),
           error: (err, _) => Center(
             child: Text('Failed to load: $err',
                 style: TextStyle(color: context.scheme.t2)),

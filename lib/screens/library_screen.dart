@@ -568,7 +568,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   ) {
     return [
       libraryAsync.when(
-        loading: () => _buildShimmerGrid(tablet, columns),
+        // A first sync can start before the library's first read lands: show
+        // its progress card, not bare placeholders that look stuck.
+        loading: () => FirstSyncCard.shows(ref.watch(syncProgressProvider))
+            ? const SliverFillRemaining(child: FirstSyncCard())
+            : _buildShimmerGrid(tablet, columns),
         error: (err, _) => _buildErrorSliver(err),
         data: (seriesList) {
           var filteredList = seriesList;
