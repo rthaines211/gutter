@@ -102,6 +102,23 @@ class ArcItemRows extends Table {
   Set<Column> get primaryKey => {arcId, issueId};
 }
 
+/// Panel boxes detected on the device (panel_detector.dart) for pages with no
+/// server sidecar. Rows from another [model] are stale and get redone.
+/// ponytail: rows outlive a comic pruned from the source; a few KB each.
+class PanelRows extends Table {
+  TextColumn get comicId => text()();
+  IntColumn get page => integer()();
+  TextColumn get model => text()();
+  IntColumn get width => integer()();
+  IntColumn get height => integer()();
+
+  /// JSON `[[left, top, right, bottom], ...]` in page pixels, reading order.
+  TextColumn get panels => text()();
+
+  @override
+  Set<Column> get primaryKey => {comicId, page};
+}
+
 /// A series plus progress-derived aggregates the Series payload can't carry.
 class MirrorSeries {
   final Series series;
@@ -129,7 +146,7 @@ String serverTimestamp(DateTime t) {
 
 @DriftDatabase(tables: [
   SeriesRows, IssueRows, ProgressRows, SyncState, QueueRows, QueueItemRows,
-  ArcRows, ArcItemRows,
+  ArcRows, ArcItemRows, PanelRows,
 ])
 class MirrorDatabase extends _$MirrorDatabase {
   MirrorDatabase(super.e);
@@ -138,7 +155,7 @@ class MirrorDatabase extends _$MirrorDatabase {
       MirrorDatabase(driftDatabase(name: 'mirror_$sourceId'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -191,8 +208,18 @@ class MirrorDatabase extends _$MirrorDatabase {
                   ..where((t) => t.key.equals('last_server_time')))
                 .go();
           }
+          if (from < 8) {
+            await m.createTable(panelRows);
+          }
         },
       );
+
+  Future<PanelRow?> panelsFor(String comicId, int page, String model) =>
+      (select(panelRows)
+            ..where((t) => t.comicId.equals(comicId) & t.page.equals(page) & t.model.equals(model)))
+          .getSingleOrNull();
+
+  Future<void> savePanels(PanelRow row) => into(panelRows).insertOnConflictUpdate(row);
 
   /// Applies a /sync delta inside one transaction: upsert changed series
   /// (replacing their issue lists), upsert pulled progress, then prune

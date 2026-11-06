@@ -2790,6 +2790,412 @@ class ArcItemRowsCompanion extends UpdateCompanion<ArcItemRow> {
   }
 }
 
+class $PanelRowsTable extends PanelRows
+    with TableInfo<$PanelRowsTable, PanelRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PanelRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _comicIdMeta = const VerificationMeta(
+    'comicId',
+  );
+  @override
+  late final GeneratedColumn<String> comicId = GeneratedColumn<String>(
+    'comic_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pageMeta = const VerificationMeta('page');
+  @override
+  late final GeneratedColumn<int> page = GeneratedColumn<int>(
+    'page',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _modelMeta = const VerificationMeta('model');
+  @override
+  late final GeneratedColumn<String> model = GeneratedColumn<String>(
+    'model',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _widthMeta = const VerificationMeta('width');
+  @override
+  late final GeneratedColumn<int> width = GeneratedColumn<int>(
+    'width',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _heightMeta = const VerificationMeta('height');
+  @override
+  late final GeneratedColumn<int> height = GeneratedColumn<int>(
+    'height',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _panelsMeta = const VerificationMeta('panels');
+  @override
+  late final GeneratedColumn<String> panels = GeneratedColumn<String>(
+    'panels',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    comicId,
+    page,
+    model,
+    width,
+    height,
+    panels,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'panel_rows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PanelRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('comic_id')) {
+      context.handle(
+        _comicIdMeta,
+        comicId.isAcceptableOrUnknown(data['comic_id']!, _comicIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_comicIdMeta);
+    }
+    if (data.containsKey('page')) {
+      context.handle(
+        _pageMeta,
+        page.isAcceptableOrUnknown(data['page']!, _pageMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pageMeta);
+    }
+    if (data.containsKey('model')) {
+      context.handle(
+        _modelMeta,
+        model.isAcceptableOrUnknown(data['model']!, _modelMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_modelMeta);
+    }
+    if (data.containsKey('width')) {
+      context.handle(
+        _widthMeta,
+        width.isAcceptableOrUnknown(data['width']!, _widthMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_widthMeta);
+    }
+    if (data.containsKey('height')) {
+      context.handle(
+        _heightMeta,
+        height.isAcceptableOrUnknown(data['height']!, _heightMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_heightMeta);
+    }
+    if (data.containsKey('panels')) {
+      context.handle(
+        _panelsMeta,
+        panels.isAcceptableOrUnknown(data['panels']!, _panelsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_panelsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {comicId, page};
+  @override
+  PanelRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PanelRow(
+      comicId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}comic_id'],
+      )!,
+      page: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}page'],
+      )!,
+      model: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}model'],
+      )!,
+      width: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}width'],
+      )!,
+      height: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}height'],
+      )!,
+      panels: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}panels'],
+      )!,
+    );
+  }
+
+  @override
+  $PanelRowsTable createAlias(String alias) {
+    return $PanelRowsTable(attachedDatabase, alias);
+  }
+}
+
+class PanelRow extends DataClass implements Insertable<PanelRow> {
+  final String comicId;
+  final int page;
+  final String model;
+  final int width;
+  final int height;
+
+  /// JSON `[[left, top, right, bottom], ...]` in page pixels, reading order.
+  final String panels;
+  const PanelRow({
+    required this.comicId,
+    required this.page,
+    required this.model,
+    required this.width,
+    required this.height,
+    required this.panels,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['comic_id'] = Variable<String>(comicId);
+    map['page'] = Variable<int>(page);
+    map['model'] = Variable<String>(model);
+    map['width'] = Variable<int>(width);
+    map['height'] = Variable<int>(height);
+    map['panels'] = Variable<String>(panels);
+    return map;
+  }
+
+  PanelRowsCompanion toCompanion(bool nullToAbsent) {
+    return PanelRowsCompanion(
+      comicId: Value(comicId),
+      page: Value(page),
+      model: Value(model),
+      width: Value(width),
+      height: Value(height),
+      panels: Value(panels),
+    );
+  }
+
+  factory PanelRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PanelRow(
+      comicId: serializer.fromJson<String>(json['comicId']),
+      page: serializer.fromJson<int>(json['page']),
+      model: serializer.fromJson<String>(json['model']),
+      width: serializer.fromJson<int>(json['width']),
+      height: serializer.fromJson<int>(json['height']),
+      panels: serializer.fromJson<String>(json['panels']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'comicId': serializer.toJson<String>(comicId),
+      'page': serializer.toJson<int>(page),
+      'model': serializer.toJson<String>(model),
+      'width': serializer.toJson<int>(width),
+      'height': serializer.toJson<int>(height),
+      'panels': serializer.toJson<String>(panels),
+    };
+  }
+
+  PanelRow copyWith({
+    String? comicId,
+    int? page,
+    String? model,
+    int? width,
+    int? height,
+    String? panels,
+  }) => PanelRow(
+    comicId: comicId ?? this.comicId,
+    page: page ?? this.page,
+    model: model ?? this.model,
+    width: width ?? this.width,
+    height: height ?? this.height,
+    panels: panels ?? this.panels,
+  );
+  PanelRow copyWithCompanion(PanelRowsCompanion data) {
+    return PanelRow(
+      comicId: data.comicId.present ? data.comicId.value : this.comicId,
+      page: data.page.present ? data.page.value : this.page,
+      model: data.model.present ? data.model.value : this.model,
+      width: data.width.present ? data.width.value : this.width,
+      height: data.height.present ? data.height.value : this.height,
+      panels: data.panels.present ? data.panels.value : this.panels,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PanelRow(')
+          ..write('comicId: $comicId, ')
+          ..write('page: $page, ')
+          ..write('model: $model, ')
+          ..write('width: $width, ')
+          ..write('height: $height, ')
+          ..write('panels: $panels')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(comicId, page, model, width, height, panels);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PanelRow &&
+          other.comicId == this.comicId &&
+          other.page == this.page &&
+          other.model == this.model &&
+          other.width == this.width &&
+          other.height == this.height &&
+          other.panels == this.panels);
+}
+
+class PanelRowsCompanion extends UpdateCompanion<PanelRow> {
+  final Value<String> comicId;
+  final Value<int> page;
+  final Value<String> model;
+  final Value<int> width;
+  final Value<int> height;
+  final Value<String> panels;
+  final Value<int> rowid;
+  const PanelRowsCompanion({
+    this.comicId = const Value.absent(),
+    this.page = const Value.absent(),
+    this.model = const Value.absent(),
+    this.width = const Value.absent(),
+    this.height = const Value.absent(),
+    this.panels = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PanelRowsCompanion.insert({
+    required String comicId,
+    required int page,
+    required String model,
+    required int width,
+    required int height,
+    required String panels,
+    this.rowid = const Value.absent(),
+  }) : comicId = Value(comicId),
+       page = Value(page),
+       model = Value(model),
+       width = Value(width),
+       height = Value(height),
+       panels = Value(panels);
+  static Insertable<PanelRow> custom({
+    Expression<String>? comicId,
+    Expression<int>? page,
+    Expression<String>? model,
+    Expression<int>? width,
+    Expression<int>? height,
+    Expression<String>? panels,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (comicId != null) 'comic_id': comicId,
+      if (page != null) 'page': page,
+      if (model != null) 'model': model,
+      if (width != null) 'width': width,
+      if (height != null) 'height': height,
+      if (panels != null) 'panels': panels,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PanelRowsCompanion copyWith({
+    Value<String>? comicId,
+    Value<int>? page,
+    Value<String>? model,
+    Value<int>? width,
+    Value<int>? height,
+    Value<String>? panels,
+    Value<int>? rowid,
+  }) {
+    return PanelRowsCompanion(
+      comicId: comicId ?? this.comicId,
+      page: page ?? this.page,
+      model: model ?? this.model,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      panels: panels ?? this.panels,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (comicId.present) {
+      map['comic_id'] = Variable<String>(comicId.value);
+    }
+    if (page.present) {
+      map['page'] = Variable<int>(page.value);
+    }
+    if (model.present) {
+      map['model'] = Variable<String>(model.value);
+    }
+    if (width.present) {
+      map['width'] = Variable<int>(width.value);
+    }
+    if (height.present) {
+      map['height'] = Variable<int>(height.value);
+    }
+    if (panels.present) {
+      map['panels'] = Variable<String>(panels.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PanelRowsCompanion(')
+          ..write('comicId: $comicId, ')
+          ..write('page: $page, ')
+          ..write('model: $model, ')
+          ..write('width: $width, ')
+          ..write('height: $height, ')
+          ..write('panels: $panels, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MirrorDatabase extends GeneratedDatabase {
   _$MirrorDatabase(QueryExecutor e) : super(e);
   $MirrorDatabaseManager get managers => $MirrorDatabaseManager(this);
@@ -2801,6 +3207,7 @@ abstract class _$MirrorDatabase extends GeneratedDatabase {
   late final $QueueItemRowsTable queueItemRows = $QueueItemRowsTable(this);
   late final $ArcRowsTable arcRows = $ArcRowsTable(this);
   late final $ArcItemRowsTable arcItemRows = $ArcItemRowsTable(this);
+  late final $PanelRowsTable panelRows = $PanelRowsTable(this);
   late final Index idxIssueSeries = Index(
     'idx_issue_series',
     'CREATE INDEX idx_issue_series ON issue_rows (series_id)',
@@ -2826,6 +3233,7 @@ abstract class _$MirrorDatabase extends GeneratedDatabase {
     queueItemRows,
     arcRows,
     arcItemRows,
+    panelRows,
     idxIssueSeries,
     idxQueueItemQueue,
     idxArcItemArc,
@@ -4390,6 +4798,222 @@ typedef $$ArcItemRowsTableProcessedTableManager =
       ArcItemRow,
       PrefetchHooks Function()
     >;
+typedef $$PanelRowsTableCreateCompanionBuilder =
+    PanelRowsCompanion Function({
+      required String comicId,
+      required int page,
+      required String model,
+      required int width,
+      required int height,
+      required String panels,
+      Value<int> rowid,
+    });
+typedef $$PanelRowsTableUpdateCompanionBuilder =
+    PanelRowsCompanion Function({
+      Value<String> comicId,
+      Value<int> page,
+      Value<String> model,
+      Value<int> width,
+      Value<int> height,
+      Value<String> panels,
+      Value<int> rowid,
+    });
+
+class $$PanelRowsTableFilterComposer
+    extends Composer<_$MirrorDatabase, $PanelRowsTable> {
+  $$PanelRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get comicId => $composableBuilder(
+    column: $table.comicId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get page => $composableBuilder(
+    column: $table.page,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get model => $composableBuilder(
+    column: $table.model,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get width => $composableBuilder(
+    column: $table.width,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get height => $composableBuilder(
+    column: $table.height,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get panels => $composableBuilder(
+    column: $table.panels,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PanelRowsTableOrderingComposer
+    extends Composer<_$MirrorDatabase, $PanelRowsTable> {
+  $$PanelRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get comicId => $composableBuilder(
+    column: $table.comicId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get page => $composableBuilder(
+    column: $table.page,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get model => $composableBuilder(
+    column: $table.model,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get width => $composableBuilder(
+    column: $table.width,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get height => $composableBuilder(
+    column: $table.height,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get panels => $composableBuilder(
+    column: $table.panels,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PanelRowsTableAnnotationComposer
+    extends Composer<_$MirrorDatabase, $PanelRowsTable> {
+  $$PanelRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get comicId =>
+      $composableBuilder(column: $table.comicId, builder: (column) => column);
+
+  GeneratedColumn<int> get page =>
+      $composableBuilder(column: $table.page, builder: (column) => column);
+
+  GeneratedColumn<String> get model =>
+      $composableBuilder(column: $table.model, builder: (column) => column);
+
+  GeneratedColumn<int> get width =>
+      $composableBuilder(column: $table.width, builder: (column) => column);
+
+  GeneratedColumn<int> get height =>
+      $composableBuilder(column: $table.height, builder: (column) => column);
+
+  GeneratedColumn<String> get panels =>
+      $composableBuilder(column: $table.panels, builder: (column) => column);
+}
+
+class $$PanelRowsTableTableManager
+    extends
+        RootTableManager<
+          _$MirrorDatabase,
+          $PanelRowsTable,
+          PanelRow,
+          $$PanelRowsTableFilterComposer,
+          $$PanelRowsTableOrderingComposer,
+          $$PanelRowsTableAnnotationComposer,
+          $$PanelRowsTableCreateCompanionBuilder,
+          $$PanelRowsTableUpdateCompanionBuilder,
+          (
+            PanelRow,
+            BaseReferences<_$MirrorDatabase, $PanelRowsTable, PanelRow>,
+          ),
+          PanelRow,
+          PrefetchHooks Function()
+        > {
+  $$PanelRowsTableTableManager(_$MirrorDatabase db, $PanelRowsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PanelRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PanelRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PanelRowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> comicId = const Value.absent(),
+                Value<int> page = const Value.absent(),
+                Value<String> model = const Value.absent(),
+                Value<int> width = const Value.absent(),
+                Value<int> height = const Value.absent(),
+                Value<String> panels = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PanelRowsCompanion(
+                comicId: comicId,
+                page: page,
+                model: model,
+                width: width,
+                height: height,
+                panels: panels,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String comicId,
+                required int page,
+                required String model,
+                required int width,
+                required int height,
+                required String panels,
+                Value<int> rowid = const Value.absent(),
+              }) => PanelRowsCompanion.insert(
+                comicId: comicId,
+                page: page,
+                model: model,
+                width: width,
+                height: height,
+                panels: panels,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PanelRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$MirrorDatabase,
+      $PanelRowsTable,
+      PanelRow,
+      $$PanelRowsTableFilterComposer,
+      $$PanelRowsTableOrderingComposer,
+      $$PanelRowsTableAnnotationComposer,
+      $$PanelRowsTableCreateCompanionBuilder,
+      $$PanelRowsTableUpdateCompanionBuilder,
+      (PanelRow, BaseReferences<_$MirrorDatabase, $PanelRowsTable, PanelRow>),
+      PanelRow,
+      PrefetchHooks Function()
+    >;
 
 class $MirrorDatabaseManager {
   final _$MirrorDatabase _db;
@@ -4410,4 +5034,6 @@ class $MirrorDatabaseManager {
       $$ArcRowsTableTableManager(_db, _db.arcRows);
   $$ArcItemRowsTableTableManager get arcItemRows =>
       $$ArcItemRowsTableTableManager(_db, _db.arcItemRows);
+  $$PanelRowsTableTableManager get panelRows =>
+      $$PanelRowsTableTableManager(_db, _db.panelRows);
 }

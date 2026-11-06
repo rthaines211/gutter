@@ -77,12 +77,12 @@ void main() {
     expect(find.text('Restore Purchases'), findsOneWidget);
   });
 
-  testWidgets('store on Komga: no ZOOM choice until on-device panels', (t) async {
+  testWidgets('store on Komga: Panels (on-device), no Bubbles', (t) async {
     isStore = true;
     addTearDown(() => isStore = false);
     await pump(t, gutterServer: false);
-    expect(find.text('Panels'), findsNothing);
-    expect(find.text('ZOOM'), findsNothing);
+    expect(find.text('Panels'), findsOneWidget);
+    expect(find.text('Bubbles'), findsNothing);
   });
 
   testWidgets('Paper sets theme to white', (t) async {

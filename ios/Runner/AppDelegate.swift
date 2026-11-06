@@ -5,6 +5,7 @@ import UserNotifications
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var aiBridge: AIRecommendationBridge?
+  private var panelBridge: PanelBridge?
 
   override func application(
     _ application: UIApplication,
@@ -49,6 +50,7 @@ import UserNotifications
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
     aiBridge = AIRecommendationBridge(messenger: engineBridge.applicationRegistrar.messenger())
+    panelBridge = PanelBridge(messenger: engineBridge.applicationRegistrar.messenger())
     PushBridge.shared.attach(messenger: engineBridge.applicationRegistrar.messenger())
     // Sleep timer -> Shortcuts app (shortcuts:// run-shortcut URL).
     FlutterMethodChannel(

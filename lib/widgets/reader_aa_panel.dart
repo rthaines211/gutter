@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../providers/providers.dart';
-import '../config/flavor.dart';
 import 'pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,6 +81,7 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
   @override
   Widget build(BuildContext context) {
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
+    final gutter = ref.watch(isCustomSourceProvider);
 
     Widget section(String title, Widget child) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,22 +136,19 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
             _s.pageFit,
             (v) => _s.copyWith(pageFit: v),
           ),
-          // Panel and balloon data come from the Gutter server; on Komga
-          // they need on-device detection (Phase 2), so the store build
-          // offers nothing to buy there yet.
-          if (!isStore || ref.watch(isCustomSourceProvider)) ...[
           gap,
+          // Balloon data comes only from a Gutter server; panels are found on
+          // the device for other sources.
           seg(
             'ZOOM',
-            const ['Off', 'Panels', 'Bubbles'],
-            const ['off', 'panels', 'bubbles'],
+            ['Off', 'Panels', if (gutter) 'Bubbles'],
+            ['off', 'panels', if (gutter) 'bubbles'],
             _s.zoomMode,
             (v) => v == 'off' ||
                     requirePro(context, ref, reason: 'Guided zoom is part of Pro.')
                 ? _s.copyWith(zoomMode: v)
                 : null,
           ),
-          ],
           gap,
           section(
             'BACKGROUND',

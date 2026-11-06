@@ -14,6 +14,8 @@
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* AIRecommendationBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */; };
 		B7E1D2C3A4F5061728394A5B /* PushBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E1D2C3A4F5061728394A5C /* PushBridge.swift */; };
+		C0A1B2C3D4E5F60718293A01 /* PanelBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */; };
+		C0A1B2C3D4E5F60718293A03 /* PanelDetector.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */; };
 		7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -58,6 +60,8 @@
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B7E1D2C3A4F5061728394A5C /* PushBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushBridge.swift; sourceTree = "<group>"; };
+		C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelBridge.swift; sourceTree = "<group>"; };
+		C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = PanelDetector.mlpackage; sourceTree = "<group>"; };
 		B7E1D2C3A4F5061728394A5D /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIRecommendationBridge.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -149,6 +153,8 @@
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */,
 				B7E1D2C3A4F5061728394A5C /* PushBridge.swift */,
+				C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */,
+				C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */,
 				B7E1D2C3A4F5061728394A5D /* Runner.entitlements */,
 				7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
@@ -394,6 +400,8 @@
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* AIRecommendationBridge.swift in Sources */,
 				B7E1D2C3A4F5061728394A5B /* PushBridge.swift in Sources */,
+				C0A1B2C3D4E5F60718293A01 /* PanelBridge.swift in Sources */,
+				C0A1B2C3D4E5F60718293A03 /* PanelDetector.mlpackage in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				7884E8682EC3CC0700C636F2 /* SceneDelegate.swift in Sources */,
 			);

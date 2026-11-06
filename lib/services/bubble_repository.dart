@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 
 import '../models/page_bubbles.dart';
 import 'api_client.dart';
+import 'mirror/mirror_database.dart';
+import 'panel_detector.dart';
 import 'sync_queue.dart';
 
 Object? _decode(String text) => jsonDecode(text);
@@ -15,10 +18,13 @@ Object? _decode(String text) => jsonDecode(text);
 /// malformed sidecars) are cached for the reader's lifetime; network errors are
 /// not, so an offline miss retries.
 class BubbleRepository {
-  BubbleRepository({required this.client, this.queue});
+  BubbleRepository({required this.client, this.queue, this.mirror});
 
   final ApiClient client;
   final SyncQueue? queue;
+
+  /// Caches on-device panels ([detectedPanels]).
+  final MirrorDatabase? mirror;
   final Map<int, PageBubbles?> _cache = {};
   String? _localDir;
   Future<Map<String, dynamic>?>? _localPages;
@@ -57,6 +63,43 @@ class BubbleRepository {
     final saved = (await _readOrders())['$page'];
     if (pb != null && saved is List) pb.applyOrder(saved.cast<int>());
     return _cache[page] = pb;
+  }
+
+  /// Panels for a page with no sidecar, from the on-device model: the mirror's
+  /// cached boxes, else detected on [image] (which this disposes) and cached,
+  /// "none found" included. Null when the model can't run here.
+  Future<PageBubbles?> detectedPanels(String comicId, int page, Future<ui.Image?> Function() image) async {
+    final db = mirror;
+    if (db == null) return null;
+    var row = await db.panelsFor(comicId, page, panelModel);
+    if (row == null) {
+      final img = await image();
+      if (img == null) return null;
+      try {
+        final panels = await detectPanels(img);
+        if (panels == null) return null;
+        row = PanelRow(
+          comicId: comicId,
+          page: page,
+          model: panelModel,
+          width: img.width,
+          height: img.height,
+          panels: jsonEncode([for (final r in panels) [r.left, r.top, r.right, r.bottom]]),
+        );
+      } finally {
+        img.dispose();
+      }
+      await db.savePanels(row);
+    }
+    return PageBubbles(
+      width: row.width,
+      height: row.height,
+      bubbles: const [],
+      panels: [
+        for (final r in (jsonDecode(row.panels) as List).cast<List>())
+          ui.Rect.fromLTRB(r[0].toDouble(), r[1].toDouble(), r[2].toDouble(), r[3].toDouble()),
+      ],
+    );
   }
 
   /// Persists [pb]'s current order: a small bubble_orders.json beside the download

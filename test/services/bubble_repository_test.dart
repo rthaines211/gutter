@@ -1,5 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui';
+
+import 'package:drift/native.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -8,6 +13,7 @@ import 'package:comic_reader_app/models/page_bubbles.dart';
 import 'package:comic_reader_app/services/api_client.dart';
 import 'package:comic_reader_app/services/app_logger.dart';
 import 'package:comic_reader_app/services/bubble_repository.dart';
+import 'package:comic_reader_app/services/mirror/mirror_database.dart';
 import 'package:comic_reader_app/services/sync_queue.dart';
 
 Map<String, dynamic> sidecar(List<int> labels) => {
@@ -163,6 +169,31 @@ void main() {
       (req) async => http.Response('stale', 400),
     ).saveOrder('c1', 0, pb);
     expect(await queue.pendingCount, 0);
+  });
+
+  testWidgets('on-device panels: detected once, then served from the mirror', (tester) async {
+    final db = MirrorDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    const channel = MethodChannel('app.comic_reader/panels');
+    final messenger = tester.binding.defaultBinaryMessenger;
+    var detects = 0;
+    messenger.setMockMethodCallHandler(channel, (call) async {
+      detects++;
+      return Float32List.fromList([320, 160, 640, 320, 1, 1]); // the top half of the 640 input
+    });
+    addTearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    final r = BubbleRepository(
+      client: ApiClient(baseUrl: 'http://x', deviceId: 't', httpClient: MockClient((_) async => http.Response('', 404))),
+      mirror: db,
+    );
+
+    await tester.runAsync(() async {
+      final first = await r.detectedPanels('c1', 3, () => createTestImage(width: 1280, height: 1280, cache: false));
+      expect(first!.panels, [const Rect.fromLTRB(0, 0, 1280, 640)]);
+      final again = await r.detectedPanels('c1', 3, () async => fail('cached: no image needed'));
+      expect(again!.panels, first.panels);
+    });
+    expect(detects, 1);
   });
 }
 
