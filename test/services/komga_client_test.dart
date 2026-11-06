@@ -116,6 +116,18 @@ void main() {
     expect(requests.first.url.queryParameters['unpaged'], 'true');
   });
 
+  test('fetchSync reports per-series progress', () async {
+    final c = client({
+      'POST /api/v1/series/list': {
+        'content': [series, {...series, 'id': 's2'}],
+      },
+      'POST /api/v1/books/list': {'content': [book('b1', sort: 1)]},
+    });
+    final seen = <(int, int)>[];
+    await c.fetchSync(since: 0, onSeries: (d, t) => seen.add((d, t)));
+    expect(seen, [(0, 2), (1, 2), (2, 2)]);
+  });
+
   test('updateProgress sends completed or 1-based page', () async {
     final c = client({'PATCH /api/v1/books/b1/read-progress': 204});
     await c.updateProgress(comicId: 'b1', currentPage: 4, totalPages: 20);

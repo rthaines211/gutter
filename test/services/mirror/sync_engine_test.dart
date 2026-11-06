@@ -11,6 +11,7 @@ import 'package:comic_reader_app/services/api_client.dart';
 import 'package:comic_reader_app/services/app_logger.dart';
 import 'package:comic_reader_app/services/mirror/mirror_database.dart';
 import 'package:comic_reader_app/services/mirror/sync_engine.dart';
+import 'package:comic_reader_app/services/mirror/sync_progress.dart';
 import 'package:comic_reader_app/services/sync_queue.dart';
 
 void main() {
@@ -470,4 +471,75 @@ void main() {
     expect(engine.inFlightForTesting, isNull,
         reason: 'follow-up must not chain another follow-up');
   });
+
+  group('progress reporting', () {
+    SyncProgress state = const SyncProgress();
+    final log = <SyncProgress>[];
+    void sink(SyncProgress Function(SyncProgress) f) {
+      state = f(state);
+      log.add(state);
+    }
+
+    setUp(() {
+      state = const SyncProgress();
+      log.clear();
+    });
+
+    test('per-series pulls advance the series count, then done', () async {
+      final engine = SyncEngine(
+        db: db,
+        client: _PerSeriesClient(),
+        queue: queue,
+        onProgress: sink,
+      );
+      await engine.sync();
+      expect(log.first.stage, SyncStage.pushing);
+      expect(
+          log.where((p) => p.stage == SyncStage.fetching).map(
+              (p) => (p.seriesDone, p.seriesTotal)),
+          containsAllInOrder([(0, 3), (1, 3), (2, 3), (3, 3)]));
+      expect(log.firstWhere((p) => p.stage == SyncStage.fetching).initial,
+          isTrue, reason: 'no watermark yet');
+      expect(state.stage, SyncStage.done);
+      expect(state.running, isFalse);
+
+      await engine.sync();
+      expect(log.lastWhere((p) => p.stage == SyncStage.fetching).initial,
+          isFalse, reason: 'watermark stored by the first pull');
+    });
+
+    test('a failed pull sets failed and still throws', () async {
+      final engine = SyncEngine(
+        db: db,
+        client: ApiClient(
+            baseUrl: 'http://t',
+            deviceId: 'd',
+            httpClient: MockClient((_) async => http.Response('{}', 500))),
+        queue: queue,
+        onProgress: sink,
+      );
+      await expectLater(engine.sync(), throwsA(anything));
+      expect(state.stage, SyncStage.failed);
+      expect(state.error, isNotNull);
+    });
+  });
+}
+
+class _PerSeriesClient extends ApiClient {
+  _PerSeriesClient() : super(baseUrl: 'http://t', deviceId: 'd');
+
+  @override
+  Future<SyncResponse> fetchSync(
+      {required int since, void Function(int done, int total)? onSeries}) async {
+    for (var i = 0; i <= 3; i++) {
+      onSeries?.call(i, 3);
+    }
+    return SyncResponse(
+      serverTime: 9,
+      series: const [],
+      progress: const [],
+      seriesIds: const [],
+      progressIds: const [],
+    );
+  }
 }

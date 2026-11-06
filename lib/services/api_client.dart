@@ -342,8 +342,10 @@ class ApiClient {
   }
 
   /// Delta sync: everything changed since the given server watermark
-  /// (unix milliseconds; 0 = full sync).
-  Future<SyncResponse> fetchSync({required int since}) async {
+  /// (unix milliseconds; 0 = full sync). [onSeries] reports per-series
+  /// progress where the pull reads series one by one (Komga, Kavita).
+  Future<SyncResponse> fetchSync(
+      {required int since, void Function(int done, int total)? onSeries}) async {
     // The first sync of a fresh mirror is `since=0`: every series with inline
     // issues in one payload, which can take well over the default 60s on a
     // large library. Incremental syncs (since>0) return quickly, so the long

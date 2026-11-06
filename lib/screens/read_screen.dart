@@ -20,6 +20,7 @@ import '../widgets/resume_hero_card.dart';
 import '../widgets/scan_banner.dart';
 import '../widgets/shimmer_box.dart';
 import '../widgets/streak_chip.dart';
+import '../widgets/sync_progress_view.dart';
 import '../widgets/this_week_card.dart';
 import '../widgets/up_next_card.dart';
 import 'reader_screen.dart';
@@ -77,6 +78,9 @@ class ReadScreen extends ConsumerWidget {
         stats: data.stats,
       );
     }
+    final empty = data.heroProgress == null && data.justAdded.isEmpty;
+    final firstSync =
+        empty && !firstScan && FirstSyncCard.shows(ref.watch(syncProgressProvider));
     return RefreshIndicator(
       color: AppTheme.accent,
       backgroundColor: context.scheme.s2,
@@ -111,7 +115,15 @@ class ReadScreen extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      Text('Read', style: AppTheme.displayTextStyle(comic)),
+                      Row(
+                        children: [
+                          Text('Read', style: AppTheme.displayTextStyle(comic)),
+                          if (!empty) ...[
+                            const SizedBox(width: 10),
+                            const Flexible(child: SyncIndicator()),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -123,6 +135,12 @@ class ReadScreen extends ConsumerWidget {
               ],
             ),
           ),
+
+          if (!empty)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: SyncIndicator.strip(),
+            ),
 
           // Hero card
           if (data.heroProgress != null)
@@ -177,14 +195,11 @@ class ReadScreen extends ConsumerWidget {
 
           // Empty state: during the server's first scan, its progress (the
           // Library tab, always mounted in the IndexedStack, starts the watch).
-          if (data.heroProgress == null &&
-              data.justAdded.isEmpty &&
-              firstScan)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-              child: FirstScanProgress(scan: scan),
-            )
-          else if (data.heroProgress == null && data.justAdded.isEmpty)
+          if (empty && firstScan)
+            SizedBox(height: 440, child: FirstScanProgress(scan: scan))
+          else if (firstSync)
+            const SizedBox(height: 440, child: FirstSyncCard())
+          else if (empty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
               child: Center(
