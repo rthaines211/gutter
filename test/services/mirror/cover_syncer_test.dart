@@ -55,6 +55,23 @@ void main() {
     expect(fetched, ['/library/s1/cover']);
   });
 
+  test('cover syncer sends headers', () async {
+    await seed('s1');
+    String? auth;
+    final syncer = CoverSyncer(
+      db: db,
+      baseUrl: 'http://t',
+      coversDir: tempDir.path,
+      headers: const {'Authorization': 'Bearer k'},
+      httpClient: MockClient((req) async {
+        auth = req.headers['Authorization'];
+        return http.Response.bytes([0xFF, 0xD8, 0xFF], 200);
+      }),
+    );
+    await syncer.syncCovers();
+    expect(auth, 'Bearer k');
+  });
+
   test('downloads missing covers and marks them synced', () async {
     await seed('s1');
     final syncer = CoverSyncer(

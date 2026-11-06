@@ -41,9 +41,11 @@ void main() async {
   MemoryPressureWatcher().init();
 
   final prefs = await SharedPreferences.getInstance();
+  final credentials = await readSourceCredentials(prefs);
   final container = ProviderContainer(
     overrides: [
       sharedPrefsProvider.overrideWithValue(prefs),
+      sourceCredentialsProvider.overrideWithValue(credentials),
     ],
   );
 

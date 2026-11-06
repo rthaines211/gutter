@@ -7,7 +7,10 @@ import 'source_provider.dart';
 /// active source changes, mirroring apiClientProvider.
 final remoteSessionProvider = Provider<RemoteSession>((ref) {
   final source = ref.watch(activeSourceProvider);
-  final session = RemoteSession(baseUrl: source.baseUrl);
+  final session = RemoteSession(
+    baseUrl: source.baseUrl,
+    authHeaders: source.authHeaders,
+  );
   ref.onDispose(session.dispose);
   return session;
 });
