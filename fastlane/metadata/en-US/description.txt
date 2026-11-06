@@ -20,7 +20,7 @@ YOUR LIBRARY
 GUTTER PRO
 A one-time purchase, not a subscription. You will never pay for a version upgrade: one purchase covers every future version.
 • Offline downloads: take issues with you
-• Guided zoom: step through a page panel by panel, and through two-page spreads half by half
+• Guided zoom: step through a page panel by panel (panels are found on your device, so it works with Komga), and through two-page spreads half by half
 • More than one server
 • Reading stats: pages per day, streaks and more
 
