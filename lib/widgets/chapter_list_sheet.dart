@@ -129,6 +129,7 @@ class _ChapterListSheet extends StatelessWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
+                                  tooltip: 'Rename chapter',
                                   icon: const Icon(Icons.edit, size: 18),
                                   onPressed: () async {
                                     final name = await _promptName(context, initial: c.title);
@@ -138,6 +139,7 @@ class _ChapterListSheet extends StatelessWidget {
                                   },
                                 ),
                                 IconButton(
+                                  tooltip: 'Delete chapter',
                                   icon: const Icon(Icons.delete_outline, size: 18),
                                   onPressed: () {
                                     onDelete(c.id!);

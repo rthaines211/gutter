@@ -21,6 +21,7 @@ class QueuesScreen extends ConsumerWidget {
         title: const Text('Queues'),
         actions: [
           IconButton(
+            tooltip: 'New queue',
             icon: const Icon(Icons.add_rounded),
             onPressed: () => _showCreate(context, ref),
           ),
@@ -28,7 +29,7 @@ class QueuesScreen extends ConsumerWidget {
       ),
       body: queuesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Failed to load queues: $e')),
+        error: (e, _) => const Center(child: Text('Couldn\'t load queues.')),
         data: (queues) {
           if (queues.isEmpty) {
             return _EmptyState(onCreate: () => _showCreate(context, ref));

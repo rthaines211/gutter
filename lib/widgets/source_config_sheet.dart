@@ -81,7 +81,7 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
     } catch (e) {
       setState(() {
         _testing = false;
-        _testResult = 'Failed: $e';
+        _testResult = 'Failed: couldn\'t reach the server';
       });
     }
   }

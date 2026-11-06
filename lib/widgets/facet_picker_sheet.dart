@@ -278,7 +278,10 @@ class _FacetPickerSheetState extends ConsumerState<FacetPickerSheet> {
                   ),
                 ),
                 if (query.isNotEmpty)
-                  GestureDetector(
+                  Semantics(
+                    button: true,
+                    label: 'Clear search',
+                    child: GestureDetector(
                     onTap: () {
                       _searchControllers[facetKey]?.clear();
                       setState(() => _queries[facetKey] = '');
@@ -287,6 +290,7 @@ class _FacetPickerSheetState extends ConsumerState<FacetPickerSheet> {
                       padding: const EdgeInsets.all(8),
                       child: Icon(Icons.close, size: 12, color: context.scheme.t3),
                     ),
+                  ),
                   ),
               ],
             ),

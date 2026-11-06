@@ -96,6 +96,7 @@ class _PageGridOverlayState extends State<PageGridOverlay> {
         foregroundColor: Colors.white,
         title: Text('${widget.totalPages} pages'),
         leading: IconButton(
+          tooltip: 'Close',
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.of(context).pop(),
         ),

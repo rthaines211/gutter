@@ -1535,7 +1535,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       nextIssue: resolvedNext,
       offlineNote: skipped == null
           ? null
-          : '${skipped.number != null && skipped.number!.isNotEmpty ? '#${skipped.number}' : skipped.name} isn\'t on this iPad',
+          : '${skipped.number != null && skipped.number!.isNotEmpty ? '#${skipped.number}' : skipped.name} isn\'t on this ${LayoutBreakpoint.deviceNoun}',
       onNext: _advanceToNextIssue,
       onBackToSeries: () async {
         await _markCurrentCompletedAndFlushSession();
@@ -2051,7 +2051,10 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       resizeToAvoidBottomInset: false,
       body: readerAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => _deadEnd(context, 'Couldn\'t open this comic.\n$e'),
+        // Store users get plain words; personal builds keep the raw error.
+        error: (e, _) => _deadEnd(context, isStore
+            ? 'Couldn\'t open this comic. Check your connection and try again.'
+            : 'Couldn\'t open this comic.\n$e'),
         data: (readerState) {
           final pageCount = readerState.info?.pageCount ?? 0;
           if (pageCount == 0) {
@@ -2059,7 +2062,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
                 context,
                 ref.watch(connectivityProvider)
                     ? 'This comic has no pages.'
-                    : 'Not on this iPad, and you\'re offline.');
+                    : 'Not on this ${LayoutBreakpoint.deviceNoun}, and you\'re offline.');
           }
           return _buildReaderBody(
               context, readerState, settings, pageCount, client);

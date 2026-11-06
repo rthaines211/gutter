@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
 import '../models/series.dart';
+import '../config/layout_breakpoint.dart';
 
 /// End-of-issue "what's next" card — Direction A (Spotlight).
 ///
@@ -374,7 +375,7 @@ class _EndCardState extends State<EndCard> with SingleTickerProviderStateMixin {
         Text('UP NEXT', style: _mono(size: 12, color: _accent, spacing: 2, weight: FontWeight.w700)),
         if (widget.offlineNote != null) ...[
           const SizedBox(height: 8),
-          Text('${widget.offlineNote} · next on this iPad:',
+          Text('${widget.offlineNote} · next on this ${LayoutBreakpoint.deviceNoun}:',
               style: TextStyle(fontSize: 13, color: _onScrimSecondary)),
         ],
         const SizedBox(height: 18),
