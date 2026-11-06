@@ -36,6 +36,7 @@ void main() {
     gets = 0;
     container = ProviderContainer(
       overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
         apiClientProvider.overrideWithValue(ApiClient(
           baseUrl: 'http://test',
           deviceId: 'd',

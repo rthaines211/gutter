@@ -19,6 +19,7 @@ final creatorsProvider =
     // never goes away on its own (autoDispose never fires) — rebuild on
     // every connectivity transition so a launch-while-offline failure
     // recovers once the app comes back online, instead of being stuck.
+    if (!ref.watch(gutterFeaturesProvider)) return const [];
     ref.watch(connectivityProvider);
     final client = ref.watch(apiClientProvider);
     return client.fetchCreators();

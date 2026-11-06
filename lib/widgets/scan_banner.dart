@@ -7,6 +7,7 @@ import '../providers/mirror_provider.dart';
 import '../providers/navigation_provider.dart';
 import '../providers/review_provider.dart';
 import '../providers/scan_status_provider.dart';
+import 'sync_progress_view.dart';
 
 class ScanBanner extends ConsumerStatefulWidget {
   const ScanBanner({super.key});
@@ -210,27 +211,18 @@ class FirstScanProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = scan.status;
     final scanning = scan.phase == ScanPhase.scanning;
-    return Center(
-      child: SizedBox(
-        width: 280,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(scanning ? 'Scanning your library…' : 'Loading your library…',
-                style: TextStyle(color: context.scheme.t2)),
-            const SizedBox(height: 12),
-            // Indeterminate while the server is still enumerating folders
-            // (total == 0), and while loading.
-            LinearProgressIndicator(
-                value: scanning && status.total > 0 ? status.progress : null),
-            if (scanning && status.total > 0) ...[
-              const SizedBox(height: 8),
-              Text('${status.scanned} of ${status.total}',
-                  style: TextStyle(color: context.scheme.t2)),
-            ],
-          ],
-        ),
-      ),
+    // Indeterminate while the server is still enumerating folders
+    // (total == 0), and while loading.
+    final counted = scanning && status.total > 0;
+    return SyncCard(
+      title: scanning ? 'Scanning your library…' : 'Loading your library…',
+      line: counted
+          ? '${status.scanned} of ${status.total}'
+          : scanning
+              ? 'Reading folders…'
+              : 'Almost there…',
+      footer: 'Your comics appear when the scan is done.',
+      value: counted ? status.progress : null,
     );
   }
 }

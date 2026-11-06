@@ -4,6 +4,7 @@ import '../services/local_session_store.dart';
 import 'cache_providers.dart';
 import '../services/source_auth_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/flavor.dart';
 import '../config/server_config.dart';
 import '../models/server_source.dart';
 import '../services/api_client.dart';
@@ -98,6 +99,12 @@ final isCustomSourceProvider = Provider<bool>((ref) {
   final source = ref.watch(activeSourceProvider);
   return source.type == SourceType.custom;
 });
+
+/// Whether the Gutter server's personal features run (Remote, push,
+/// Creators, Review, Arcs): a personal build on a Gutter server. Komga and
+/// Kavita answer those endpoints with their web app's HTML, OPDS with 404s.
+final gutterFeaturesProvider = Provider<bool>(
+    (ref) => !isStore && ref.watch(isCustomSourceProvider));
 
 /// Points [SourceAuthClient] (image loads, cover sync) at the active source
 /// and its credentials. Watched by the app root.

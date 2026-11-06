@@ -61,6 +61,7 @@ void main() {
   }) {
     requests = [];
     final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
       apiClientProvider.overrideWithValue(ApiClient(
         baseUrl: 'http://test',
         deviceId: 'test-device',
@@ -194,6 +195,7 @@ void main() {
     final fake = _FakeConnectivity(false);
     var calls = 0;
     final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
       connectivityProvider.overrideWith(() => fake),
       apiClientProvider.overrideWithValue(ApiClient(
         baseUrl: 'http://test',

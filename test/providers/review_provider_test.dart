@@ -29,6 +29,7 @@ void main() {
   ProviderContainer make(Future<http.Response> Function(http.Request) h) {
     requests = [];
     final c = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
       apiClientProvider.overrideWithValue(ApiClient(
         baseUrl: 'http://test',
         deviceId: 'test-device',

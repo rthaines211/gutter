@@ -74,6 +74,25 @@ void main() {
       expect(read?.title, 'Saga');
     });
 
+    test('a pick cached for one source is not read by another', () async {
+      final prefs = await SharedPreferences.getInstance();
+      const rec = Recommendation(
+        seriesId: 'fantastic-four', title: 'FF', creator: 'Hickman',
+        reasoning: 'why', isInLibrary: true,
+      );
+      await RecommendationCache(prefs, sourceId: 'gutter')
+          .writeDailyPick(rec, today: DateTime(2026, 6, 4));
+      expect(
+          RecommendationCache(prefs, sourceId: 'kavita')
+              .readCachedPick(today: DateTime(2026, 6, 4)),
+          isNull);
+      expect(
+          RecommendationCache(prefs, sourceId: 'gutter')
+              .readCachedPick(today: DateTime(2026, 6, 4))
+              ?.seriesId,
+          'fantastic-four');
+    });
+
     test('returns null when date does not match', () async {
       final prefs = await SharedPreferences.getInstance();
       final cache = RecommendationCache(prefs);

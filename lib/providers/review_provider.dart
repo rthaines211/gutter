@@ -104,6 +104,9 @@ final reviewQueueProvider =
       retry: (_, _) => null,
     );
 
+/// 0 without fetching where Review is hidden (store app, not a Gutter server).
 final reviewCountProvider = Provider<int>(
-  (ref) => ref.watch(reviewQueueProvider).value?.items.length ?? 0,
+  (ref) => !ref.watch(gutterFeaturesProvider)
+      ? 0
+      : ref.watch(reviewQueueProvider).value?.items.length ?? 0,
 );

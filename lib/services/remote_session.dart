@@ -83,6 +83,10 @@ class RemoteSnapshot {
 class RemoteSession {
   final String baseUrl;
   final Map<String, String> authHeaders;
+
+  /// False on a source without the relay (not a Gutter server, or the store
+  /// app): every call is a no-op, so nothing polls an endpoint that isn't there.
+  final bool enabled;
   final http.Client _client;
   final Future<void> Function(Duration) _sleep;
 
@@ -107,6 +111,7 @@ class RemoteSession {
   RemoteSession({
     required this.baseUrl,
     this.authHeaders = const {},
+    this.enabled = true,
     http.Client? httpClient,
     Future<void> Function(Duration)? sleep,
     Duration idleTimeout = const Duration(seconds: 35),
@@ -148,6 +153,7 @@ class RemoteSession {
   /// session and hold it. [dispose] tears down the whole session (the shared
   /// http.Client) and ends any streams still running.
   Stream<Map<String, dynamic>> events(String role) {
+    if (!enabled) return const Stream.empty();
     // Completed by onCancel; raced against every await so a cancel is honored
     // while parked on a chunk read or mid-backoff, not only at a yield point.
     final stop = Completer<void>();
@@ -244,6 +250,7 @@ class RemoteSession {
 
   /// Returns false when the server reports no reader connected (409).
   Future<bool> sendCommand(String type, {int? page}) async {
+    if (!enabled) return false;
     try {
       final resp = await _client.post(
         Uri.parse('$baseUrl/remote/command'),
@@ -261,6 +268,7 @@ class RemoteSession {
   /// because this object is the only one that also knows when its connection
   /// reset and the server therefore forgot.
   Future<void> publishState(RemoteSnapshot snapshot) async {
+    if (!enabled) return;
     final body = jsonEncode(snapshot.toJson());
     if (body == _stateJson) return;
     _stateJson = body;

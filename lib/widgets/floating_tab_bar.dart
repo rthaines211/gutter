@@ -20,7 +20,11 @@ class FloatingTabBar extends StatelessWidget {
     this.accent = AppTheme.accent,
     this.offline = false,
     this.reviewCount = 0,
+    this.serverTabs = true,
   });
+
+  /// False hides Creators and Review (a source that isn't a Gutter server).
+  final bool serverTabs;
 
   static const _tabs = [
     (icon: Icons.play_arrow_rounded, activeIcon: null, label: 'Read'),
@@ -45,7 +49,7 @@ class FloatingTabBar extends StatelessWidget {
             child: Row(
               // Offline, Creators (2) and Review (3) need the server: hidden.
               children: [0, 1, 2, 3, 4]
-                  .where((i) => !(offline || isStore) || (i != 2 && i != 3))
+                  .where((i) => !(offline || isStore || !serverTabs) || (i != 2 && i != 3))
                   .map((i) {
                 final tab = _tabs[i];
                 final active = i == currentIndex;

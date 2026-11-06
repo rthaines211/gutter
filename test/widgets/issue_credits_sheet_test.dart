@@ -44,7 +44,8 @@ Future<void> _openSheet(
   void Function(int id, String name)? onOpen,
 }) async {
   await t.pumpWidget(ProviderScope(
-    overrides: [apiClientProvider.overrideWithValue(apiClient)],
+    overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),apiClientProvider.overrideWithValue(apiClient)],
     child: MaterialApp(
       navigatorObservers: observer != null ? [observer] : const [],
       home: Scaffold(
@@ -140,6 +141,7 @@ void main() {
       addTearDown(() => neverResolves.complete(const []));
       await t.pumpWidget(ProviderScope(
         overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
           issueCreditsProvider('c1').overrideWith((ref) => neverResolves.future),
         ],
         child: MaterialApp(
@@ -160,6 +162,7 @@ void main() {
     testWidgets('without onOpen no name is tappable', (t) async {
       await t.pumpWidget(ProviderScope(
         overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
           issueCreditsProvider('c1').overrideWith((ref) async =>
               const [Creator(name: 'Tom King', role: 'writer')]),
         ],

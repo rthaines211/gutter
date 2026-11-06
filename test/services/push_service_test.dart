@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/providers/providers.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:comic_reader_app/app.dart';
@@ -155,7 +156,7 @@ void sourceChangeTests() {
   });
 
   testWidgets('read tap pops pushed routes back to the shell', (tester) async {
-    final container = ProviderContainer();
+    final container = ProviderContainer(overrides: [gutterFeaturesProvider.overrideWithValue(true)]);
     addTearDown(container.dispose);
     await tester.pumpWidget(MaterialApp(
       navigatorKey: navigatorKey,

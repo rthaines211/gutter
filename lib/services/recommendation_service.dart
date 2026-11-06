@@ -14,7 +14,15 @@ class RecommendationCache {
   final Set<String> _sessionExclusions = {};
   final Set<String> _sessionTitles = {};
 
-  RecommendationCache(this._prefs);
+  /// Picks are per source: a pick names a series id on one server, and the
+  /// card builds its cover URL with the active source.
+  final String _suffix;
+
+  RecommendationCache(this._prefs, {String sourceId = ''})
+      : _suffix = sourceId.isEmpty ? '' : ':$sourceId';
+
+  String get _pickKey => '$_kPickKey$_suffix';
+  String get _dateKey => '$_kDateKey$_suffix';
 
   String _dateString(DateTime d) =>
       '${d.year.toString().padLeft(4, '0')}-'
@@ -22,9 +30,9 @@ class RecommendationCache {
       '${d.day.toString().padLeft(2, '0')}';
 
   Recommendation? readCachedPick({required DateTime today}) {
-    final cachedDate = _prefs.getString(_kDateKey);
+    final cachedDate = _prefs.getString(_dateKey);
     if (cachedDate != _dateString(today)) return null;
-    final raw = _prefs.getString(_kPickKey);
+    final raw = _prefs.getString(_pickKey);
     if (raw == null) return null;
     try {
       return Recommendation.fromJson(jsonDecode(raw) as Map<String, dynamic>);
@@ -37,8 +45,8 @@ class RecommendationCache {
     Recommendation rec, {
     required DateTime today,
   }) async {
-    await _prefs.setString(_kPickKey, jsonEncode(rec.toJson()));
-    await _prefs.setString(_kDateKey, _dateString(today));
+    await _prefs.setString(_pickKey, jsonEncode(rec.toJson()));
+    await _prefs.setString(_dateKey, _dateString(today));
   }
 
   Set<String> sessionExclusions() => Set.unmodifiable(_sessionExclusions);
