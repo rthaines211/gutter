@@ -337,10 +337,14 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
         if (mounted) setState(() => _showSleepWarning = true);
       },
     );
-    _bubbleRepo = BubbleRepository(
-      client: ref.read(apiClientProvider),
-      queue: ref.read(syncQueueProvider),
-    );
+    // Panel and balloon data come from a Gutter server; other sources have
+    // none, so don't ask them on every page.
+    _bubbleRepo = ref.read(isCustomSourceProvider)
+        ? BubbleRepository(
+            client: ref.read(apiClientProvider),
+            queue: ref.read(syncQueueProvider),
+          )
+        : null;
     // Fires at once when settings are already loaded (every reader after the first),
     // and again when they arrive or change. Only bubble-relevant changes act.
     ref.listenManual<AsyncValue<ReaderSettings>>(settingsProvider, (prev, next) {
@@ -988,7 +992,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
 
   /// Long-press swaps a popped-out balloon with the next; anywhere else it clips a panel.
   void _handleLongPress(ReaderSettings settings, Offset pos) {
-    if (!_handleBubbleLongPress(settings)) _clipPanel(settings, pos);
+    if (_handleBubbleLongPress(settings)) return;
+    if (ref.read(isCustomSourceProvider)) _clipPanel(settings, pos);
   }
 
   bool _handleBubbleLongPress(ReaderSettings settings) {
@@ -1747,6 +1752,9 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
         ref.read(settingsProvider).value?.readingMode == 'scroll';
     final flagPage = _flaggablePage();
     final fixPage = _fixablePage();
+    // Chapters, clipping and credits need a Gutter server's detection and
+    // credits index.
+    final gutter = ref.read(isCustomSourceProvider);
     // A route we hold, so hideChrome can close it (showGeneralDialog's
     // RawDialogRoute, built directly).
     final route = _moreRoute = RawDialogRoute<void>(
@@ -1761,11 +1769,11 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
             left: _popoverLeft,
             right: _popoverRight,
             child: ReaderMoreMenu(
-              onChapters: _openChapterList,
+              onChapters: gutter ? _openChapterList : null,
               onAllPages: _openPageGrid,
               onRecap: hasSeries && !isStore ? _openRecap : null,
               // Clipping crops a paged page; scroll mode has none to crop.
-              onClipPanel: scrollMode ? null : _armClip,
+              onClipPanel: scrollMode || !gutter ? null : _armClip,
               onIssueDetails: hasSeries ? _openIssueDetails : null,
               onFlagPage: flagPage == null ? null : () => _flagPage(flagPage),
               onFixPanels: fixPage == null
@@ -1774,7 +1782,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
               onFixBalloons: fixPage == null
                   ? null
                   : () => _fixPage(fixPage, LabelMode.balloons),
-              onCredits: _showCredits,
+              onCredits: gutter ? _showCredits : null,
             ),
           ),
         ],
@@ -1830,6 +1838,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   /// The page a Fix… item would act on: like [_flaggablePage] but without
   /// the zoom-mode requirement — fixing doesn't need panel/bubble zoom on.
   int? _fixablePage() {
+    if (isStore) return null; // the labeller is personal only
     final settings = ref.read(settingsProvider).value ?? const ReaderSettings();
     if (settings.readingMode != 'page') return null;
     final reader = ref.read(readerProvider(_readerKey)).value;
