@@ -136,6 +136,16 @@ void main() {
     expect(requests.last.url.queryParameters['seriesId'], '7');
   });
 
+  test('fetchSync reports per-series progress', () async {
+    final c = client({
+      'POST /api/Series/all-v2': [series, {...series, 'id': 8}],
+      'GET /api/Series/volumes': volumes,
+    });
+    final seen = <(int, int)>[];
+    await c.fetchSync(since: 0, onSeries: (d, t) => seen.add((d, t)));
+    expect(seen, [(0, 2), (1, 2), (2, 2)]);
+  });
+
   test('updateProgress posts pageNum with the parent ids from sync', () async {
     final c = client({
       'POST /api/Series/all-v2': [series],

@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import '../services/mirror/cover_syncer.dart';
 import '../services/mirror/mirror_database.dart';
 import '../services/mirror/sync_engine.dart';
+import '../services/mirror/sync_progress.dart';
 import 'cache_providers.dart';
 import 'providers.dart';
 import 'source_provider.dart';
@@ -27,6 +28,27 @@ final coversDirProvider = Provider<String?>((ref) {
   return p.join(docsDir, 'covers', source.id);
 });
 
+/// What the active source's mirror sync is doing (sync_progress_view.dart).
+final syncProgressProvider =
+    NotifierProvider<SyncProgressNotifier, SyncProgress>(
+        SyncProgressNotifier.new);
+
+class SyncProgressNotifier extends Notifier<SyncProgress> {
+  @override
+  SyncProgress build() {
+    ref.watch(activeSourceProvider.select((s) => s.id));
+    return const SyncProgress();
+  }
+
+  void apply(SyncProgress Function(SyncProgress) update) =>
+      state = update(state);
+}
+
+SyncProgressUpdate _progressSink(Ref ref) =>
+    (update) {
+      if (ref.mounted) ref.read(syncProgressProvider.notifier).apply(update);
+    };
+
 final syncEngineProvider = Provider<SyncEngine?>((ref) {
   final queue = ref.watch(syncQueueProvider);
   if (queue == null) return null;
@@ -38,6 +60,7 @@ final syncEngineProvider = Provider<SyncEngine?>((ref) {
     minPullInterval: ref.watch(activeSourceProvider).type != SourceType.custom
         ? const Duration(minutes: 10)
         : Duration.zero,
+    onProgress: _progressSink(ref),
   );
 });
 
@@ -51,6 +74,7 @@ final coverSyncerProvider = Provider<CoverSyncer?>((ref) {
     headers: source.authHeaders,
     coversDir: dir,
     httpClient: SourceAuthClient(),
+    onProgress: _progressSink(ref),
   );
 });
 

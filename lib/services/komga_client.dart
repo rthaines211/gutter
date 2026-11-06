@@ -41,13 +41,15 @@ class KomgaClient extends ApiClient with LocalReaderData {
   // ponytail: full pull every sync (Komga has no lastModified search
   // condition); page books by sort=lastModified,desc if big libraries get slow.
   @override
-  Future<SyncResponse> fetchSync({required int since}) async {
+  Future<SyncResponse> fetchSync(
+      {required int since, void Function(int done, int total)? onSeries}) async {
     final data = await requestJson('POST', '/api/v1/series/list?unpaged=true',
         body: {}, timeout: const Duration(minutes: 4)) as Map<String, dynamic>;
     final series = (data['content'] as List<dynamic>)
         .cast<Map<String, dynamic>>()
         .where((s) => s['deleted'] != true)
         .toList();
+    onSeries?.call(0, series.length);
     final books = await _books();
     final bySeries = <String, List<Map<String, dynamic>>>{};
     for (final b in books) {
@@ -57,12 +59,14 @@ class KomgaClient extends ApiClient with LocalReaderData {
       for (final b in books)
         if (_readable(b)) ?komgaProgress(b),
     ];
+    final mapped = <Map<String, dynamic>>[];
+    for (final s in series) {
+      mapped.add(komgaSeriesToSync(s, bySeries[s['id']] ?? const []));
+      onSeries?.call(mapped.length, series.length);
+    }
     return SyncResponse(
       serverTime: DateTime.now().millisecondsSinceEpoch,
-      series: [
-        for (final s in series)
-          komgaSeriesToSync(s, bySeries[s['id']] ?? const []),
-      ],
+      series: mapped,
       progress: progress,
       seriesIds: [for (final s in series) s['id'] as String],
       progressIds: [for (final p in progress) p['comic_id'] as String],
