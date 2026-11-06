@@ -1123,10 +1123,10 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       label: k,
       maxScale: 1.5,
       heightCap: 0.85,
-      // A panel too wide to grow still lifts out at its own size, but only
-      // over the dim: on the bare page a 1x copy just looks doubled.
+      // A panel too wide to grow still lifts out at its own size, so every
+      // step shows which panel is current.
       minScale: 1,
-      minGrowth: settings.panelDim ? 1 : minPopGrowth,
+      minGrowth: 1,
     );
   }
 

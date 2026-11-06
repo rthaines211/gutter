@@ -157,7 +157,7 @@ void main() {
   });
 
   for (final dim in [true, false]) {
-  testWidgets('iPad: a full-width panel lifts out at its own size only over the dim (dim: $dim)', (tester) async {
+  testWidgets('iPad: a full-width panel lifts out at its own size (dim: $dim)', (tester) async {
     // a 600 x 800 surface (tablet breakpoint is 768 wide: use landscape 800 x 600 with a
     // page that fills its height... simpler: 1000 x 1333 page on 800 x 600 contain-fits
     // 450 wide; use a page that fills the width instead: 1200 x 900 fits 800 x 600 exactly)
@@ -177,12 +177,11 @@ void main() {
     expect(shown(tester), 1);
     final o = tester.widget<BubblePopOverlay>(find.byType(BubblePopOverlay));
     expect(o.minScale, 1);
-    expect(o.minGrowth, dim ? 1 : minPopGrowth);
-    // the panel spans the whole 800 px width: drawn at its own size over the dim;
-    // on the bare page a 1x copy would only look doubled
+    expect(o.minGrowth, 1);
+    // the panel spans the whole 800 px width: drawn at its own size, dim or not
     expect(
       find.descendant(of: find.byType(BubblePopOverlay), matching: find.byType(CustomPaint)),
-      dim ? findsOneWidget : findsNothing,
+      findsOneWidget,
     );
     await disposeReader(tester);
   });
