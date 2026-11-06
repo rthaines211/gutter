@@ -254,6 +254,16 @@ String? _utc(Object? t) {
   return t.endsWith('Z') || t.contains('+') ? t : '${t}Z';
 }
 
+/// Newest of some timestamps from [_utc] (same format, so they sort as text).
+String? _latest(Iterable<String?> ts) => ts
+    .whereType<String>()
+    .fold<String?>(null, (a, b) => a == null || b.compareTo(a) > 0 ? b : a);
+
+/// Cache-busting parameter for a cover URL (which already has a query): a
+/// changed file gets a new URL, so the image cache and cover sync refetch it.
+String _v(String? stamp) =>
+    stamp == null ? '' : '&v=${Uri.encodeQueryComponent(stamp)}';
+
 String _fileName(Map c) {
   final files = c['files'] as List? ?? const [];
   final path = files.isEmpty ? '' : (files.first as Map)['filePath'] as String? ?? '';
@@ -306,14 +316,19 @@ Map<String, dynamic> kavitaSeriesToSync(
     return _isSentinel(v['number']) ? null : v['name'] as String?;
   }
 
+  // A changed chapter file can change the series cover too.
+  final stamp = _latest([
+    _utc(series['lastChapterAddedUtc']),
+    for (final c in chapters) _utc(c['lastModifiedUtc']),
+  ]);
   return {
     'id': id,
     'name': series['name'] as String? ?? '',
-    'updated_at': _utc(series['lastChapterAddedUtc']),
+    'updated_at': stamp,
     'created_at': _utc(series['created']),
     'folder_path': '',
     'issue_count': chapters.length,
-    'cover_url': '/api/Image/series-cover?seriesId=$id',
+    'cover_url': '/api/Image/series-cover?seriesId=$id${_v(stamp)}',
     'publisher': _first(first, 'publishers'),
     'genres': [
       for (final g in (first['genres'] as List? ?? const []).cast<Map>()) g['title'],
@@ -334,7 +349,7 @@ Map<String, dynamic> kavitaSeriesToSync(
               : (c['isSpecial'] == true ? c['title'] : null),
           'summary': c['summary'],
           'cover_date': _utc(c['releaseDate'])?.substring(0, 10),
-          'cover_url': '/api/Image/chapter-cover?chapterId=${c['id']}',
+          'cover_url': '/api/Image/chapter-cover?chapterId=${c['id']}${_v(_utc(c['lastModifiedUtc']))}',
           'writer': _first(c, 'writers'),
           'penciller': _first(c, 'pencillers'),
         },

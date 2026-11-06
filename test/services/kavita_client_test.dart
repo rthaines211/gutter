@@ -68,6 +68,18 @@ final series = {
 };
 
 void main() {
+
+  test('a changed chapter gives new cover URLs and a newer series updated_at', () {
+    Map<String, dynamic> stamped(String at) => {...chapter(1), 'lastModifiedUtc': at};
+    final before = kavitaSeriesToSync(series, [volume(10, 1, [stamped('2024-03-01T00:00:00')])]);
+    final after = kavitaSeriesToSync(series, [volume(10, 1, [stamped('2024-05-01T00:00:00')])]);
+    expect(after['updated_at'], '2024-05-01T00:00:00Z');
+    expect(after['cover_url'], isNot(before['cover_url']));
+    String issueCover(Map<String, dynamic> s) => (s['issues'] as List).first['cover_url'] as String;
+    expect(issueCover(after), isNot(issueCover(before)));
+    expect(kavitaSeriesToSync(series, [volume(10, 1, [stamped('2024-03-01T00:00:00')])])['cover_url'],
+        before['cover_url']);
+  });
   late List<http.Request> requests;
 
   setUp(() => AppLogger.init(logDirFactory: () async => null));
@@ -111,7 +123,7 @@ void main() {
     expect(r.serverHasQueues, isFalse);
     final s = r.series.single;
     expect(s['name'], 'Saga');
-    expect(s['cover_url'], '/api/Image/series-cover?seriesId=7');
+    expect(s['cover_url'], startsWith('/api/Image/series-cover?seriesId=7'));
     expect(s['updated_at'], '2024-02-01T00:00:00.5Z');
     expect(s['publisher'], 'Image');
     expect(s['genres'], ['Sci-Fi']);
@@ -123,7 +135,7 @@ void main() {
     expect(issues.map((i) => i['number']), ['1', '1', '2', null],
         reason: 'a volume file takes its volume name');
     expect(issues.last['title'], 'Annual');
-    expect(issues[1]['cover_url'], '/api/Image/chapter-cover?chapterId=1');
+    expect(issues[1]['cover_url'], startsWith('/api/Image/chapter-cover?chapterId=1'));
     expect(issues[1]['name'], 'Saga #1.cbz');
     expect(issues[1]['cover_date'], '2012-03-14');
     expect(issues[1]['penciller'], 'Fiona Staples');

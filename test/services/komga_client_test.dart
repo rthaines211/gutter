@@ -52,6 +52,19 @@ void main() {
   setUp(() => AppLogger.init(logDirFactory: () async => null));
   tearDown(AppLogger.resetForTest);
 
+  test('a changed book gives new cover URLs and a newer series updated_at', () {
+    Map<String, dynamic> stamped(String id, String at) => {...book(id), 'lastModified': at};
+    final before = komgaSeriesToSync(series, [stamped('b1', '2024-03-01T00:00:00Z')]);
+    final after = komgaSeriesToSync(series, [stamped('b1', '2024-05-01T00:00:00Z')]);
+    expect(after['updated_at'], '2024-05-01T00:00:00Z');
+    expect(after['cover_url'], isNot(before['cover_url']));
+    String issueCover(Map<String, dynamic> s) => (s['issues'] as List).first['cover_url'] as String;
+    expect(issueCover(after), isNot(issueCover(before)));
+    // Unchanged files keep the same URLs, so nothing is refetched.
+    expect(komgaSeriesToSync(series, [stamped('b1', '2024-03-01T00:00:00Z')])['cover_url'],
+        before['cover_url']);
+  });
+
   KomgaClient client(Map<String, Object> routes) {
     requests = [];
     return KomgaClient(
@@ -99,13 +112,13 @@ void main() {
     expect(r.serverHasQueues, isFalse);
     final s = r.series.single;
     expect(s['name'], 'Saga');
-    expect(s['cover_url'], '/api/v1/series/s1/thumbnail');
+    expect(s['cover_url'], startsWith('/api/v1/series/s1/thumbnail?v='));
     expect(s['publisher'], 'Image');
     expect(s['writer'], 'Brian K. Vaughan');
     expect(s['year'], 2012);
     final issues = (s['issues'] as List).cast<Map<String, dynamic>>();
     expect(issues.map((i) => i['id']), ['b1', 'b2']);
-    expect(issues.first['cover_url'], '/api/v1/books/b1/thumbnail');
+    expect(issues.first['cover_url'], startsWith('/api/v1/books/b1/thumbnail'));
     expect(issues.first['penciller'], 'Fiona Staples');
     final progress = {for (final p in r.progress) p['comic_id']: p};
     expect(progress['b1']!['current_page'], 20, reason: 'completed reads as finished');
