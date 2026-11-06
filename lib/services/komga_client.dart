@@ -15,7 +15,7 @@ import 'local_stats.dart';
 /// A Komga server behind the [ApiClient] surface the mirror, reader and
 /// progress sync use. Everything else the app calls is Gutter-server only
 /// and hidden on Komga sources (`isCustomSourceProvider`).
-class KomgaClient extends ApiClient {
+class KomgaClient extends ApiClient with LocalReaderData {
   KomgaClient({
     required super.baseUrl,
     required super.deviceId,
@@ -25,8 +25,7 @@ class KomgaClient extends ApiClient {
     this.sessions,
   });
 
-  /// Where reading sessions go (Komga has no session API); stats come
-  /// from here.
+  @override
   final LocalSessionStore? sessions;
 
   static String _enc(String id) => Uri.encodeComponent(id);
@@ -78,21 +77,9 @@ class KomgaClient extends ApiClient {
     final books = await _books({
       'seriesId': {'operator': 'is', 'value': seriesId},
     });
-    final map = komgaSeriesToSync(s, books);
-    // Issue statuses inline, as GET /library/{id} returns them.
-    final progress = {
-      for (final b in books)
-        b['id']: ?komgaProgress(b),
-    };
-    for (final i in (map['issues'] as List).cast<Map<String, dynamic>>()) {
-      final p = progress[i['id']];
-      if (p == null) continue;
-      final cp = p['current_page'] as int, tp = p['total_pages'] as int;
-      i['current_page'] = cp;
-      i['total_pages'] = tp;
-      i['status'] = tp > 0 && cp >= tp ? 'completed' : 'in_progress';
-    }
-    return map;
+    return withIssueStatuses(komgaSeriesToSync(s, books), [
+      for (final b in books) ?komgaProgress(b),
+    ]);
   }
 
   @override
@@ -178,12 +165,19 @@ class KomgaClient extends ApiClient {
       return null;
     }
   }
+}
 
-  /// Komga keeps no reader settings: settingsProvider falls back to its
-  /// local cache.
+/// Reader settings, reading sessions, stats and queues for servers that keep
+/// none of them (Komga, Kavita): settings fall back to the local cache,
+/// sessions go to [sessions] and stats are computed from it.
+mixin LocalReaderData on ApiClient {
+  /// Where reading sessions go; stats come from here.
+  LocalSessionStore? get sessions;
+
+  /// settingsProvider falls back to its local cache.
   @override
   Future<ReaderSettings> getSettings() =>
-      Future.error(UnsupportedError('Komga has no reader settings'));
+      Future.error(UnsupportedError('No reader settings on this server'));
 
   @override
   Future<void> updateSettings(ReaderSettings settings) async {}
@@ -223,6 +217,22 @@ class KomgaClient extends ApiClient {
 
   @override
   Future<void> deleteQueue(String id) async {}
+}
+
+/// [series] (the `/sync` shape) with each issue's status inline, as
+/// GET /library/{id} returns them, from `/sync`-shaped [progress] rows.
+Map<String, dynamic> withIssueStatuses(
+    Map<String, dynamic> series, List<Map<String, dynamic>> progress) {
+  final byId = {for (final p in progress) p['comic_id']: p};
+  for (final i in (series['issues'] as List).cast<Map<String, dynamic>>()) {
+    final p = byId[i['id']];
+    if (p == null) continue;
+    final cp = p['current_page'] as int, tp = p['total_pages'] as int;
+    i['current_page'] = cp;
+    i['total_pages'] = tp;
+    i['status'] = tp > 0 && cp >= tp ? 'completed' : 'in_progress';
+  }
+  return series;
 }
 
 int _pages(Map<String, dynamic> book) =>

@@ -139,7 +139,7 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
         if (s.isDefault)
           ServerSource(
             id: s.id,
-            name: server.type == SourceType.komga ? 'Komga' : s.name,
+            name: server.type == SourceType.custom ? s.name : server.type.label,
             type: server.type,
             baseUrl: server.baseUrl,
             authType: server.authType,

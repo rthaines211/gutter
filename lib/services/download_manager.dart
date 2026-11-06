@@ -252,9 +252,12 @@ class DownloadManager {
     // Komga (`<server>/api/v1/books/<id>`): the book itself has the page
     // count, and its pages are 1-based.
     final komga = meta.url.contains('/api/v1/books/');
+    // Kavita (`<server>/api/Chapter?chapterId=<id>`): the chapter has the
+    // page count; pages are 0-based and need the key as a query parameter.
+    final kavita = meta.url.contains('/api/Chapter?chapterId=');
     if (meta.pageCount == null) {
       final res = await _httpClient
-          .get(Uri.parse(komga ? meta.url : '${meta.url}/info'),
+          .get(Uri.parse(komga || kavita ? meta.url : '${meta.url}/info'),
               headers: headers)
           .timeout(const Duration(seconds: 30));
       if (res.statusCode != 200) {
@@ -262,8 +265,12 @@ class DownloadManager {
       }
       final info = jsonDecode(res.body) as Map;
       final media = info['media'] as Map? ?? const {};
-      final count =
-          (komga ? media['pagesCount'] : info['page_count']) as int? ?? 0;
+      final count = (komga
+              ? media['pagesCount']
+              : kavita
+                  ? info['pages']
+                  : info['page_count']) as int? ??
+          0;
       if (count == 0) throw Exception('No pages in comic');
       // Saved so a relaunch can resume without asking again.
       meta = _downloadMeta[key] = meta.withPageCount(count);
@@ -272,7 +279,10 @@ class DownloadManager {
     await _fetcher.start(meta.taskId, [
       for (var i = 0; i < meta.pageCount!; i++)
         (
-          url: '${meta.url}/pages/${komga ? i + 1 : i}',
+          url: kavita
+              ? '${meta.url.replaceFirst('/api/Chapter?', '/api/Reader/image?')}'
+                  '&page=$i&apiKey=${Uri.encodeQueryComponent(headers['X-API-Key'] ?? '')}'
+              : '${meta.url}/pages/${komga ? i + 1 : i}',
           // Name = 1-based page number; readers match on it, and decode by
           // content, so no extension is needed.
           dest: p.join(comicDir, 'pages', (i + 1).toString().padLeft(3, '0')),
@@ -486,7 +496,7 @@ class DownloadManager {
 }
 
 class _DownloadMeta {
-  final String url; // <server>/comics/<id>, or Komga's <server>/api/v1/books/<id>
+  final String url; // <server>/comics/<id>, Komga's <server>/api/v1/books/<id>, or Kavita's <server>/api/Chapter?chapterId=<id>
   final Map<String, String> headers;
   final String taskId;
   final int? pageCount; // null until /info answers

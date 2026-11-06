@@ -311,6 +311,36 @@ void main() {
     manager.dispose();
   });
 
+  test('Kavita layout: page count from the chapter, 0-based keyed page URLs', () async {
+    final requests = <Uri>[];
+    final manager = DownloadManager(
+      baseDir: tempDir.path,
+      httpClient: MockClient((req) async {
+        requests.add(req.url);
+        final q = req.url.queryParameters;
+        if (req.url.path == '/api/Chapter' && q['chapterId'] == '3') {
+          return http.Response(jsonEncode({'pages': 2}), 200);
+        }
+        if (req.url.path != '/api/Reader/image' || q['apiKey'] != 'k') {
+          return http.Response('nope', 404);
+        }
+        return http.Response.bytes([int.parse(q['page']!)], 200);
+      }),
+    );
+    manager.enqueue(
+      comicId: '3', sourceId: 'src1', seriesId: '7', seriesName: 'S',
+      comicName: 'C3', comicUrl: 'http://localhost/api/Chapter?chapterId=3',
+      headers: const {'X-API-Key': 'k'},
+    );
+    await pumpUntil(() => manager.isDownloaded('3', 'src1'));
+    for (var n = 0; n < 2; n++) {
+      final name = (n + 1).toString().padLeft(3, '0');
+      expect(File(p.join(comicDir('3'), 'pages', name)).readAsBytesSync(), [n]);
+    }
+    expect(requests.last.queryParameters['chapterId'], '3');
+    manager.dispose();
+  });
+
   test('a relaunch only fetches the pages still missing', () async {
     final managerA = DownloadManager(
         baseDir: tempDir.path,

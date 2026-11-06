@@ -124,6 +124,15 @@ void main() {
       expect(source.authHeaders, {'X-API-Key': 'k1'});
     });
 
+    test('kavita auth key goes in X-API-Key and round-trips', () {
+      const source = ServerSource(
+        id: 'v', name: 'Kavita', type: SourceType.kavita,
+        baseUrl: 'http://v', authType: AuthType.apiKey, apiKey: 'k1',
+      );
+      expect(source.authHeaders, {'X-API-Key': 'k1'});
+      expect(ServerSource.fromJson(source.toJson()).type, SourceType.kavita);
+    });
+
     test('komga round-trips through JSON', () {
       const source = ServerSource(
         id: 'k', name: 'K', type: SourceType.komga,

@@ -32,7 +32,7 @@ class ServersScreen extends ConsumerWidget {
             ListTile(
               title: Text(s.name, style: TextStyle(color: context.scheme.tx)),
               subtitle: Text(
-                  '${s.type == SourceType.komga ? 'Komga' : 'Gutter'} · '
+                  '${s.type.label} · '
                   '${Uri.tryParse(s.baseUrl)?.host ?? s.baseUrl}',
                   style: TextStyle(color: context.scheme.t2)),
               leading: Icon(s.id == active.id ? Icons.check : null,

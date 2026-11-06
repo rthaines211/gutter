@@ -20,6 +20,17 @@ void main() {
     expect(s.page('a', 0), 'http://h/api/v1/books/a/pages/1');
   });
 
+  test('Kavita layout, 0-based pages with the key', () {
+    const s = ServerSource(
+        id: 's', name: 'S', type: SourceType.kavita, baseUrl: 'http://h',
+        authType: AuthType.apiKey, apiKey: 'k');
+    expect(s.comicCover('3'), 'http://h/api/Image/chapter-cover?chapterId=3');
+    expect(s.seriesCover('7'), 'http://h/api/Image/series-cover?seriesId=7');
+    expect(s.page('3', 0), 'http://h/api/Reader/image?chapterId=3&page=0&apiKey=k');
+    expect(s.comicDownload('3'), 'http://h/api/Chapter?chapterId=3');
+    expect(s.imageHeaders, {'X-API-Key': 'k'});
+  });
+
   test('image headers carry auth', () {
     const s = ServerSource(
         id: 's', name: 'S', type: SourceType.komga, baseUrl: 'http://h',

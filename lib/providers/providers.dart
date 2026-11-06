@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/server_config.dart';
 import '../models/server_source.dart';
 import '../services/api_client.dart';
+import '../services/kavita_client.dart';
 import '../services/komga_client.dart';
 import '../services/label_client.dart';
 import 'connectivity_provider.dart';
@@ -21,7 +22,8 @@ final serverConfigProvider = Provider<ServerConfig>((ref) {
   return ServerConfig(prefs);
 });
 
-/// Client for the active source: [KomgaClient] for Komga, else the Gutter
+/// Client for the active source: [KomgaClient] for Komga, [KavitaClient] for
+/// Kavita, else the Gutter
 /// server's [ApiClient].
 /// Rebuilds when active source changes.
 final apiClientProvider = Provider<ApiClient>((ref) {
@@ -39,20 +41,28 @@ ApiClient clientFor(ServerSource source,
         {required String deviceId,
         RequestOutcomeCallback? onRequestOutcome,
         LocalSessionStore? sessions}) =>
-    source.type == SourceType.komga
-        ? KomgaClient(
-            baseUrl: source.baseUrl,
-            deviceId: deviceId,
-            authHeaders: source.authHeaders,
-            onRequestOutcome: onRequestOutcome,
-            sessions: sessions,
-          )
-        : ApiClient(
-            baseUrl: source.baseUrl,
-            deviceId: deviceId,
-            authHeaders: source.authHeaders,
-            onRequestOutcome: onRequestOutcome,
-          );
+    switch (source.type) {
+      SourceType.komga => KomgaClient(
+          baseUrl: source.baseUrl,
+          deviceId: deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onRequestOutcome,
+          sessions: sessions,
+        ),
+      SourceType.kavita => KavitaClient(
+          baseUrl: source.baseUrl,
+          deviceId: deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onRequestOutcome,
+          sessions: sessions,
+        ),
+      _ => ApiClient(
+          baseUrl: source.baseUrl,
+          deviceId: deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onRequestOutcome,
+        ),
+    };
 
 /// Auth headers for an image at [url]: the active source's credentials when
 /// [url] is on that source's server, nothing otherwise. Creator, review and
@@ -96,7 +106,7 @@ final sourceAuthSyncProvider = Provider<void>((ref) {
   SourceAuthClient.use(source.baseUrl, source.authHeaders);
 });
 
-/// Whether the active source syncs into the mirror (Gutter server or Komga).
+/// Whether the active source syncs into the mirror (Gutter, Komga, Kavita).
 final hasMirrorProvider = Provider<bool>((ref) {
   return ref.watch(activeSourceProvider).type != SourceType.opds;
 });
