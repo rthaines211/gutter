@@ -199,18 +199,16 @@ class SeriesDetailHeader extends ConsumerWidget {
             const SizedBox(width: 36)
           else
             GlassButton(
+              label: 'Back',
               onTap: () => Navigator.pop(context),
               child: Icon(Icons.chevron_left, size: 18, color: context.scheme.tx),
             ),
           Row(
             children: [
               if (!isPanel) ...[
-                GlassButton(
-                  child: Icon(Icons.favorite_border, size: 16, color: context.scheme.tx),
-                ),
                 if (onMore != null) ...[
-                  const SizedBox(width: 8),
                   GlassButton(
+                    label: 'More',
                     onTap: onMore,
                     child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
                   ),
@@ -219,12 +217,14 @@ class SeriesDetailHeader extends ConsumerWidget {
               if (isPanel) ...[
                 if (onMore != null) ...[
                   GlassButton(
+                    label: 'More',
                     onTap: onMore,
                     child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
                   ),
                   const SizedBox(width: 8),
                 ],
                 GlassButton(
+                  label: 'Close',
                   onTap: onClose,
                   child: Icon(Icons.close, size: 16, color: context.scheme.tx),
                 ),

@@ -274,8 +274,11 @@ class _StatusTile extends StatelessWidget {
                 child: Icon(icon, size: 13, color: color),
               ),
               const SizedBox(width: 6),
-              Text(label, style: TextStyle(
-                fontSize: 12, color: context.scheme.t3, fontWeight: FontWeight.w600)),
+              Flexible(
+                child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12, color: context.scheme.t3,
+                        fontWeight: FontWeight.w600)),
+              ),
               if (pulse) ...[
                 const SizedBox(width: 6),
                 Container(
@@ -395,7 +398,10 @@ class _MoreRow extends StatelessWidget {
               ),
             ),
             if (value != null)
-              Text(value!, style: TextStyle(fontSize: 13, color: context.scheme.t3)),
+              Flexible(
+                child: Text(value!, maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, color: context.scheme.t3)),
+              ),
             const SizedBox(width: 4),
             Icon(Icons.chevron_right, size: 12, color: context.scheme.t4),
           ],

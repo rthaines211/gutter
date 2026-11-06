@@ -301,14 +301,18 @@ class _FilmstripScrubberState extends State<FilmstripScrubber> {
           ),
         ),
         if (widget.onOpenGrid != null) ...[
-          GestureDetector(
-            key: const Key('filmstripScrubber.gridButton'),
-            onTap: widget.onOpenGrid,
-            behavior: HitTestBehavior.opaque,
-            // 44pt touch target around the 18pt glyph.
-            child: SizedBox.square(
-              dimension: 44,
-              child: Icon(Icons.grid_view, size: 18, color: context.scheme.t2),
+          Semantics(
+            button: true,
+            label: 'Page grid',
+            child: GestureDetector(
+              key: const Key('filmstripScrubber.gridButton'),
+              onTap: widget.onOpenGrid,
+              behavior: HitTestBehavior.opaque,
+              // 44pt touch target around the 18pt glyph.
+              child: SizedBox.square(
+                dimension: 44,
+                child: Icon(Icons.grid_view, size: 18, color: context.scheme.t2),
+              ),
             ),
           ),
         ],

@@ -10,6 +10,7 @@ import '../config/scheme.dart';
 import '../models/series.dart';
 import 'caption_box.dart';
 import 'panel_frame.dart';
+import '../config/layout_breakpoint.dart';
 
 class SeriesGridTile extends ConsumerWidget {
   final Series series;
@@ -159,7 +160,7 @@ class SeriesGridTile extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Text(
-                  '$onDevice on iPad',
+                  '$onDevice on ${LayoutBreakpoint.deviceNoun}',
                   style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,

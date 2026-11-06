@@ -79,7 +79,8 @@ class _ProSheetState extends ConsumerState<ProSheet> {
     });
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
     return SafeArea(
-      child: Padding(
+      // Scrolls when large Dynamic Type makes it taller than the screen.
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import '../config/scheme.dart';
 import '../models/series.dart';
 import '../providers/download_provider.dart';
+import '../config/layout_breakpoint.dart';
 
 /// Before a series download: how many issues, roughly how big, and whether it
 /// fits. Returns the issues to queue, or null if cancelled.
@@ -137,7 +138,7 @@ class _SeriesDownloadSheetState extends State<_SeriesDownloadSheet> {
                   ? 'Checking sizes…'
                   : _free == null
                       ? 'Free space unknown'
-                      : '${_fmt(_free!)} free on this iPad',
+                      : '${_fmt(_free!)} free on this ${LayoutBreakpoint.deviceNoun}',
               style: TextStyle(fontSize: 13, color: context.scheme.t3),
             ),
             if (measuring) ...[
@@ -147,7 +148,7 @@ class _SeriesDownloadSheetState extends State<_SeriesDownloadSheet> {
             ],
             const SizedBox(height: 16),
             if (_all.isEmpty)
-              Text('Every issue is already on this iPad.',
+              Text('Every issue is already on this ${LayoutBreakpoint.deviceNoun}.',
                   style: TextStyle(color: context.scheme.t2))
             else ...[
               if (_unread.isNotEmpty && _unread.length < _all.length)
@@ -194,7 +195,7 @@ class _SeriesDownloadSheetState extends State<_SeriesDownloadSheet> {
           if (tooBig)
             Padding(
               padding: const EdgeInsets.only(top: 4),
-              child: Text('Not enough space on this iPad',
+              child: Text('Not enough space on this ${LayoutBreakpoint.deviceNoun}',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, color: Colors.red[400])),
             ),

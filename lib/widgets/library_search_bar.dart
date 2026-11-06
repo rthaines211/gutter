@@ -53,14 +53,19 @@ class LibrarySearchBar extends StatelessWidget {
             ),
           ),
           if (controller.text.isNotEmpty)
-            GestureDetector(
-              onTap: () {
-                controller.clear();
-                onChanged('');
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Icon(Icons.close, size: 14, color: context.scheme.t3),
+            Semantics(
+              button: true,
+              label: 'Clear search',
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  controller.clear();
+                  onChanged('');
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Icon(Icons.close, size: 14, color: context.scheme.t3),
+                ),
               ),
             ),
           GestureDetector(

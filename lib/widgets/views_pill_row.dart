@@ -9,6 +9,7 @@ import '../providers/connectivity_provider.dart';
 import '../providers/library_provider.dart';
 import '../providers/smart_filter_provider.dart';
 import 'smart_filter_editor.dart';
+import '../config/layout_breakpoint.dart';
 
 /// Unified horizontal pill row for library views.
 /// Merges status filters (All, In Progress, Unread), smart filters,
@@ -65,7 +66,7 @@ class ViewsPillRow extends ConsumerWidget {
           const SizedBox(width: 6),
           _Pill(
             icon: Icons.download_done_rounded,
-            label: 'On iPad',
+            label: 'On ${LayoutBreakpoint.deviceNoun}',
             active: !isSmartActive && !isCollectionActive && filter.status == 'on_device',
             accent: accent,
             onTap: () => _selectStatus(ref, 'on_device'),

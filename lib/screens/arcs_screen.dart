@@ -118,6 +118,7 @@ class _ArcsScreenState extends ConsumerState<ArcsScreen> {
             ),
           ),
           GlassButton(
+            label: _searching ? 'Close search' : 'Search',
             onTap: () => setState(() {
               _searching = !_searching;
               if (!_searching) _query = '';

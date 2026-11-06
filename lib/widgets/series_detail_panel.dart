@@ -387,7 +387,11 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
 
   Widget _viewToggleButton(IconData icon, String mode) {
     final active = _issueViewMode == mode;
-    return GestureDetector(
+    return Semantics(
+      button: true,
+      selected: active,
+      label: mode == 'grid' ? 'Grid view' : 'List view',
+      child: GestureDetector(
       onTap: () => setState(() {
         // Switching into the grid riffles it, like opening the series.
         if (mode == 'grid' && _issueViewMode != 'grid') _riffleFrom = null;
@@ -402,6 +406,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
         ),
         child: Icon(icon, size: 12, color: active ? context.scheme.tx : context.scheme.t3),
       ),
+    ),
     );
   }
 
