@@ -428,6 +428,44 @@ void main() {
     manager.dispose();
   });
 
+  test('deleteSource drops completed + dir for that source only', () async {
+    final manager =
+        DownloadManager(baseDir: tempDir.path, httpClient: comicClient());
+    enqueueTestItem(manager, comicId: 'c1');
+    enqueueTestItem(manager, comicId: 'c2', sourceId: 'src2');
+    await pumpUntil(() =>
+        manager.isDownloaded('c1', 'src1') &&
+        manager.isDownloaded('c2', 'src2'));
+
+    await manager.deleteSource('src1');
+    expect(manager.isDownloaded('c1', 'src1'), isFalse);
+    expect(Directory(p.join(tempDir.path, 'downloads', 'src1')).existsSync(),
+        isFalse);
+    expect(manager.isDownloaded('c2', 'src2'), isTrue);
+    expect(manager.currentState.completed.map((i) => i.sourceId), ['src2']);
+    manager.dispose();
+  });
+
+  test('deleteSource cancels that source\'s queued items', () async {
+    final manager =
+        DownloadManager(
+            baseDir: tempDir.path, httpClient: comicClient(hangPages: true));
+    enqueueTestItem(manager, comicId: 'c1');
+    enqueueTestItem(manager, comicId: 'c2');
+    enqueueTestItem(manager, comicId: 'c3', sourceId: 'src2');
+    await pumpUntil(() =>
+        manager.currentState.active?.status == DownloadStatus.downloading);
+    await Future.delayed(const Duration(milliseconds: 50));
+
+    await manager.deleteSource('src1');
+    await pumpUntil(() =>
+        manager.currentState.queue.every((i) => i.sourceId == 'src2'));
+    final entries = jsonDecode(journal().readAsStringSync()) as List;
+    expect(entries.map((e) => ((e as Map)['item'] as Map)['source_id']),
+        everyElement('src2'));
+    manager.dispose();
+  });
+
   test('init lists finished downloads from disk after a relaunch', () async {
     final first =
         DownloadManager(baseDir: tempDir.path, httpClient: comicClient());

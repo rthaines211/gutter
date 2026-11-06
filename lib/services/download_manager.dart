@@ -319,6 +319,23 @@ class DownloadManager {
     _emit();
   }
 
+  /// Forget everything downloaded or queued for [sourceId] (signing out of,
+  /// or replacing, a server).
+  Future<void> deleteSource(String sourceId) async {
+    for (final item in [..._queue]) {
+      if (item.sourceId == sourceId) cancel(item.comicId, sourceId);
+    }
+    _completed.removeWhere((i) => i.sourceId == sourceId);
+    // ponytail: an in-flight page may land after the dir delete; it stays
+    // an orphan file (nothing sweeps it).
+    try {
+      final dir = Directory(p.join(_downloadsRoot, sourceId));
+      if (await dir.exists()) await dir.delete(recursive: true);
+    } catch (_) {}
+    _persistJournal();
+    _emit();
+  }
+
   /// Cancel a download. A queued item is removed at once; the active one
   /// is removed by the work loop when its fetch reports the cancel.
   void cancel(String comicId, String sourceId) {

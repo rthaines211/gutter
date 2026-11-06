@@ -16,6 +16,7 @@ import '../providers/accent_provider.dart';
 import '../providers/creator_provider.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../services/creator_view.dart';
 import '../services/mirror/mirror_database.dart';
 import '../widgets/creator_detail_panel.dart';
@@ -355,7 +356,7 @@ class _Spotlight extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
     final coversDir = ref.watch(coversDirProvider);
     final owned = ownedByCreator(mirror, id: creator.id, name: creator.name);
     final issuesReadCount = issuesRead(owned);
@@ -451,7 +452,7 @@ class _CreatorCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
     final coversDir = ref.watch(coversDirProvider);
     final owned = ownedByCreator(mirror, id: creator.id, name: creator.name);
     final duo = owned.take(2).toList();

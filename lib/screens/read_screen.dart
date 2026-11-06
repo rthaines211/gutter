@@ -12,6 +12,7 @@ import '../providers/download_provider.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/read_tab_provider.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../providers/scan_status_provider.dart';
 import '../widgets/just_added_card.dart';
 import '../widgets/recommendation_card.dart';
@@ -31,7 +32,7 @@ class ReadScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dataAsync = ref.watch(readTabProvider);
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
     final tablet = LayoutBreakpoint.isTablet(context);
 
     return Scaffold(

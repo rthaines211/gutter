@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/widgets/connectivity_overlay.dart';
+
+/// No prefs in these tests: the on-device count reads the active source id.
+class _Active extends ActiveSourceNotifier {
+  @override
+  String build() => 'default';
+}
 
 /// Test double: bypasses the real notifier's timers/lifecycle setup and lets
 /// the test drive the bool directly.
@@ -22,7 +29,10 @@ class FakeConnectivity extends ConnectivityNotifier {
 Future<void> _pumpOverlay(WidgetTester tester, FakeConnectivity fake) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [connectivityProvider.overrideWith(() => fake)],
+      overrides: [
+        connectivityProvider.overrideWith(() => fake),
+        activeSourceIdProvider.overrideWith(_Active.new),
+      ],
       child: const MaterialApp(
         home: ConnectivityOverlay(child: SizedBox.expand()),
       ),
@@ -55,7 +65,10 @@ void main() {
       final fake = FakeConnectivity(true);
       final nav = GlobalKey<NavigatorState>();
       await tester.pumpWidget(ProviderScope(
-        overrides: [connectivityProvider.overrideWith(() => fake)],
+        overrides: [
+        connectivityProvider.overrideWith(() => fake),
+        activeSourceIdProvider.overrideWith(_Active.new),
+      ],
         child: MaterialApp(
           navigatorKey: nav,
           navigatorObservers: [RootRouteObserver()],

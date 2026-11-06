@@ -8,36 +8,31 @@ import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../models/server_source.dart';
 import '../widgets/longbox_mark.dart';
+import '../config/server_url.dart';
 
-/// Trims, adds `https://` when no scheme was typed, and drops trailing
-/// slashes: `nas.local:8080/` → `https://nas.local:8080`.
-String normalizeServerUrl(String input) {
-  var url = input.trim();
-  if (!url.contains('://')) url = 'https://$url';
-  while (url.endsWith('/')) {
-    url = url.substring(0, url.length - 1);
-  }
-  return url;
-}
-
-/// What to probe, in order. A typed scheme is taken as is; without one try
-/// https, then plain http, which most LAN servers speak.
-List<String> serverUrlCandidates(String input) {
-  final url = normalizeServerUrl(input);
-  if (input.trim().contains('://')) return [url];
-  return [url, 'http://${url.substring('https://'.length)}'];
-}
+export '../config/server_url.dart';
 
 /// First launch with no server (every store install): ask for the server
 /// type, URL and (Komga) login, check it answers, then save it as the default
 /// source. `app.dart` swaps to the shell once the active source has a URL, so
 /// this never pushes.
+///
+/// With [onConnected] it is the Servers screen's edit/add form instead: it
+/// gets an app bar, starts from [initial], and hands the probed server to
+/// [onConnected] rather than saving it.
 class OnboardingScreen extends ConsumerStatefulWidget {
   /// HTTP status from a candidate source (normalized URL, type, credentials),
   /// null when unreachable. Defaults to the source's client `probeStatus`.
   final Future<int?> Function(ServerSource candidate)? probe;
 
-  const OnboardingScreen({super.key, this.probe});
+  /// The server being edited: prefills type, address and login.
+  final ServerSource? initial;
+
+  /// Edit/add mode: called with the server once it answers.
+  final Future<void> Function(ServerSource found)? onConnected;
+
+  const OnboardingScreen(
+      {super.key, this.probe, this.initial, this.onConnected});
 
   @override
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -56,6 +51,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // Gutter server only: set once a candidate answered 401, so the server
   // needs a password.
   String? _authUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    final s = widget.initial;
+    if (s == null) return;
+    _type = s.type == SourceType.komga ? SourceType.komga : SourceType.custom;
+    _urlCtrl.text = s.baseUrl;
+    _userCtrl.text = s.username ?? '';
+    _passCtrl.text = s.password ?? '';
+    _keyCtrl.text = s.apiKey ?? '';
+    _useKey = _komga && s.authType == AuthType.apiKey;
+    if (!_komga && s.authType == AuthType.basic) _authUrl = s.baseUrl;
+  }
 
   @override
   void dispose() {
@@ -77,10 +86,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   ServerSource _candidate(String url) {
     if (!_komga && _authUrl == null) {
-      // First try on a Gutter server: whatever auth the default source
-      // already has (the personal build's built-in key), so a server that
-      // accepts it connects unprompted.
-      final current = ref.read(activeSourceProvider);
+      // First try on a Gutter server: whatever auth the server being edited
+      // (or the default source) already has, e.g. the personal build's
+      // built-in key, so a server that accepts it connects unprompted.
+      final ServerSource current =
+          widget.initial ?? ref.read(activeSourceProvider);
       return ServerSource(
         id: 'default',
         name: 'My Server',
@@ -139,7 +149,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
     }
     if (!mounted) return;
-    if (found != null) {
+    if (found != null && widget.onConnected != null) {
+      await widget.onConnected!(found);
+      if (mounted) setState(() => _probing = false);
+    } else if (found != null) {
       // Both, as Settings → Server URL does: covers and series detail build
       // URLs from ServerConfig, the API client from the source.
       await ref.read(serverConfigProvider).setServerUrl(found.baseUrl);
@@ -189,6 +202,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
     return Scaffold(
       backgroundColor: context.scheme.bg,
+      appBar: widget.onConnected == null
+          ? null
+          : AppBar(
+              backgroundColor: context.scheme.bg,
+              title: Text(widget.initial == null ? 'Add server' : 'Edit server'),
+            ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

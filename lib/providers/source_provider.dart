@@ -96,7 +96,11 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
     if (builtInApiKey.isNotEmpty) {
       for (var i = 0; i < updated.length; i++) {
         final s = updated[i];
-        if (s.isDefault && (s.apiKey ?? '').isEmpty) {
+        // Only a keyless Gutter default: never over a login the user typed.
+        if (s.isDefault &&
+            s.type == SourceType.custom &&
+            s.authType == AuthType.none &&
+            (s.apiKey ?? '').isEmpty) {
           updated[i] =
               s.copyWith(authType: AuthType.apiKey, apiKey: builtInApiKey);
           seeded = true;
@@ -146,14 +150,6 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
           )
         else
           s,
-    ];
-    _persist(state);
-  }
-
-  void updateDefaultUrl(String url) {
-    state = [
-      for (final s in state)
-        if (s.isDefault) s.copyWith(baseUrl: url) else s,
     ];
     _persist(state);
   }

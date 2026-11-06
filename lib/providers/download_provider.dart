@@ -76,12 +76,16 @@ final onDeviceProvider =
       .where((i) => i.status == DownloadStatus.completed)
       .map((i) => '${i.sourceId}:${i.comicId}')
       .join(',')));
+  // Comic ids can collide across servers: only the active one's count.
+  final sourceId = ref.watch(activeSourceIdProvider);
   final items = ref.read(downloadStateProvider).value?.completed ??
       const <DownloadItem>[];
   final comicIds = <String>{};
   final perSeries = <String, int>{};
   for (final i in items) {
-    if (i.status != DownloadStatus.completed) continue;
+    if (i.status != DownloadStatus.completed || i.sourceId != sourceId) {
+      continue;
+    }
     comicIds.add(i.comicId);
     perSeries.update(i.seriesId, (n) => n + 1, ifAbsent: () => 1);
   }

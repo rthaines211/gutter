@@ -8,7 +8,6 @@ import '../config/flavor.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
 import '../widgets/privacy_sheet.dart';
-import 'onboarding_screen.dart' show normalizeServerUrl;
 import '../widgets/longbox_mark.dart';
 import '../widgets/reader_settings_form.dart' show sleepSettingsRows;
 import '../providers/accent_provider.dart';
@@ -24,6 +23,7 @@ import 'downloads_screen.dart';
 import 'label_screen.dart';
 import 'log_viewer_screen.dart';
 import 'rename_templates_screen.dart';
+import 'servers_screen.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -56,41 +56,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       settings: RouteSettings(name: routeName),
       builder: (_) => screen,
     ));
-  }
-
-  Future<void> _editServerUrl(String current) async {
-    final controller = TextEditingController(text: current);
-    try {
-      final result = await showDialog<String>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          backgroundColor: ctx.scheme.s1,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: const Text('Server URL'),
-          content: TextField(
-            controller: controller,
-            style: TextStyle(color: ctx.scheme.tx),
-            decoration: InputDecoration(
-              hintText: 'https://komga.example.com',
-              hintStyle: TextStyle(color: ctx.scheme.t3),
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-            TextButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Save')),
-          ],
-        ),
-      );
-      // Same cleanup as onboarding: `nas.local:8080/` saved raw has no host.
-      if (result != null && result.trim().isNotEmpty) {
-        final url = normalizeServerUrl(result);
-        await ref.read(serverConfigProvider).setServerUrl(url);
-        ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
-        ref.read(connectivityProvider.notifier).check();
-      }
-    } finally {
-      controller.dispose();
-    }
   }
 
   Future<void> _editApiKey(String current) async {
@@ -128,7 +93,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final serverConfig = ref.watch(serverConfigProvider);
     final currentPreset = _currentAccentPreset();
     final isOnline = ref.watch(connectivityProvider);
     final schemeId = ref.watch(schemeProvider);
@@ -277,9 +241,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Server',
                   children: [
                     _NavRow(
-                      label: 'Server URL',
-                      value: serverConfig.serverUrl,
-                      onTap: () => _editServerUrl(serverConfig.serverUrl),
+                      label: 'Servers',
+                      value: ref.watch(activeSourceProvider).name,
+                      onTap: () => _push(const ServersScreen(), '/servers'),
                     ),
                     // The key registers push, which is personal-only.
                     if (!isStore) _NavRow(

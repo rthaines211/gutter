@@ -8,7 +8,7 @@ import '../providers/collection_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/library_provider.dart';
 import '../providers/navigation_provider.dart';
-import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../providers/smart_filter_provider.dart';
 import 'offline_dot.dart';
 
@@ -25,7 +25,7 @@ class _SidebarV2State extends ConsumerState<SidebarV2> {
     final current = ref.watch(navigationProvider);
     final collections = ref.watch(collectionsProvider);
     final smartFilters = ref.watch(smartFilterListProvider);
-    final serverConfig = ref.watch(serverConfigProvider);
+    final serverUrl = ref.watch(activeSourceProvider.select((s) => s.baseUrl));
     final isOnline = ref.watch(connectivityProvider);
 
     return Container(
@@ -132,7 +132,7 @@ class _SidebarV2State extends ConsumerState<SidebarV2> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(_hostname(serverConfig.serverUrl), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(_hostname(serverUrl), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis),
                         Text(isOnline ? 'Online' : 'Offline', style: TextStyle(fontSize: 10, color: context.scheme.t3)),
                       ],
                     ),

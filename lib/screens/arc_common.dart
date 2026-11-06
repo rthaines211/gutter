@@ -8,6 +8,7 @@ import '../config/scheme.dart';
 import '../models/arc.dart';
 import '../models/series.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../services/arc_shelves.dart';
 import 'reader_screen.dart';
 import '../widgets/cover_flight_route.dart';
@@ -81,7 +82,7 @@ class ArcCover extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final resolved = url.startsWith('http')
         ? url
-        : '${ref.watch(serverConfigProvider).serverUrl}$url';
+        : '${ref.watch(activeSourceProvider.select((s) => s.baseUrl))}$url';
     final placeholder = Container(
       width: width,
       height: height,
