@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../config/flavor.dart';
+import 'providers.dart';
 
 /// Represents which screen is showing in the app shell.
 /// Phone: 0=Read, 1=Library, 2=Creators, 3=Review, 4=More
@@ -24,6 +24,11 @@ const storeHiddenDestinations = {
   NavDestination.arcs,
 };
 
+/// Destinations hidden right now: the personal-only ones, in the store app or
+/// on a source that isn't a Gutter server ([gutterFeaturesProvider]).
+final hiddenDestinationsProvider = Provider<Set<NavDestination>>((ref) =>
+    ref.watch(gutterFeaturesProvider) ? const {} : storeHiddenDestinations);
+
 /// Destinations that need the server; hidden while offline.
 const onlineOnlyDestinations = {
   NavDestination.creators,
@@ -36,10 +41,10 @@ class NavigationNotifier extends Notifier<NavDestination> {
   NavDestination build() => NavDestination.read;
 
   /// Every navigation goes through here (rail, tabs, scan banner, push taps),
-  /// so this is the one guard: a hidden destination in the store app lands on
-  /// Read instead of an empty screen.
+  /// so this is the one guard: a hidden destination (store app, or not a
+  /// Gutter server) lands on Read instead of an empty screen.
   void go(NavDestination dest) => state =
-      isStore && storeHiddenDestinations.contains(dest) ? NavDestination.read : dest;
+      ref.read(hiddenDestinationsProvider).contains(dest) ? NavDestination.read : dest;
 
   /// Map NavDestination to the phone tab bar index (0-4).
   int get tabIndex {

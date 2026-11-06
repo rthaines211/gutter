@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/navigation_provider.dart';
@@ -11,6 +12,7 @@ const _accent = Color(0xFF0A84FF);
 Widget _host({NavDestination initial = NavDestination.read, bool online = true}) =>
     ProviderScope(
       overrides: [
+        gutterFeaturesProvider.overrideWith((ref) => !isStore),
         navigationProvider.overrideWith(() => _FakeNavigationNotifier(initial)),
         connectivityProvider.overrideWith(() => _FixedConnectivity(online)),
       ],
@@ -100,6 +102,7 @@ void main() {
     late final BuildContext context;
     await t.pumpWidget(ProviderScope(
       overrides: [
+        gutterFeaturesProvider.overrideWith((ref) => !isStore),
         navigationProvider.overrideWith(
             () => _FakeNavigationNotifier(NavDestination.read)),
         connectivityProvider.overrideWith(() => _FixedConnectivity(true)),
@@ -126,6 +129,7 @@ void main() {
     late final BuildContext context;
     await t.pumpWidget(ProviderScope(
       overrides: [
+        gutterFeaturesProvider.overrideWith((ref) => !isStore),
         navigationProvider.overrideWith(
             () => _FakeNavigationNotifier(NavDestination.read)),
         connectivityProvider.overrideWith(() => _FixedConnectivity(true)),

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/remote_session.dart';
+import 'providers.dart';
 import 'source_provider.dart';
 
 /// Remote-control session against the active backend. Rebuilds when the
@@ -10,6 +11,7 @@ final remoteSessionProvider = Provider<RemoteSession>((ref) {
   final session = RemoteSession(
     baseUrl: source.baseUrl,
     authHeaders: source.authHeaders,
+    enabled: ref.watch(gutterFeaturesProvider),
   );
   ref.onDispose(session.dispose);
   return session;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
-import '../config/flavor.dart';
 import '../config/scheme.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/navigation_provider.dart';
@@ -38,8 +37,9 @@ class IconRail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = ref.watch(navigationProvider);
-    final reviewCount = isStore ? 0 : ref.watch(reviewCountProvider);
+    final reviewCount = ref.watch(reviewCountProvider);
     final offline = !ref.watch(connectivityProvider);
+    final hidden = ref.watch(hiddenDestinationsProvider);
 
     return Container(
       width: 76,
@@ -61,7 +61,7 @@ class IconRail extends ConsumerWidget {
               children: [
                 for (final d in _destinations)
                   if ((!offline || !onlineOnlyDestinations.contains(d.dest)) &&
-                      !(isStore && storeHiddenDestinations.contains(d.dest)))
+                      !hidden.contains(d.dest))
                   _RailTile(
                     icon: d.icon,
                     label: d.label,

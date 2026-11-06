@@ -8,10 +8,12 @@ import '../models/reading_progress.dart';
 import 'library_provider.dart';
 import 'mirror_provider.dart';
 import 'providers.dart';
+import 'source_provider.dart';
 import 'stats_provider.dart';
 
 final recommendationCacheProvider = Provider<RecommendationCache>((ref) {
-  final cache = RecommendationCache(ref.watch(sharedPrefsProvider));
+  final cache = RecommendationCache(ref.watch(sharedPrefsProvider),
+      sourceId: ref.watch(activeSourceProvider.select((s) => s.id)));
   cache.clearSessionExclusions();
   return cache;
 });

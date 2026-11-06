@@ -54,7 +54,9 @@ void main() {
         }
       ]);
       final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
         sharedPrefsProvider.overrideWithValue(prefs),
+        recommendationCacheProvider.overrideWith((ref) => RecommendationCache(prefs)),
         foundationModelsChannelProvider.overrideWithValue(channel),
         recommendationSignalsLoaderProvider
             .overrideWithValue(() async => SignalSnapshot.empty()),
@@ -70,7 +72,9 @@ void main() {
     test('returns null when channel reports unavailable', () async {
       final prefs = await SharedPreferences.getInstance();
       final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
         sharedPrefsProvider.overrideWithValue(prefs),
+        recommendationCacheProvider.overrideWith((ref) => RecommendationCache(prefs)),
         foundationModelsChannelProvider
             .overrideWithValue(_FakeChannel(const [], available: false)),
         recommendationSignalsLoaderProvider
@@ -100,7 +104,9 @@ void main() {
         },
       ]);
       final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
         sharedPrefsProvider.overrideWithValue(prefs),
+        recommendationCacheProvider.overrideWith((ref) => RecommendationCache(prefs)),
         foundationModelsChannelProvider.overrideWithValue(channel),
         recommendationSignalsLoaderProvider
             .overrideWithValue(() async => SignalSnapshot.empty()),
@@ -190,6 +196,7 @@ void main() {
         final mirrorDb = MirrorDatabase(NativeDatabase.memory());
         addTearDown(() => mirrorDb.close());
         final container = ProviderContainer(overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
           libraryProvider.overrideWith(
               (ref) => StreamController<List<Series>>().stream),
           mirrorDbProvider.overrideWithValue(mirrorDb),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/providers/providers.dart';
 
 import 'package:comic_reader_app/models/creator_profile.dart';
 import 'package:comic_reader_app/providers/creator_provider.dart';
@@ -35,6 +36,7 @@ Future<void> _pump(
   await t.pumpWidget(
     ProviderScope(
       overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
         creatorsProvider.overrideWith(createCreators),
       ],
       child: MaterialApp(

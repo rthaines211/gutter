@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/models/review_item.dart';
 import 'package:comic_reader_app/providers/navigation_provider.dart';
 import 'package:comic_reader_app/providers/review_provider.dart';
@@ -36,6 +37,7 @@ Future<ProviderContainer> _pump(WidgetTester t, int n) async {
   _queueSize = n;
   await t.pumpWidget(ProviderScope(
     overrides: [
+        gutterFeaturesProvider.overrideWithValue(true),
       scanStatusProvider.overrideWith(_FakeScan.new),
       reviewQueueProvider.overrideWith(_FakeQueue.new),
     ],

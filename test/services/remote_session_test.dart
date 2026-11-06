@@ -132,6 +132,15 @@ void main() {
       expect(receivedBodies.single, contains('"page":11'));
     });
 
+    test('a disabled session sends nothing', () async {
+      final session = RemoteSession(baseUrl: baseUrl, enabled: false);
+      addTearDown(session.dispose);
+      await session.publishState(const RemoteSnapshot(comicId: 'c', series: 's', page: 1, totalPages: 2, bookmarked: false, hasNextIssue: false, readingMode: 'page'));
+      expect(await session.sendCommand('next'), isFalse);
+      expect(await session.events('reader').toList(), isEmpty);
+      expect(receivedPaths, isEmpty);
+    });
+
     test('sendCommand returns false on 409', () async {
       commandStatus = 409;
       final session = RemoteSession(baseUrl: baseUrl);

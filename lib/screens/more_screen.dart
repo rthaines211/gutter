@@ -58,6 +58,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
     // Remote and Stats need the server: hidden offline.
     final online = ref.watch(connectivityProvider);
+    final gutter = ref.watch(gutterFeaturesProvider);
     final downloadState = ref.watch(downloadStateProvider);
     final queueCount = downloadState.value?.queue.length ?? 0;
     final completedCount = downloadState.value?.completed.length ?? 0;
@@ -142,14 +143,14 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   sub: 'Plan your next reads',
                   onTap: () => _push(context, const QueuesScreen(), '/queues'),
                 ),
-                if (online && !isStore) _MoreRow(
+                if (online && gutter) _MoreRow(
                   icon: Icons.settings_remote_rounded,
                   iconColor: AppTheme.blue,
                   label: 'Remote',
                   sub: 'Control the iPad reader',
                   onTap: () => _push(context, const RemoteScreen(), '/remote'),
                 ),
-                if (!isStore) _MoreRow(
+                if (gutter) _MoreRow(
                   icon: Icons.account_tree_rounded,
                   iconColor: AppTheme.violet,
                   label: 'Story Arcs',

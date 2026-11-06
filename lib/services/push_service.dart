@@ -66,6 +66,8 @@ class PushService {
   /// pushes until the next launch.
   Future<void> registerDevice(String token, String env) async {
     final src = source();
+    // Only a Gutter server takes device registrations.
+    if (src.type != SourceType.custom) return;
     try {
       final resp = await client.post(
         Uri.parse('${src.baseUrl}/devices'),
