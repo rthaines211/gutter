@@ -150,8 +150,8 @@ class RootRouteObserver extends NavigatorObserver {
 String _offlineLabel(int n, {bool pretend = false}) {
   final what = switch (n) {
     0 => 'nothing downloaded',
-    1 => '1 comic on this iPad',
-    _ => '$n comics on this iPad',
+    1 => '1 comic on this ${LayoutBreakpoint.deviceNoun}',
+    _ => '$n comics on this ${LayoutBreakpoint.deviceNoun}',
   };
   return '${pretend ? 'Pretend offline' : 'Offline'} · $what';
 }

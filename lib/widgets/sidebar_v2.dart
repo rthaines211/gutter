@@ -138,10 +138,11 @@ class _SidebarV2State extends ConsumerState<SidebarV2> {
                     ),
                   ),
                   IconButton(
+                    tooltip: 'Settings',
                     icon: Icon(Icons.settings_rounded, size: 18, color: context.scheme.t3),
                     onPressed: () => _navigate(NavDestination.settings),
                     padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
                   ),
                 ],
               ),

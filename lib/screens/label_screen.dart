@@ -269,6 +269,7 @@ class _LabelScreenState extends ConsumerState<LabelScreen> {
       child: Row(
         children: [
           IconButton(
+            tooltip: 'Close',
             icon: const Icon(Icons.close),
             color: sc.tx,
             onPressed: () => Navigator.of(context).maybePop(),

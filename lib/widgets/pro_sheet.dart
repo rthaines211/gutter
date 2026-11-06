@@ -9,7 +9,7 @@ import '../providers/pro_provider.dart';
 
 const _features = [
   (Icons.download_for_offline_outlined, 'Offline downloads'),
-  (Icons.center_focus_strong_outlined, 'Guided spread zoom'),
+  (Icons.center_focus_strong_outlined, 'Guided zoom: panels and spreads'),
   (Icons.dns_outlined, 'More than one server'),
   (Icons.insights_outlined, 'Reading stats'),
 ];
@@ -79,7 +79,8 @@ class _ProSheetState extends ConsumerState<ProSheet> {
     });
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
     return SafeArea(
-      child: Padding(
+      // Scrolls when large Dynamic Type makes it taller than the screen.
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,

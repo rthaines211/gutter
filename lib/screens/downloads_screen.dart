@@ -15,6 +15,7 @@ import '../providers/library_provider.dart';
 import '../services/download_manager.dart';
 import '../widgets/cover_flight_route.dart';
 import 'reader_screen.dart';
+import '../config/layout_breakpoint.dart';
 
 /// What's on this iPad: active downloads on top, then one section per series
 /// with tappable issue rows (read offline), per-issue swipe and per-series
@@ -123,13 +124,14 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
         children: [
           // A rail tab has nothing to go back to.
           if (Navigator.canPop(context))
-            GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: Padding(
-                padding: const EdgeInsets.only(right: 12),
-                child: Icon(Icons.arrow_back_ios_rounded,
-                    size: 20, color: context.scheme.t2),
-              ),
+            IconButton(
+              tooltip: 'Back',
+              onPressed: () => Navigator.pop(context),
+              padding: EdgeInsets.zero,
+              alignment: Alignment.centerLeft,
+              constraints: const BoxConstraints(minWidth: 44, minHeight: 44),
+              icon: Icon(Icons.arrow_back_ios_rounded,
+                  size: 20, color: context.scheme.t2),
             ),
           const Expanded(
             child: Text('Downloads', style: AppTheme.titleLarge),
@@ -446,7 +448,7 @@ class _SeriesSection extends ConsumerWidget {
         title: Text('Remove $name?'),
         content: Text(
             'Deletes ${items.length} downloaded ${items.length == 1 ? 'issue' : 'issues'} '
-            'from this iPad. Your reading progress stays.'),
+            'from this ${LayoutBreakpoint.deviceNoun}. Your reading progress stays.'),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),

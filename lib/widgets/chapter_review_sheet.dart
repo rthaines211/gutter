@@ -70,6 +70,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
                       trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                         IconButton(
                           key: Key('edit-${c.page}'),
+                          tooltip: 'Edit title',
                           icon: const Icon(Icons.edit, size: 18),
                           onPressed: () async {
                             final t = await _editTitle(_titles[c.page] ?? c.title);
@@ -78,6 +79,7 @@ class _ReviewSheetState extends State<_ReviewSheet> {
                         ),
                         IconButton(
                           key: Key('dismiss-${c.page}'),
+                          tooltip: on ? 'Exclude chapter' : 'Include chapter',
                           icon: Icon(on ? Icons.check_circle : Icons.remove_circle_outline,
                               size: 18, color: on ? AppTheme.accent : context.scheme.t3),
                           onPressed: () => setState(() => _accepted[c.page] = !on),

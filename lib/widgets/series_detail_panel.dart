@@ -321,7 +321,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
 
   Widget _buildIssuesHeader() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
+      padding: const EdgeInsets.fromLTRB(20, 1, 20, 3),
       child: Row(
         children: [
           const Text('Issues', style: TextStyle(
@@ -330,18 +330,33 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
             letterSpacing: -0.4,
           )),
           const Spacer(),
-          // View toggle
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: context.scheme.s1,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          // View toggle. Each half takes taps over a 44pt-tall box around the
+          // 30pt pill; the header's vertical padding is trimmed 7pt to match.
+          SizedBox(
+            height: 44,
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                _viewToggleButton(Icons.grid_view_rounded, 'grid'),
-                _viewToggleButton(Icons.view_list_rounded, 'list'),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: context.scheme.s1,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _viewToggleButton(Icons.grid_view_rounded, 'grid'),
+                      _viewToggleButton(Icons.view_list_rounded, 'list'),
+                    ],
+                  ),
+                ),
+                Positioned.fill(
+                  child: Row(children: [
+                    _viewToggleHitArea('grid'),
+                    _viewToggleHitArea('list'),
+                  ]),
+                ),
               ],
             ),
           ),
@@ -385,25 +400,37 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
     );
   }
 
-  Widget _viewToggleButton(IconData icon, String mode) {
-    final active = _issueViewMode == mode;
-    return GestureDetector(
-      onTap: () => setState(() {
+  void _setViewMode(String mode) => setState(() {
         // Switching into the grid riffles it, like opening the series.
         if (mode == 'grid' && _issueViewMode != 'grid') _riffleFrom = null;
         _issueViewMode = mode;
-      }),
-      child: Container(
-        width: 28,
-        height: 24,
-        decoration: BoxDecoration(
-          color: active ? context.scheme.s3 : Colors.transparent,
-          borderRadius: BorderRadius.circular(7),
-        ),
-        child: Icon(icon, size: 12, color: active ? context.scheme.tx : context.scheme.t3),
+      });
+
+  Widget _viewToggleButton(IconData icon, String mode) {
+    final active = _issueViewMode == mode;
+    return Container(
+      width: 28,
+      height: 24,
+      decoration: BoxDecoration(
+        color: active ? context.scheme.s3 : Colors.transparent,
+        borderRadius: BorderRadius.circular(7),
       ),
+      child: Icon(icon, size: 12, color: active ? context.scheme.tx : context.scheme.t3),
     );
   }
+
+  /// The tappable half of the view toggle, full height of the 44pt box.
+  Widget _viewToggleHitArea(String mode) => Expanded(
+        child: Semantics(
+          button: true,
+          selected: _issueViewMode == mode,
+          label: mode == 'grid' ? 'Grid view' : 'List view',
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _setViewMode(mode),
+          ),
+        ),
+      );
 
   Widget _buildIssueSliver({
     required List<SeriesIssue> sortedIssues,

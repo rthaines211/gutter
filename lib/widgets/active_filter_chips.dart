@@ -166,6 +166,7 @@ class _FilterChip extends StatelessWidget {
                   onTap: onDismiss,
                   child: Icon(
                     Icons.close,
+                    semanticLabel: 'Remove filter',
                     size: 14,
                     color: accent,
                   ),

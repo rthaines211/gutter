@@ -95,7 +95,7 @@ class _ArcsScreenState extends ConsumerState<ArcsScreen> {
 
   Widget _header(int count) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 16),
+      padding: const EdgeInsets.fromLTRB(20, 0, 16, 12), // minus GlassButton's 4pt hit margin
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -118,6 +118,7 @@ class _ArcsScreenState extends ConsumerState<ArcsScreen> {
             ),
           ),
           GlassButton(
+            label: _searching ? 'Close search' : 'Search',
             onTap: () => setState(() {
               _searching = !_searching;
               if (!_searching) _query = '';
