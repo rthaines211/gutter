@@ -12,7 +12,6 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		650297EEC1E9ED34A44839C6 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1254A00034042D87EA7EFB74 /* Pods_Runner.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
-		A1B2C3D4E5F6A7B8C9D0E1F2 /* AIRecommendationBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */; };
 		B7E1D2C3A4F5061728394A5B /* PushBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7E1D2C3A4F5061728394A5C /* PushBridge.swift */; };
 		C0A1B2C3D4E5F60718293A01 /* PanelBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */; };
 		C0A1B2C3D4E5F60718293A03 /* PanelDetector.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */; };
@@ -63,7 +62,6 @@
 		C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelBridge.swift; sourceTree = "<group>"; };
 		C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = PanelDetector.mlpackage; sourceTree = "<group>"; };
 		B7E1D2C3A4F5061728394A5D /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
-		A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIRecommendationBridge.swift; sourceTree = "<group>"; };
 		7884E8672EC3CC0400C636F2 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
@@ -151,7 +149,6 @@
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
-				A1B2C3D4E5F6A7B8C9D0E1F3 /* AIRecommendationBridge.swift */,
 				B7E1D2C3A4F5061728394A5C /* PushBridge.swift */,
 				C0A1B2C3D4E5F60718293A02 /* PanelBridge.swift */,
 				C0A1B2C3D4E5F60718293A04 /* PanelDetector.mlpackage */,
@@ -398,7 +395,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				A1B2C3D4E5F6A7B8C9D0E1F2 /* AIRecommendationBridge.swift in Sources */,
 				B7E1D2C3A4F5061728394A5B /* PushBridge.swift in Sources */,
 				C0A1B2C3D4E5F60718293A01 /* PanelBridge.swift in Sources */,
 				C0A1B2C3D4E5F60718293A03 /* PanelDetector.mlpackage in Sources */,
