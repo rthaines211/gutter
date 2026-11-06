@@ -14,11 +14,18 @@ import 'download_provider.dart';
 import 'providers.dart';
 import 'source_provider.dart';
 
-/// Same type at the same (normalized) address: a login-only change, which
-/// keeps the source's id and everything on the device.
-bool sameServer(ServerSource a, ServerSource b) =>
-    a.type == b.type &&
-    normalizeServerUrl(a.baseUrl) == normalizeServerUrl(b.baseUrl);
+/// Same type at the same address: a login-only change, which keeps the
+/// source's id and everything on the device. The address is host (any case),
+/// explicit non-default port and path; the scheme doesn't count, so adding
+/// TLS to the same box keeps its downloads.
+bool sameServer(ServerSource a, ServerSource b) {
+  String key(String url) {
+    final u = Uri.parse(normalizeServerUrl(url));
+    return '${u.host.toLowerCase()}:${u.hasPort ? u.port : ''}${u.path}';
+  }
+
+  return a.type == b.type && key(a.baseUrl) == key(b.baseUrl);
+}
 
 typedef OutboxDrain = Future<void> Function(
     ServerSource source, SyncQueue queue);
@@ -117,8 +124,10 @@ class ServerActions {
     await _forget(s.id);
   }
 
-  /// The next active source is already selected, so the mirror provider has
-  /// closed this source's database before its file goes.
+  /// The next active source is already selected, so nothing reopens this
+  /// source's database. Its close (the mirror provider's dispose) may still be
+  /// pending when the file is unlinked; on iOS the open handle keeps the
+  /// inode alive until then, and the id is never reused.
   Future<void> _forget(String id) async {
     _ref.read(sourceListProvider.notifier).remove(id);
     try {

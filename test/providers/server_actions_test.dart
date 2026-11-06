@@ -85,6 +85,18 @@ void main() {
         isFalse);
   });
 
+  test('scheme, host case and default port are the same server; port or '
+      'path changes are not', () {
+    expect(sameServer(_komga, _probed('http://KOMGA.example.com')), isTrue);
+    expect(sameServer(_komga, _probed('https://komga.example.com:443')), isTrue);
+    expect(sameServer(_probed('http://nas:8080'), _probed('https://nas:8080')),
+        isTrue);
+    expect(sameServer(_komga, _probed('https://komga.example.com:8443')),
+        isFalse);
+    expect(sameServer(_komga, _probed('https://komga.example.com/other')),
+        isFalse);
+  });
+
   test('new address gets new id, is selected, old files deleted, '
       'isDefault carried', () async {
     final c = await _container([_komga]);

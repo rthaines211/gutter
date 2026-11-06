@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/cache_providers.dart';
+import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/providers/server_actions.dart';
@@ -35,7 +36,17 @@ const _two = ServerSource(
 
 late Directory docs;
 
-Future<ProviderContainer> _pump(WidgetTester t, List<ServerSource> sources) async {
+class _Connectivity extends ConnectivityNotifier {
+  _Connectivity(this.online);
+  final bool online;
+  @override
+  bool build() => online;
+}
+
+var drains = 0;
+
+Future<ProviderContainer> _pump(WidgetTester t, List<ServerSource> sources,
+    {bool online = true}) async {
   SharedPreferences.setMockInitialValues({
     'server_sources': jsonEncode(sources.map((s) => s.toJson()).toList()),
     'active_source_id': sources.first.id,
@@ -46,10 +57,12 @@ Future<ProviderContainer> _pump(WidgetTester t, List<ServerSource> sources) asyn
     sharedPrefsProvider.overrideWithValue(prefs),
     proStoreProvider.overrideWithValue(FakeProStore()),
     docsDirProvider.overrideWith((_) async => docs.path),
+    connectivityProvider.overrideWith(() => _Connectivity(online)),
   ]);
   addTearDown(c.dispose);
-  // Offline: the drain sends nothing.
-  c.read(serverActionsProvider).drain = (_, _) async {};
+  // The server rejects everything: the drain sends nothing.
+  drains = 0;
+  c.read(serverActionsProvider).drain = (_, _) async => drains++;
   await t.pumpWidget(UncontrolledProviderScope(
       container: c, child: const MaterialApp(home: ServersScreen())));
   await t.pump();
@@ -124,6 +137,18 @@ void main() {
     expect(s.id, isNot('one'));
     expect(s.baseUrl, '');
     expect(_queueFile('one').existsSync(), isFalse);
+  });
+
+  testWidgets('offline: no drain attempt, pending dialog at once', (t) async {
+    _queueFile('one')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(jsonEncode([
+        {'type': 'progress', 'payload': {}},
+      ]));
+    await _pump(t, [_one], online: false);
+    await _signOut(t, 'My Server');
+    expect(find.text('1 change not synced to My Server'), findsOneWidget);
+    expect(drains, 0);
   });
 
   testWidgets('tap switches the active server', (t) async {

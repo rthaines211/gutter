@@ -6,6 +6,7 @@ import '../config/app_theme.dart';
 import '../config/scheme.dart';
 import '../models/server_source.dart';
 import '../providers/accent_provider.dart';
+import '../providers/connectivity_provider.dart';
 import '../providers/server_actions.dart';
 import '../providers/source_provider.dart';
 import '../widgets/pro_sheet.dart';
@@ -141,8 +142,13 @@ Future<bool> confirmLeaveServer(
   );
   if (ok != true || !context.mounted) return false;
   final actions = ref.read(serverActionsProvider);
-  if (await actions.pendingCount(s) == 0) return true;
-  var left = await actions.flushOutbox(s);
+  final pending = await actions.pendingCount(s);
+  if (pending == 0) return true;
+  // Offline, a send would only sit out the HTTP timeout: ask at once.
+  // Try again always sends.
+  var left = ref.read(connectivityProvider)
+      ? await actions.flushOutbox(s)
+      : pending;
   while (left > 0) {
     if (!context.mounted) return false;
     final choice = await showDialog<String>(

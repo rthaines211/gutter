@@ -109,8 +109,11 @@ default source; `_editServerUrl` and `updateDefaultUrl` go away.
 - The personal-only Settings → API Key row stays as is (push key).
 - `ServersScreen` is reached only from Settings/More, so no reader is open
   while a source is forgotten; no extra guard.
-- Offline sign-out still tries the drain (fails fast) and then shows the
-  "N changes not synced" dialog; Try again works once back online.
+- Offline (`connectivityProvider` false) the leave flow skips the drain (it
+  would only sit out the HTTP timeout) and shows the "N changes not synced"
+  dialog at once; Try again always sends.
+- "Same address" = host (any case) + explicit non-default port + path; the
+  scheme is ignored, so `http://nas:8080` → `https://nas:8080` keeps data.
 
 ## Tests
 
