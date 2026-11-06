@@ -11,6 +11,7 @@ import '../config/scheme.dart';
 import '../services/sleep_timer.dart';
 import 'claude_panel.dart';
 import 'liquid_glass.dart';
+import 'reader_more_menu.dart' show MoreItem;
 
 /// Slim glass top bar: back, title + sub-line, moon, bookmark, Aa, more.
 ///
@@ -34,6 +35,9 @@ class ReaderTopBar extends ConsumerWidget {
   final VoidCallback onBookmark;
   final VoidCallback onSettings;
   final VoidCallback onMore;
+
+  /// When set, these replace the More button, one bar button each.
+  final List<MoreItem>? inlineMore;
   final VoidCallback? onTitleTap;
 
   /// Sleep-timer time left (null = off), re-read while mounted. The moon is
@@ -63,6 +67,7 @@ class ReaderTopBar extends ConsumerWidget {
     required this.onBookmark,
     required this.onSettings,
     required this.onMore,
+    this.inlineMore,
     this.onTitleTap,
     this.sleepRemaining,
     this.onSleepTimer,
@@ -191,16 +196,27 @@ class ReaderTopBar extends ConsumerWidget {
           ),
         ),
       ),
-      _ActionButton(
-        key: const Key('reader.more'),
-        label: 'More',
-        icon: Icons.more_horiz,
-        fill: isMoreOpen ? scheme.hairStrong : null,
-        onTap: () {
-          HapticFeedback.selectionClick();
-          onMore();
-        },
-      ),
+      if (inlineMore case final items?)
+        for (final (icon, label, onTap) in items)
+          _ActionButton(
+            label: label,
+            icon: icon,
+            onTap: () {
+              HapticFeedback.selectionClick();
+              onTap();
+            },
+          )
+      else
+        _ActionButton(
+          key: const Key('reader.more'),
+          label: 'More',
+          icon: Icons.more_horiz,
+          fill: isMoreOpen ? scheme.hairStrong : null,
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onMore();
+          },
+        ),
       if (rail && onClaude != null)
         Opacity(
           opacity: claudeMode == ClaudePanelMode.ghost ? 0.5 : 1,

@@ -157,6 +157,26 @@ void main() {
       expect(find.byType(ShimmerBox), findsWidgets);
     });
 
+    testWidgets('without onOpen no name is tappable', (t) async {
+      await t.pumpWidget(ProviderScope(
+        overrides: [
+          issueCreditsProvider('c1').overrideWith((ref) async =>
+              const [Creator(name: 'Tom King', role: 'writer')]),
+        ],
+        child: const MaterialApp(
+          home: Scaffold(
+            body: IssueCreditsSheet(comicId: 'c1', info: null, title: 'x'),
+          ),
+        ),
+      ));
+      await t.pump();
+      expect(find.text('Tom King'), findsOneWidget);
+      expect(
+          t.widget<InkWell>(find.ancestor(
+              of: find.text('Tom King'), matching: find.byType(InkWell))).onTap,
+          isNull);
+    });
+
     testWidgets('server credits list each role; writer is tappable, letterer is not',
         (t) async {
       await _openSheet(
