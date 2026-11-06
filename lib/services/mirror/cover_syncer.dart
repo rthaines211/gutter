@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
 import 'mirror_database.dart';
+import 'sync_progress.dart';
 
 /// Downloads cover thumbnails for mirrored series into permanent storage
 /// (`<coversDir>/<seriesId>.jpg`). Sequential and best-effort: failures are
@@ -17,7 +18,11 @@ class CoverSyncer {
   final http.Client httpClient;
   final Map<String, String> headers;
 
+  /// Covers-done reporting for the sync UI.
+  final SyncProgressUpdate? onProgress;
+
   CoverSyncer({
+    this.onProgress,
     required this.db,
     required this.baseUrl,
     required this.coversDir,
@@ -39,6 +44,21 @@ class CoverSyncer {
 
   Future<void> _sweep() async {
     final rows = await db.listSeriesNeedingCovers();
+    if (rows.isEmpty) return;
+    // Never stomp the stage of an engine sync that started meanwhile.
+    onProgress?.call((p) => p.next(
+        stage: p.running ? null : SyncStage.covers,
+        coversDone: 0,
+        coversTotal: rows.length));
+    try {
+      await _download(rows);
+    } finally {
+      onProgress?.call((p) =>
+          p.stage == SyncStage.covers ? p.next(stage: SyncStage.done) : p);
+    }
+  }
+
+  Future<void> _download(List<SeriesRow> rows) async {
     for (final row in rows) {
       try {
         final payload = jsonDecode(row.payload) as Map<String, dynamic>;
@@ -59,6 +79,7 @@ class CoverSyncer {
         await tmp.writeAsBytes(resp.bodyBytes, flush: true);
         await tmp.rename(path);
         await db.markCoverSynced(row.id, row.updatedAt);
+        onProgress?.call((p) => p.next(coversDone: p.coversDone + 1));
       } catch (_) {
         // Network error or malformed payload — skip row, retry on next sync trigger.
       }

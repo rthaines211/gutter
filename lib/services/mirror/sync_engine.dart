@@ -4,6 +4,7 @@ import '../api_client.dart';
 import '../sync_queue.dart';
 import '../sync_queue_drainer.dart';
 import 'mirror_database.dart';
+import 'sync_progress.dart';
 
 /// Push-then-pull sync: flush the outbox queue so the server has our writes,
 /// then pull the delta and apply it. Progress entries still queued after the
@@ -26,12 +27,18 @@ class SyncEngine {
   bool _forceFollowUp = false;
   DateTime? _lastPull;
 
+  /// Progress for the sync UI; reporting only, never changes the sync.
+  final SyncProgressUpdate? onProgress;
+
   SyncEngine({
     required this.db,
     required this.client,
     required this.queue,
     this.minPullInterval = Duration.zero,
+    this.onProgress,
   });
+
+  void _report(SyncProgress Function(SyncProgress) f) => onProgress?.call(f);
 
   /// Public for tests only.
   Future<void>? get inFlightForTesting => _inFlight;
@@ -57,6 +64,17 @@ class SyncEngine {
   }
 
   Future<void> _sync(bool force) async {
+    _report((_) => SyncProgress.start());
+    try {
+      await _pushThenPull(force);
+      _report((p) => p.next(stage: SyncStage.done));
+    } catch (e) {
+      _report((p) => p.next(stage: SyncStage.failed, error: e));
+      rethrow;
+    }
+  }
+
+  Future<void> _pushThenPull(bool force) async {
     await SyncQueueDrainer(queue: queue, client: client).drain();
     final last = _lastPull;
     if (!force &&
@@ -92,13 +110,21 @@ class SyncEngine {
 
     final since =
         int.tryParse(await db.getSyncState('last_server_time') ?? '') ?? 0;
-    final resp = await client.fetchSync(since: since);
+    _report((p) => p.next(stage: SyncStage.fetching, initial: since == 0));
+    final resp = await client.fetchSync(
+        since: since,
+        onSeries: (done, total) =>
+            _report((p) => p.next(seriesDone: done, seriesTotal: total)));
+    _report((p) => p.next(
+        stage: SyncStage.applying,
+        seriesTotal: p.seriesTotal ?? resp.series.length));
     await db.applySync(resp,
         protectedComicIds: pending,
         protectedQueueIds: pendingQueues,
         protectedSeriesIds: pendingSeries);
     await db.setSyncState('last_server_time', resp.serverTime.toString());
     _lastPull = DateTime.now();
+    _report((p) => p.next(seriesDone: p.seriesTotal));
 
     await _healMissingSeries(resp.seriesIds);
   }

@@ -66,14 +66,17 @@ class KavitaClient extends ApiClient with LocalReaderData {
   // time); skip series whose lastChapterAddedUtc/latestReadDate predate
   // `since` if big libraries get slow.
   @override
-  Future<SyncResponse> fetchSync({required int since}) async {
+  Future<SyncResponse> fetchSync(
+      {required int since, void Function(int done, int total)? onSeries}) async {
     final series = ((await requestJson('POST', '/api/Series/all-v2',
             body: {}, timeout: const Duration(minutes: 4))) as List<dynamic>)
         .cast<Map<String, dynamic>>();
     final volumes = <Object?, List<Map<String, dynamic>>>{};
+    onSeries?.call(0, series.length);
     for (var i = 0; i < series.length; i += 6) {
       await Future.wait(series.skip(i).take(6).map((s) async {
         volumes[s['id']] = await _volumes(s);
+        onSeries?.call(volumes.length, series.length);
       }));
     }
     final progress = [

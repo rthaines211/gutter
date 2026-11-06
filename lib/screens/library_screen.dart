@@ -39,6 +39,7 @@ import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/scan_status_provider.dart';
 import '../widgets/scan_banner.dart';
+import '../widgets/sync_progress_view.dart';
 import '../widgets/creator_search_rows.dart';
 
 class LibraryScreen extends ConsumerStatefulWidget {
@@ -440,6 +441,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 loading: () => const SizedBox.shrink(),
                 error: (_, _) => const SizedBox.shrink(),
               ),
+              if (libraryAsync.value?.isNotEmpty ?? false) ...[
+                const SizedBox(width: 10),
+                const Flexible(child: SyncIndicator()),
+              ],
               const Spacer(),
               const LibraryModePill(),
               const SizedBox(width: 8),
@@ -471,6 +476,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
             ],
           ),
         ),
+
+        if (libraryAsync.value?.isNotEmpty ?? false)
+          const Padding(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: SyncIndicator.strip(),
+          ),
 
         // Search bar — always visible
         Padding(
@@ -578,6 +589,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               if (FirstScanProgress.shows(scan)) {
                 return SliverFillRemaining(child: FirstScanProgress(scan: scan));
               }
+            }
+            if (unfiltered &&
+                FirstSyncCard.shows(ref.watch(syncProgressProvider))) {
+              return const SliverFillRemaining(child: FirstSyncCard());
             }
             return SliverFillRemaining(
               child: Center(
