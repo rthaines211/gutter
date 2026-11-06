@@ -5,7 +5,7 @@ import 'liquid_glass.dart';
 /// The reader's "…" menu. Shown as a route (the reader anchors it under the
 /// button); each item pops the menu, then runs its action.
 class ReaderMoreMenu extends StatelessWidget {
-  final VoidCallback onChapters;
+  final VoidCallback? onChapters;
   final VoidCallback onAllPages;
 
   /// Null hides the item (no series to recap).
@@ -29,7 +29,7 @@ class ReaderMoreMenu extends StatelessWidget {
 
   const ReaderMoreMenu({
     super.key,
-    required this.onChapters,
+    this.onChapters,
     required this.onAllPages,
     this.onRecap,
     this.onClipPanel,
@@ -43,7 +43,7 @@ class ReaderMoreMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <(IconData, String, VoidCallback)>[
-      (Icons.toc, 'Chapters', onChapters),
+      if (onChapters case final chapters?) (Icons.toc, 'Chapters', chapters),
       (Icons.grid_view, 'All pages', onAllPages),
       if (onRecap case final recap?) (Icons.history, 'Recap so far', recap),
       if (onClipPanel case final clip?) (Icons.crop, 'Clip a panel', clip),
