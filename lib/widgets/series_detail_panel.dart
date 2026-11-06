@@ -1,5 +1,6 @@
 // lib/widgets/series_detail_panel.dart
 import 'dart:async';
+import 'pro_sheet.dart';
 import '../config/source_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -565,6 +566,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
   }
 
   Future<void> _downloadSeries(SeriesDetail detail) async {
+    if (!requirePro(context, ref, reason: 'Downloads are part of Pro.')) return;
     HapticFeedback.mediumImpact();
     final source = ref.read(activeSourceProvider);
     final manager = ref.read(downloadManagerProvider);

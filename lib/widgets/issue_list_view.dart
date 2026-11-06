@@ -1,5 +1,6 @@
 // lib/widgets/issue_list_view.dart
 import 'package:flutter/material.dart';
+import 'pro_sheet.dart';
 import '../config/source_urls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -207,6 +208,10 @@ class IssueListRow extends ConsumerWidget {
               comicId: issue.id,
               sourceId: ref.read(activeSourceProvider).id,
               onTap: () {
+                if (!requirePro(context, ref,
+                    reason: 'Downloads are part of Pro.')) {
+                  return;
+                }
                 final source = ref.read(activeSourceProvider);
                 ref.read(downloadManagerProvider)?.enqueue(
                   comicId: issue.id,

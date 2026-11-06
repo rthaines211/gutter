@@ -1,4 +1,5 @@
 import 'package:clock/clock.dart';
+import '../providers/pro_provider.dart';
 import '../config/source_urls.dart';
 import 'dart:async';
 import 'dart:io';
@@ -713,7 +714,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     return calculatePageTransforms(
       containRect: containRect,
       viewportSize: viewport,
-      isSpread: isSpread(imageWidth, imageHeight),
+      // Spread zoom steps are Pro; without it a spread shows whole.
+      isSpread: ref.read(proProvider) && isSpread(imageWidth, imageHeight),
       isPortrait: viewport.height > viewport.width,
       isRtl: settings.readingDirection == 'rtl',
       fitMode: settings.pageFit,

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../providers/pro_provider.dart';
+import '../widgets/pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
@@ -335,6 +337,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                         ],
                       ),
+                    ),
+                    if (isStore) _NavRow(
+                      label: 'Gutter Pro',
+                      value: ref.watch(proProvider) ? 'Unlocked' : null,
+                      onTap: () => showProSheet(context),
                     ),
                     _NavRow(
                       label: 'Privacy',

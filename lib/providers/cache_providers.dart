@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/local_session_store.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import '../services/cache_layer.dart';
@@ -25,6 +26,14 @@ final syncQueueProvider = Provider<SyncQueue?>((ref) {
   final source = ref.watch(activeSourceProvider);
   return SyncQueue(
       queuePath: p.join(docsDir, 'cache', source.id, 'sync_queue.json'));
+});
+
+/// The active source's on-device reading sessions (used by Komga sources).
+final localSessionStoreProvider = Provider<LocalSessionStore?>((ref) {
+  final docsDir = ref.watch(docsDirProvider).value;
+  if (docsDir == null) return null;
+  final source = ref.watch(activeSourceProvider);
+  return LocalSessionStore(p.join(docsDir, 'cache', source.id, 'sessions.json'));
 });
 
 final cachedApiProvider = Provider<CachedApi?>((ref) {

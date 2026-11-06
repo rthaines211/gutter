@@ -3,9 +3,13 @@ import '../models/bookmark.dart';
 import '../models/chapter.dart';
 import '../models/reader_settings.dart';
 import '../models/reading_queue.dart';
+import '../models/reading_session.dart';
+import '../models/stats_summary.dart';
 import '../models/series.dart';
 import '../models/sync_response.dart';
 import 'api_client.dart';
+import 'local_session_store.dart';
+import 'local_stats.dart';
 
 /// A Komga server behind the [ApiClient] surface the mirror, reader and
 /// progress sync use. Everything else the app calls is Gutter-server only
@@ -17,7 +21,12 @@ class KomgaClient extends ApiClient {
     super.httpClient,
     super.onRequestOutcome,
     super.authHeaders,
+    this.sessions,
   });
+
+  /// Where reading sessions go (Komga has no session API); stats come
+  /// from here.
+  final LocalSessionStore? sessions;
 
   static String _enc(String id) => Uri.encodeComponent(id);
 
@@ -169,7 +178,28 @@ class KomgaClient extends ApiClient {
     required DateTime startedAt,
     required int pagesRead,
     required int durationS,
-  }) async {}
+  }) async {
+    await sessions?.append(LocalSession(
+      comicId: comicId,
+      seriesId: seriesId,
+      startedAt: startedAt,
+      pagesRead: pagesRead,
+      durationS: durationS,
+    ));
+  }
+
+  /// Without series names; the Stats screen adds them from the mirror.
+  @override
+  Future<StatsSummary> fetchStatsSummary() async =>
+      computeLocalStats(await sessions?.all() ?? const [], const {}, DateTime.now());
+
+  @override
+  Future<({List<ReadingSession> sessions, int total})> fetchStatsHistory({
+    int page = 1,
+    int limit = 20,
+  }) async =>
+      localHistory(await sessions?.all() ?? const [], const {},
+          page: page, limit: limit);
 
   @override
   Future<void> putQueue(ReadingQueue queue) async {}
