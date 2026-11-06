@@ -1,4 +1,5 @@
 // lib/widgets/issue_grid_view.dart
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import '../providers/source_provider.dart';
 import '../config/source_urls.dart';
@@ -68,6 +69,7 @@ class IssueGridTile extends ConsumerWidget {
                       radius: AppTheme.r12,
                       child: CachedNetworkImage(
                         imageUrl: coverUrl,
+                        httpHeaders: imageHeadersOf(context, coverUrl),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s1),
                         errorWidget: (_, _, _) => Container(

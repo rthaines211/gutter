@@ -1,4 +1,5 @@
 // lib/widgets/series_stat_tiles.dart
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -82,7 +83,7 @@ class NextUpCard extends ConsumerWidget {
                         comicId: issue.id,
                         imageUrl: coverImageUrl!,
                         radius: AppTheme.r8,
-                        child: CachedNetworkImage(imageUrl: coverImageUrl!, fit: BoxFit.cover),
+                        child: CachedNetworkImage(imageUrl: coverImageUrl!, httpHeaders: imageHeadersOf(context, coverImageUrl!), fit: BoxFit.cover),
                       )
                     : Container(color: context.scheme.s2),
               ),

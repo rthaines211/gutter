@@ -1,4 +1,5 @@
 // lib/widgets/volume_info_sheet.dart
+import '../providers/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -113,6 +114,7 @@ class _InfoBody extends StatelessWidget {
                   ? Container(width: 96, height: 146, color: context.scheme.s2)
                   : CachedNetworkImage(
                       imageUrl: info.coverUrl,
+                      httpHeaders: imageHeadersOf(context, info.coverUrl),
                       width: 96,
                       height: 146,
                       fit: BoxFit.cover,

@@ -555,6 +555,7 @@ class _Cover extends StatelessWidget {
         ? placeholder
         : CachedNetworkImage(
             imageUrl: networkUrl,
+            httpHeaders: imageHeadersOf(context, networkUrl),
             fit: BoxFit.cover,
             placeholder: (_, _) => placeholder,
             errorWidget: (_, _, _) => placeholder,

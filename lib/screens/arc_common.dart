@@ -62,9 +62,10 @@ class ArcCover extends ConsumerWidget {
     this.placeholderIcon = Icons.account_tree_rounded,
   });
 
-  Widget _image(String resolved, Widget placeholder) {
+  Widget _image(BuildContext context, String resolved, Widget placeholder) {
     final image = CachedNetworkImage(
       imageUrl: resolved,
+      httpHeaders: imageHeadersOf(context, resolved),
       width: width,
       height: height,
       fit: BoxFit.cover,
@@ -89,7 +90,7 @@ class ArcCover extends ConsumerWidget {
     );
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius),
-      child: url.isEmpty ? placeholder : _image(resolved, placeholder),
+      child: url.isEmpty ? placeholder : _image(context, resolved, placeholder),
     );
   }
 }

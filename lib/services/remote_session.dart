@@ -82,6 +82,7 @@ class RemoteSnapshot {
 /// which is all SSE needs. No new dependency, no WebSocket upgrade.
 class RemoteSession {
   final String baseUrl;
+  final Map<String, String> authHeaders;
   final http.Client _client;
   final Future<void> Function(Duration) _sleep;
 
@@ -105,6 +106,7 @@ class RemoteSession {
   /// records durations without actually waiting. Defaults to a real delay.
   RemoteSession({
     required this.baseUrl,
+    this.authHeaders = const {},
     http.Client? httpClient,
     Future<void> Function(Duration)? sleep,
     Duration idleTimeout = const Duration(seconds: 35),
@@ -159,7 +161,9 @@ class RemoteSession {
           final req = http.Request(
             'GET',
             Uri.parse('$baseUrl/remote/events?role=$role'),
-          )..headers['Accept'] = 'text/event-stream';
+          )
+            ..headers.addAll(authHeaders)
+            ..headers['Accept'] = 'text/event-stream';
           final resp = await _client.send(req);
           if (resp.statusCode != 200) {
             // Drain, or the socket is held open by an unread body and the
@@ -243,7 +247,7 @@ class RemoteSession {
     try {
       final resp = await _client.post(
         Uri.parse('$baseUrl/remote/command'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', ...authHeaders},
         body: jsonEncode({'type': type, 'page': page ?? 0}),
       );
       return resp.statusCode == 204;
@@ -272,7 +276,7 @@ class RemoteSession {
     try {
       await _client.post(
         Uri.parse('$baseUrl/remote/state'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {'Content-Type': 'application/json', ...authHeaders},
         body: body,
       );
     } catch (_) {}

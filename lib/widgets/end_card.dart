@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import '../providers/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
@@ -201,6 +202,7 @@ class _EndCardState extends State<EndCard> with SingleTickerProviderStateMixin {
                     scale: 1.3,
                     child: CachedNetworkImage(
                       imageUrl: widget.currentCoverUrl,
+                      httpHeaders: imageHeadersOf(context, widget.currentCoverUrl),
                       fit: BoxFit.cover,
                       placeholder: (_, _) => const SizedBox.shrink(),
                       errorWidget: (_, _, _) => const SizedBox.shrink(),
@@ -543,6 +545,7 @@ class _EndCardState extends State<EndCard> with SingleTickerProviderStateMixin {
           ? ColoredBox(color: context.scheme.s3)
           : CachedNetworkImage(
               imageUrl: url,
+              httpHeaders: imageHeadersOf(context, url),
               fit: BoxFit.cover,
               placeholder: (_, _) => ColoredBox(color: context.scheme.s2),
               errorWidget: (_, _, _) => ColoredBox(color: context.scheme.s3),

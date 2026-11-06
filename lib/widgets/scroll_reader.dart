@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:path/path.dart' as p;
@@ -158,6 +159,7 @@ class _ScrollReaderState extends State<ScrollReader> {
                 ? _buildLocalImage(index)
                 : CachedNetworkImage(
                     imageUrl: widget.pageUrlBuilder(index),
+                    httpHeaders: imageHeadersOf(context, widget.pageUrlBuilder(index)),
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                     placeholder: (_, _) => AspectRatio(

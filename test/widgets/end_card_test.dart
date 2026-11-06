@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:comic_reader_app/models/server_source.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/models/series.dart';
 import 'package:comic_reader_app/widgets/end_card.dart';
@@ -17,7 +20,7 @@ void main() {
   group('EndCard', () {
     testWidgets('offline: says the next issue is missing and offers the next one on the iPad',
         (tester) async {
-      Widget card(SeriesIssue? next) => MaterialApp(
+      Widget card(SeriesIssue? next) => noImgAuth(MaterialApp(
             home: Scaffold(
               body: EndCard(
                 currentIssueTitle: 'Batman 003',
@@ -32,7 +35,7 @@ void main() {
                 onClose: () {},
               ),
             ),
-          );
+          ));
 
       await tester.pumpWidget(card(_next()));
       expect(find.textContaining("#4 isn't on this iPad"), findsOneWidget);
@@ -50,7 +53,7 @@ void main() {
       var closeTaps = 0;
 
       await tester.pumpWidget(
-        MaterialApp(
+        noImgAuth(MaterialApp(
           home: Scaffold(
             body: EndCard(
               currentIssueTitle: 'Batman 003',
@@ -64,7 +67,7 @@ void main() {
               onClose: () => closeTaps++,
             ),
           ),
-        ),
+        )),
       );
 
       expect(find.text('Batman 003'), findsOneWidget);
@@ -85,7 +88,7 @@ void main() {
 
     testWidgets('shows "caught up" badge and hides Next when nextIssue is null', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        noImgAuth(MaterialApp(
           home: Scaffold(
             body: EndCard(
               currentIssueTitle: 'Final Issue',
@@ -99,7 +102,7 @@ void main() {
               onClose: () {},
             ),
           ),
-        ),
+        )),
       );
 
       expect(find.textContaining("caught up"), findsOneWidget);
@@ -109,3 +112,10 @@ void main() {
     });
   });
 }
+
+
+/// Cover images ask for auth headers; these tests have no source.
+Widget noImgAuth(Widget child) => ProviderScope(
+      overrides: [activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: ''))],
+      child: child,
+    );
