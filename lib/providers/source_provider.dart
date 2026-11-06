@@ -154,14 +154,6 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
     _persist(state);
   }
 
-  void updateDefaultUrl(String url) {
-    state = [
-      for (final s in state)
-        if (s.isDefault) s.copyWith(baseUrl: url) else s,
-    ];
-    _persist(state);
-  }
-
   /// Sets (or, when empty, clears) the default server's API key. The server
   /// requires it to register this device for push notifications.
   void updateDefaultApiKey(String key) {

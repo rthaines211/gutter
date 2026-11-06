@@ -9,12 +9,14 @@ import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/download_provider.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import '../widgets/privacy_sheet.dart';
 import 'arcs_screen.dart';
 import 'downloads_screen.dart';
 import 'queues_screen.dart';
 import 'remote_screen.dart';
 import 'stats_screen.dart';
+import 'servers_screen.dart';
 import 'settings_screen.dart';
 
 class MoreScreen extends ConsumerStatefulWidget {
@@ -93,7 +95,14 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: _StatusTile(
+                    // Signed out: the fix is a new login, on the Servers
+                    // screen.
+                    child: GestureDetector(
+                      onTap: signedOut
+                          ? () => _push(
+                              context, const ServersScreen(), '/servers')
+                          : null,
+                      child: _StatusTile(
                       label: 'Server',
                       value: _status == null
                           ? '...'
@@ -108,6 +117,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                           : Icons.public_rounded,
                       color: serverUp ? AppTheme.green : context.scheme.t3,
                       pulse: serverUp,
+                    ),
                     ),
                   ),
                 ],
@@ -149,9 +159,9 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                 _MoreRow(
                   icon: Icons.public_rounded,
                   iconColor: AppTheme.green,
-                  label: 'Sources',
-                  value: '1 connected',
-                  onTap: () => _push(context, const SettingsScreen(), '/settings'),
+                  label: 'Servers',
+                  value: '${ref.watch(sourceListProvider).length}',
+                  onTap: () => _push(context, const ServersScreen(), '/servers'),
                 ),
               ],
             ),
