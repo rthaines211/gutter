@@ -37,7 +37,7 @@ store_flavor = $(call write_flavor,$(STORE_BUNDLE_ID),Gutter,Runner/Store.entitl
 ## the certificate being reissued under a new name.
 CODESIGN_IDENTITY = $(shell security find-identity -v -p codesigning | \
 	awk -F'"' 'NR==1 {print $$2}')
-KEYCHAIN = $(HOME)/Library/Keychains/login.keychain-db
+KEYCHAIN ?= $(HOME)/Library/Keychains/login.keychain-db
 
 ## Unlock the login keychain and grant codesign access to the signing key.
 ## Prompts once for the login password; it is read into a variable rather than
@@ -47,9 +47,14 @@ KEYCHAIN = $(HOME)/Library/Keychains/login.keychain-db
 ## fails with errSecInternalComponent unless the key's partition list names it
 ## explicitly. -D targets one certificate: without it the ACL update lands on
 ## whichever keys happen to match and the build still fails.
+##
+## With BUILD_KEYCHAIN_PASS in Makefile.local (scripts/setup-build-keychain.sh),
+## KEYCHAIN is a signing-only keychain and is unlocked with no prompt.
 unlock:
 	@if security show-keychain-info $(KEYCHAIN) >/dev/null 2>&1; then \
 		echo "Keychain already unlocked."; exit 0; fi; \
+	if [ -n "$(BUILD_KEYCHAIN_PASS)" ]; then \
+		security unlock-keychain -p "$(BUILD_KEYCHAIN_PASS)" $(KEYCHAIN) && echo "Build keychain unlocked."; exit $$?; fi; \
 	test -n "$(CODESIGN_IDENTITY)" || \
 		{ echo "No codesigning identity found. Check: security find-identity -v -p codesigning"; exit 1; }; \
 	read -r -s -p "Login password for the keychain: " pw; echo; \
