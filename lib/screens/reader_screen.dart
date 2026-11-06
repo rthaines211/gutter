@@ -1,6 +1,5 @@
 import 'package:clock/clock.dart';
 import '../providers/pro_provider.dart';
-import '../config/source_urls.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -1504,7 +1503,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final currentSeries = _seriesName ?? info?.series ?? '';
     final source = ref.read(activeSourceProvider);
     final baseUrl = source.baseUrl;
-    final currentCover = source.comicCover(state.comicId);
+    final currentCover = ref.read(issueCoverUrlProvider(state.comicId));
 
     // Server returns relative cover URLs (e.g. "/comics/<id>/cover"); resolve
     // against the active source baseUrl so CachedNetworkImage can fetch it.

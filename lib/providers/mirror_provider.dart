@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../config/source_urls.dart';
 import '../models/server_source.dart';
 import '../services/source_auth_client.dart';
 import 'package:path/path.dart' as p;
@@ -82,4 +83,22 @@ final coverSyncerProvider = Provider<CoverSyncer?>((ref) {
 /// and home shelves.
 final mirrorLibraryProvider = StreamProvider<List<MirrorSeries>>((ref) {
   return ref.watch(mirrorDbProvider).watchLibrary();
+});
+
+/// Synced cover path per issue id ([MirrorDatabase.watchIssueCoverPaths]);
+/// empty for sources without a mirror (OPDS).
+final issueCoverPathsProvider = StreamProvider<Map<String, String>>((ref) {
+  if (!ref.watch(hasMirrorProvider)) return Stream.value(const {});
+  return ref.watch(mirrorDbProvider).watchIssueCoverPaths();
+});
+
+/// An issue's cover URL. Uses the synced, versioned path when the mirror has
+/// one, so a cover the server changed is fetched again instead of served from
+/// the image cache; otherwise builds it from the id. Every issue cover goes
+/// through here.
+final issueCoverUrlProvider = Provider.family<String, String>((ref, comicId) {
+  final source = ref.watch(activeSourceProvider);
+  final path = ref.watch(issueCoverPathsProvider).value?[comicId];
+  if (path == null || path.isEmpty) return source.comicCover(comicId);
+  return path.startsWith('http') ? path : '${source.baseUrl}$path';
 });

@@ -662,6 +662,16 @@ class MirrorDatabase extends _$MirrorDatabase {
     });
   }
 
+  /// Issue id → its synced cover path. Komga/Kavita paths carry the file's
+  /// version, so a changed cover gets a new URL (and image-cache entry).
+  Stream<Map<String, String>> watchIssueCoverPaths() => customSelect(
+        "SELECT id, json_extract(payload, '\$.cover_url') AS cover_url "
+        "FROM issue_rows WHERE json_extract(payload, '\$.cover_url') IS NOT NULL",
+        readsFrom: {issueRows},
+      ).watch().map((rows) => {
+            for (final r in rows) r.read<String>('id'): r.read<String>('cover_url'),
+          });
+
   /// In-progress comics, newest first — the "Continue Reading" shelf.
   Stream<List<ReadingProgress>> watchReadingList() {
     final query = customSelect('''

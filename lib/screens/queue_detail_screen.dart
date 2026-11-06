@@ -59,8 +59,13 @@ class QueueDetailScreen extends ConsumerWidget {
                     .map((m) => m.series)
                     .firstOrNull;
                 final name = series?.name ?? seriesId;
-                final coverUrl =
-                    ref.watch(activeSourceProvider).seriesCover(seriesId);
+                // The synced (versioned) cover when the series is mirrored.
+                final source = ref.watch(activeSourceProvider);
+                final coverUrl = (series?.coverUrl.isNotEmpty ?? false)
+                    ? (series!.coverUrl.startsWith('http')
+                        ? series.coverUrl
+                        : '${source.baseUrl}${series.coverUrl}')
+                    : source.seriesCover(seriesId);
                 return Dismissible(
                   key: ValueKey(seriesId),
                   direction: DismissDirection.endToStart,
