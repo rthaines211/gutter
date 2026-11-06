@@ -191,12 +191,12 @@ class SeriesDetailHeader extends ConsumerWidget {
 
   Widget _buildTopActions(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      padding: const EdgeInsets.fromLTRB(12, 4, 12, 0), // 16/8 minus GlassButton's 4pt hit margin
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (isPanel)
-            const SizedBox(width: 36)
+            const SizedBox(width: GlassButton.minTapSize)
           else
             GlassButton(
               label: 'Back',
@@ -221,7 +221,6 @@ class SeriesDetailHeader extends ConsumerWidget {
                     onTap: onMore,
                     child: Icon(Icons.more_horiz, size: 16, color: context.scheme.tx),
                   ),
-                  const SizedBox(width: 8),
                 ],
                 GlassButton(
                   label: 'Close',
