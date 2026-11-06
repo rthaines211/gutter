@@ -43,6 +43,13 @@ Each gets its own plan; all three must land before submission.
 
 1. **Store app**: build flavors, Komga adapter, onboarding, StoreKit Pro,
    local stats and settings, App Review package.
+   - **To do before submission: manage servers in the app.** Today the
+     only way to sign in is first-launch onboarding; after that, Settings
+     → Server URL changes the address but not the type or login, and
+     fixing a wrong login means deleting the app. Free: change or replace
+     the one server (type, address, login) through the onboarding form,
+     and sign out. Pro: add more servers and switch between them (the
+     source switcher's Add Server, already gated).
 2. **On-device panels**: replace the Ultralytics model with a
    permissively licensed one, run it on-device, and feed the existing
    panel-step pipeline (`lib/services/panel_steps.dart`).
