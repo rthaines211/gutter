@@ -1,6 +1,6 @@
 Gutter is a comic reader for people who run their own comic server. It has no content of its own and no accounts with us. On first launch it asks for the address of the user's server and their login.
 
-Demo server (public-domain comics, read-only reviewer account):
+Demo server (public-domain and CC BY comics, read-only reviewer account):
 - Server type: Komga (selected by default)
 - Address: TODO_DEMO_SERVER_URL
 - Username: TODO_DEMO_USERNAME
