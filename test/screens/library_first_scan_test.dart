@@ -9,6 +9,8 @@ import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/screens/library_screen.dart';
 import 'package:comic_reader_app/services/api_client.dart';
 import 'package:comic_reader_app/services/mirror/sync_engine.dart';
+import 'package:comic_reader_app/services/mirror/sync_progress.dart';
+import 'package:comic_reader_app/widgets/sync_progress_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,7 +63,38 @@ Future<void> _pump(WidgetTester t, _FakeApi api, SyncEngine sync) async {
   await t.pump(const Duration(milliseconds: 100));
 }
 
+class _Syncing extends SyncProgressNotifier {
+  @override
+  SyncProgress build() => SyncProgress.start().next(stage: SyncStage.fetching, initial: true);
+}
+
 void main() {
+  testWidgets('a first sync shows its card even before the library loads',
+      (t) async {
+    t.view.physicalSize = const Size(600, 900); // phone (390 overflows with the test font)
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.reset);
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final never = StreamController<List<Series>>();
+    addTearDown(never.close);
+    await t.pumpWidget(ProviderScope(
+      overrides: [
+        sharedPrefsProvider.overrideWithValue(prefs),
+        connectivityProvider.overrideWith(_Online.new),
+        isCustomSourceProvider.overrideWithValue(false),
+        syncEngineProvider.overrideWithValue(_FakeSync()),
+        coverSyncerProvider.overrideWithValue(null),
+        syncProgressProvider.overrideWith(_Syncing.new),
+        libraryProvider.overrideWith((ref) => never.stream), // still loading
+      ],
+      child: const MaterialApp(home: LibraryScreen()),
+    ));
+    await t.pump();
+    expect(find.byType(FirstSyncCard), findsOneWidget);
+    await t.pumpWidget(const SizedBox());
+  });
+
   testWidgets('empty library while scanning shows progress', (t) async {
     final api = _FakeApi()
       ..status = const ScanStatus(isScanning: true, scanned: 120, total: 583);
