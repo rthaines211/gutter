@@ -216,14 +216,24 @@ class MirrorDatabase extends _$MirrorDatabase {
       for (final p in resp.progress) {
         final comicId = p['comic_id'] as String;
         if (protectedComicIds.contains(comicId)) continue;
-        await into(progressRows).insertOnConflictUpdate(
+        // No `chapters` key (Komga keeps none) means "leave ours alone".
+        final chapters = p.containsKey('chapters')
+            ? Value(jsonEncode(p['chapters'] ?? []))
+            : const Value<String>.absent();
+        await into(progressRows).insert(
           ProgressRowsCompanion.insert(
             comicId: comicId,
             currentPage: p['current_page'] as int? ?? 0,
             totalPages: p['total_pages'] as int? ?? 0,
             updatedAt: p['updated_at'] as String? ?? '',
-            chapters: Value(jsonEncode(p['chapters'] ?? [])),
+            chapters: chapters.present ? chapters : const Value('[]'),
           ),
+          onConflict: DoUpdate((_) => ProgressRowsCompanion(
+                currentPage: Value(p['current_page'] as int? ?? 0),
+                totalPages: Value(p['total_pages'] as int? ?? 0),
+                updatedAt: Value(p['updated_at'] as String? ?? ''),
+                chapters: chapters,
+              )),
         );
       }
 
@@ -319,6 +329,9 @@ class MirrorDatabase extends _$MirrorDatabase {
                 t.comicId.isNotIn(protectedComicIds.toList())))
           .go();
 
+      // Komga has no queues or arcs: its empty id lists mean "none of
+      // mine", not "delete yours".
+      if (!resp.serverHasQueues) return;
       final keepQueueIds = [...resp.queueIds, ...protectedQueueIds];
       await (delete(queueRows)..where((t) => t.id.isNotIn(keepQueueIds))).go();
       await (delete(queueItemRows)
@@ -329,6 +342,13 @@ class MirrorDatabase extends _$MirrorDatabase {
       await (delete(arcItemRows)..where((t) => t.arcId.isNotIn(resp.arcIds)))
           .go();
     });
+  }
+
+  /// The series a mirrored issue belongs to, or null if it isn't mirrored.
+  Future<String?> seriesIdForComic(String comicId) async {
+    final row = await (select(issueRows)..where((t) => t.id.equals(comicId)))
+        .getSingleOrNull();
+    return row?.seriesId;
   }
 
   /// Inserts/updates one series row (+ its issue rows) from a raw server map
@@ -620,7 +640,8 @@ class MirrorDatabase extends _$MirrorDatabase {
     final query = customSelect('''
       SELECT p.comic_id AS comic_id, p.current_page AS current_page,
              p.total_pages AS total_pages, p.updated_at AS updated_at,
-             i.series_id AS series_id
+             i.series_id AS series_id,
+             json_extract(i.payload, '\$.name') AS issue_name
       FROM progress_rows p
       LEFT JOIN issue_rows i ON i.id = p.comic_id
       WHERE p.current_page < p.total_pages
@@ -633,6 +654,7 @@ class MirrorDatabase extends _$MirrorDatabase {
               totalPages: r.read<int>('total_pages'),
               updatedAt: DateTime.tryParse(r.read<String>('updated_at')),
               seriesId: r.read<String?>('series_id'),
+              issueName: r.read<String?>('issue_name'),
             ))
         .toList());
   }

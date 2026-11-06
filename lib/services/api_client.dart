@@ -41,6 +41,8 @@ class ApiClient {
   final String deviceId;
   final http.Client _httpClient;
   final RequestOutcomeCallback? onRequestOutcome;
+
+  /// The source's credentials, sent on every request.
   final Map<String, String> authHeaders;
 
   ApiClient({
@@ -174,6 +176,18 @@ class ApiClient {
       return jsonDecode(response.body);
     }
     throw ApiException(response.statusCode, response.body);
+  }
+
+  /// For server adapters ([KomgaClient]): any method, JSON body in, decoded
+  /// JSON (or null for an empty body) out; non-2xx throws [ApiException].
+  Future<dynamic> requestJson(String method, String path,
+      {Object? body, Duration timeout = const Duration(seconds: 60)}) async {
+    final response =
+        await _request(method: method, path: path, body: body, timeout: timeout);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    return response.body.isEmpty ? null : jsonDecode(response.body);
   }
 
   Future<void> _put(String path, Map<String, dynamic> body) async {

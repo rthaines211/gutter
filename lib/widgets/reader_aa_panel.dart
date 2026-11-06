@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
+import '../config/flavor.dart';
+import 'pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screen_brightness/screen_brightness.dart';
@@ -94,7 +97,7 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
       List<String> labels,
       List<String> values,
       String selected,
-      ReaderSettings Function(String) apply,
+      ReaderSettings? Function(String) apply,
     ) => section(
       title,
       SettingsSegControl(
@@ -102,7 +105,10 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
         values: values,
         selected: selected,
         accent: accent,
-        onChanged: (v) => _update(apply(v)),
+        onChanged: (v) {
+          final next = apply(v);
+          if (next != null) _update(next);
+        },
       ),
     );
 
@@ -130,14 +136,22 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
             _s.pageFit,
             (v) => _s.copyWith(pageFit: v),
           ),
+          // Panel and balloon data come from the Gutter server; on Komga
+          // they need on-device detection (Phase 2), so the store build
+          // offers nothing to buy there yet.
+          if (!isStore || ref.watch(isCustomSourceProvider)) ...[
           gap,
           seg(
             'ZOOM',
             const ['Off', 'Panels', 'Bubbles'],
             const ['off', 'panels', 'bubbles'],
             _s.zoomMode,
-            (v) => _s.copyWith(zoomMode: v),
+            (v) => v == 'off' ||
+                    requirePro(context, ref, reason: 'Guided zoom is part of Pro.')
+                ? _s.copyWith(zoomMode: v)
+                : null,
           ),
+          ],
           gap,
           section(
             'BACKGROUND',

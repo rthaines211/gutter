@@ -180,7 +180,8 @@ class ReaderNotifier extends AsyncNotifier<ReaderState> {
     var resolvedIssues = seriesIssues;
     var resolvedIndex = currentIssueIndex;
     if (resolvedIssues == null && isOnline) {
-      final seriesId = _seriesIdFromComicId(comicId);
+      final seriesId = await _mirrorDb.seriesIdForComic(comicId) ??
+          _seriesIdFromComicId(comicId);
       if (seriesId != null) {
         try {
           final detail = await _client.fetchSeriesDetail(seriesId)

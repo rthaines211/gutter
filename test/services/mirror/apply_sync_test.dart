@@ -1,5 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:comic_reader_app/models/reading_queue.dart';
 import 'package:comic_reader_app/models/sync_response.dart';
 import 'package:comic_reader_app/services/mirror/mirror_database.dart';
 
@@ -175,5 +176,27 @@ void main() {
     await db.setSyncState('last_server_time', '123');
     await db.setSyncState('last_server_time', '456');
     expect(await db.getSyncState('last_server_time'), '456');
+  });
+
+  test('servers without queues (Komga) keep local queues', () async {
+    await db.upsertQueueLocal(ReadingQueue(
+        id: 'q1', name: 'Next', seriesIds: const [],
+        createdAt: DateTime(2026), updatedAt: DateTime(2026)));
+    await db.applySync(const SyncResponse(
+        serverTime: 1, series: [], progress: [], seriesIds: [], progressIds: [],
+        serverHasQueues: false));
+    expect((await db.watchQueues().first).map((q) => q.id), ['q1']);
+
+    await db.applySync(const SyncResponse(
+        serverTime: 2, series: [], progress: [], seriesIds: [], progressIds: []));
+    expect(await db.watchQueues().first, isEmpty);
+  });
+
+  test('seriesIdForComic finds the issue\'s series', () async {
+    await db.applySync(SyncResponse(
+        serverTime: 1, series: [seriesJson('s1', issues: [issueJson('c1')])],
+        progress: const [], seriesIds: const ['s1'], progressIds: const []));
+    expect(await db.seriesIdForComic('c1'), 's1');
+    expect(await db.seriesIdForComic('nope'), isNull);
   });
 }

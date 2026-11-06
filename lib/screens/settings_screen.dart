@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../providers/pro_provider.dart';
+import '../widgets/pro_sheet.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
@@ -204,7 +206,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: '$density columns',
                       onTap: () => _cycleGridDensity(density),
                     ),
-                    _NavRow(
+                    if (ref.watch(isCustomSourceProvider)) _NavRow(
                       label: 'Rename Templates',
                       onTap: () => _push(
                           const RenameTemplatesScreen(), '/rename-templates'),
@@ -290,7 +292,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       value: isOnline ? 'Online' : 'Offline',
                       color: isOnline ? AppTheme.green : context.scheme.t3,
                     ),
-                    _NavRow(
+                    if (ref.watch(isCustomSourceProvider)) _NavRow(
                       label: 'Refresh Library',
                       onTap: _refreshLibrary,
                     ),
@@ -335,6 +337,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           ),
                         ],
                       ),
+                    ),
+                    if (isStore) _NavRow(
+                      label: 'Gutter Pro',
+                      value: ref.watch(proProvider) ? 'Unlocked' : null,
+                      onTap: () => showProSheet(context),
                     ),
                     _NavRow(
                       label: 'Privacy',

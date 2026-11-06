@@ -12,7 +12,7 @@ Future<void> showChapterListSheet(
   required void Function(int pageNum, String title) onAdd,
   required void Function(String id, String title) onRename,
   required void Function(String id) onDelete,
-  required VoidCallback onDetect,
+  VoidCallback? onDetect,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -37,7 +37,7 @@ class _ChapterListSheet extends StatelessWidget {
   final void Function(int pageNum, String title) onAdd;
   final void Function(String id, String title) onRename;
   final void Function(String id) onDelete;
-  final VoidCallback onDetect;
+  final VoidCallback? onDetect;
 
   const _ChapterListSheet({
     required this.chapters,
@@ -46,7 +46,7 @@ class _ChapterListSheet extends StatelessWidget {
     required this.onAdd,
     required this.onRename,
     required this.onDelete,
-    required this.onDetect,
+    this.onDetect,
   });
 
   Future<String?> _promptName(BuildContext context, {String initial = ''}) {
@@ -86,11 +86,12 @@ class _ChapterListSheet extends StatelessWidget {
                 children: [
                   const Text('Chapters', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   const Spacer(),
-                  TextButton.icon(
-                    icon: const Icon(Icons.auto_awesome),
-                    label: const Text('Detect chapters'),
-                    onPressed: () { Navigator.pop(context); onDetect(); },
-                  ),
+                  if (onDetect != null)
+                    TextButton.icon(
+                      icon: const Icon(Icons.auto_awesome),
+                      label: const Text('Detect chapters'),
+                      onPressed: () { Navigator.pop(context); onDetect!(); },
+                    ),
                   TextButton.icon(
                     icon: const Icon(Icons.add),
                     label: const Text('Add here'),

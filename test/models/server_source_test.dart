@@ -115,5 +115,21 @@ void main() {
       final headers = source.authHeaders;
       expect(headers['Authorization'], 'Bearer my-key');
     });
+
+    test('komga API key goes in X-API-Key', () {
+      const source = ServerSource(
+        id: 'k', name: 'K', type: SourceType.komga,
+        baseUrl: 'http://k', authType: AuthType.apiKey, apiKey: 'k1',
+      );
+      expect(source.authHeaders, {'X-API-Key': 'k1'});
+    });
+
+    test('komga round-trips through JSON', () {
+      const source = ServerSource(
+        id: 'k', name: 'K', type: SourceType.komga,
+        baseUrl: 'http://k', authType: AuthType.basic, username: 'u',
+      );
+      expect(ServerSource.fromJson(source.toJson()).type, SourceType.komga);
+    });
   });
 }

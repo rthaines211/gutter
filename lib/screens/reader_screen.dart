@@ -1,4 +1,6 @@
 import 'package:clock/clock.dart';
+import '../providers/pro_provider.dart';
+import '../config/source_urls.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
@@ -271,6 +273,12 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final folder = seriesFromComicPath(_comicPath);
     _seriesId = (widget.seriesId?.isNotEmpty ?? false) ? widget.seriesId : folder?.id;
     _seriesName = (widget.seriesName?.isNotEmpty ?? false) ? widget.seriesName : folder?.name;
+    // Komga ids carry no folder: ask the mirror.
+    if (_seriesId == null) {
+      ref.read(mirrorDbProvider).seriesIdForComic(_comicId).then((id) {
+        if (mounted) _seriesId ??= id;
+      }).ignore();
+    }
     _pageController = PageController(initialPage: widget.initialPage);
     _remoteCommands = ref.read(remoteCommandsProvider)();
     _overlayAnim = AnimationController(
@@ -706,7 +714,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     return calculatePageTransforms(
       containRect: containRect,
       viewportSize: viewport,
-      isSpread: isSpread(imageWidth, imageHeight),
+      // Spread zoom steps are Pro; without it a spread shows whole.
+      isSpread: ref.read(proProvider) && isSpread(imageWidth, imageHeight),
       isPortrait: viewport.height > viewport.width,
       isRtl: settings.readingDirection == 'rtl',
       fitMode: settings.pageFit,
@@ -1379,7 +1388,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       onAdd: notifier.addChapter,
       onRename: notifier.renameChapter,
       onDelete: notifier.deleteChapter,
-      onDetect: () => _detectChapters(),
+      onDetect: ref.read(isCustomSourceProvider) ? _detectChapters : null,
     );
   }
 
@@ -1467,8 +1476,9 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final info = state.info;
     final currentTitle = info?.title ?? state.comicPath.split('/').last;
     final currentSeries = _seriesName ?? info?.series ?? '';
-    final baseUrl = ref.read(activeSourceProvider).baseUrl;
-    final currentCover = '$baseUrl/comics/${state.comicId}/cover';
+    final source = ref.read(activeSourceProvider);
+    final baseUrl = source.baseUrl;
+    final currentCover = source.comicCover(state.comicId);
 
     // Server returns relative cover URLs (e.g. "/comics/<id>/cover"); resolve
     // against the active source baseUrl so CachedNetworkImage can fetch it.

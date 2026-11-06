@@ -99,6 +99,25 @@ void main() {
     expect(row.currentPage, 9, reason: 'queued write must not be clobbered');
   });
 
+  test('minPullInterval: pushes every time, pulls once per interval unless forced', () async {
+    final engine = SyncEngine(
+      db: db,
+      client: ApiClient(baseUrl: 'http://t', deviceId: 'd', httpClient: mockServer()),
+      queue: queue,
+      minPullInterval: const Duration(minutes: 10),
+    );
+    await engine.sync();
+    await queue.enqueue({
+      'type': 'progress',
+      'payload': {'comic_id': 'c2', 'current_page': 3, 'total_pages': 20},
+    });
+    await engine.sync();
+    expect(syncCalls, 1, reason: 'second pull inside the interval is skipped');
+    expect(putCalls, ['c2'], reason: 'the outbox still drains');
+    await engine.sync(force: true);
+    expect(syncCalls, 2);
+  });
+
   test('single uncontended sync does exactly one GET /sync', () async {
     final engine = SyncEngine(
       db: db,

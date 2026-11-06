@@ -66,6 +66,8 @@ void showIssueActionSheet({
                 markIssue(ref: ref, issue: issue, seriesId: seriesId, read: false);
               },
             ),
+          // Files and metadata live on the Gutter server; Komga edits its own.
+          if (ref.read(isCustomSourceProvider)) ...[
           ListTile(
             leading: Icon(Icons.edit_outlined, color: ctx.scheme.tx),
             title: Text('Rename File',
@@ -96,6 +98,7 @@ void showIssueActionSheet({
               );
             },
           ),
+          ],
           const SizedBox(height: 8),
         ],
       ),

@@ -3,11 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
 import '../config/scheme.dart';
-import '../models/server_source.dart';
 import '../providers/accent_provider.dart';
 import '../providers/providers.dart';
 import '../providers/source_provider.dart';
-import '../services/api_client.dart';
+import '../models/server_source.dart';
 import '../widgets/longbox_mark.dart';
 
 /// Trims, adds `https://` when no scheme was typed, and drops trailing
@@ -29,13 +28,14 @@ List<String> serverUrlCandidates(String input) {
   return [url, 'http://${url.substring('https://'.length)}'];
 }
 
-/// First launch with no server (every store install): ask for the server URL,
-/// check it answers, then save it as the default source. `app.dart` swaps to
-/// the shell once the active source has a URL, so this never pushes.
+/// First launch with no server (every store install): ask for the server
+/// type, URL and (Komga) login, check it answers, then save it as the default
+/// source. `app.dart` swaps to the shell once the active source has a URL, so
+/// this never pushes.
 class OnboardingScreen extends ConsumerStatefulWidget {
-  /// Returns the HTTP status of a normalized URL (null when unreachable).
-  /// Defaults to [ApiClient.probeStatus].
-  final Future<int?> Function(String url, Map<String, String> headers)? probe;
+  /// HTTP status from a candidate source (normalized URL, type, credentials),
+  /// null when unreachable. Defaults to the source's client `probeStatus`.
+  final Future<int?> Function(ServerSource candidate)? probe;
 
   const OnboardingScreen({super.key, this.probe});
 
@@ -47,92 +47,142 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _urlCtrl = TextEditingController();
   final _userCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _keyCtrl = TextEditingController();
+  late final _fields = Listenable.merge([_urlCtrl, _userCtrl, _passCtrl, _keyCtrl]);
+  var _type = SourceType.komga;
+  bool _useKey = false;
   bool _probing = false;
   String? _error;
-  // Set once a candidate answered 401: the server needs a password.
+  // Gutter server only: set once a candidate answered 401, so the server
+  // needs a password.
   String? _authUrl;
 
   @override
   void dispose() {
-    _urlCtrl.dispose();
-    _userCtrl.dispose();
-    _passCtrl.dispose();
+    for (final c in [_urlCtrl, _userCtrl, _passCtrl, _keyCtrl]) {
+      c.dispose();
+    }
     super.dispose();
   }
 
-  Future<int?> _defaultProbe(String url, Map<String, String> headers) =>
-      ApiClient(
+  bool get _komga => _type == SourceType.komga;
+
+  bool get _canConnect =>
+      !_probing &&
+      _urlCtrl.text.trim().isNotEmpty &&
+      (!_komga ||
+          (_useKey
+              ? _keyCtrl.text.trim().isNotEmpty
+              : _userCtrl.text.trim().isNotEmpty && _passCtrl.text.isNotEmpty));
+
+  ServerSource _candidate(String url) {
+    if (!_komga && _authUrl == null) {
+      // First try on a Gutter server: whatever auth the default source
+      // already has (the personal build's built-in key), so a server that
+      // accepts it connects unprompted.
+      final current = ref.read(activeSourceProvider);
+      return ServerSource(
+        id: 'default',
+        name: 'My Server',
+        type: _type,
         baseUrl: url,
-        deviceId: ref.read(serverConfigProvider).deviceId,
-        authHeaders: headers,
-      ).probeStatus();
+        authType: current.authType,
+        username: current.username,
+        password: current.password,
+        apiKey: current.apiKey,
+        isDefault: true,
+      );
+    }
+    final basic = !_komga || !_useKey;
+    return ServerSource(
+      id: 'default',
+      name: _komga ? 'Komga' : 'My Server',
+      type: _type,
+      baseUrl: url,
+      authType: basic ? AuthType.basic : AuthType.apiKey,
+      username: basic ? _userCtrl.text.trim() : null,
+      password: basic ? _passCtrl.text : null,
+      apiKey: basic ? null : _keyCtrl.text.trim(),
+      isDefault: true,
+    );
+  }
+
+  Future<int?> _defaultProbe(ServerSource source) =>
+      clientFor(source, deviceId: ref.read(serverConfigProvider).deviceId)
+          .probeStatus();
 
   bool _ok(int? s) => s != null && s >= 200 && s < 300;
 
   Future<void> _connect() async {
-    final probe = widget.probe ?? _defaultProbe;
-    final candidates =
-        _authUrl != null ? [_authUrl!] : serverUrlCandidates(_urlCtrl.text);
-    final user = _userCtrl.text;
-    final pass = _passCtrl.text;
+    // A login is never retried over plain http unless typed: a blocked 443
+    // would otherwise send the password in the clear.
+    final candidates = _authUrl != null
+        ? [_authUrl!]
+        : serverUrlCandidates(_urlCtrl.text).take(_komga ? 1 : 2).toList();
     final withAuth = _authUrl != null;
-    // First try: whatever auth the default source already has (the personal
-    // build's built-in key), so a server that accepts it connects unprompted.
-    final headers = withAuth
-        ? ServerSource(
-            id: '',
-            name: '',
-            type: SourceType.custom,
-            baseUrl: '',
-            authType: AuthType.basic,
-            username: user,
-            password: pass,
-          ).authHeaders
-        : ref.read(activeSourceProvider).authHeaders;
     setState(() {
       _probing = true;
       _error = null;
     });
-    String? url;
+    ServerSource? found;
     String? needsAuth;
     for (final c in candidates) {
-      final status = await probe(c, headers);
+      final source = _candidate(c);
+      final status = await (widget.probe ?? _defaultProbe)(source);
       if (_ok(status)) {
-        url = c;
+        found = source;
         break;
       }
-      if (status == 401) {
+      if (!_komga && status == 401) {
         needsAuth = c;
         break;
       }
     }
     if (!mounted) return;
-    if (url != null) {
-      // Credentials first: the shell mounts as soon as the URL lands, and its
-      // first API calls must already carry auth.
-      if (withAuth) {
-        ref.read(sourceListProvider.notifier).updateDefaultBasicAuth(user, pass);
-      }
+    if (found != null) {
       // Both, as Settings → Server URL does: covers and series detail build
       // URLs from ServerConfig, the API client from the source.
-      await ref.read(serverConfigProvider).setServerUrl(url);
+      await ref.read(serverConfigProvider).setServerUrl(found.baseUrl);
       if (!mounted) return;
-      ref.read(sourceListProvider.notifier).updateDefaultUrl(url);
+      ref.read(sourceListProvider.notifier).setDefaultServer(found);
     } else if (needsAuth != null) {
       setState(() {
         _probing = false;
         _authUrl = needsAuth;
-        _error =
-            withAuth ? 'Wrong username or password' : 'This server needs a password';
+        _error = withAuth
+            ? 'Wrong username or password'
+            : 'This server needs a password';
       });
     } else {
       setState(() {
         _probing = false;
-        _error = "Couldn't reach a server at ${candidates.first}. "
-            'Check the address and that the server is running.';
+        _error = _komga
+            ? "Couldn't sign in to Komga at ${candidates.first}. "
+                'Check the address and your login.'
+            : "Couldn't reach a server at ${candidates.first}. "
+                'Check the address and that the server is running.';
       });
     }
   }
+
+  Widget _field(TextEditingController c, String label,
+          {String? hint,
+          bool obscure = false,
+          TextInputType? keyboard,
+          ValueChanged<String>? onChanged}) =>
+      Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: TextField(
+          controller: c,
+          obscureText: obscure,
+          keyboardType: keyboard,
+          autocorrect: false,
+          enableSuggestions: false,
+          onChanged: onChanged,
+          onSubmitted: (_) => _canConnect ? _connect() : null,
+          decoration: InputDecoration(labelText: label, hintText: hint),
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -156,65 +206,71 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   Text('Connect to your comic server',
                       style: TextStyle(color: context.scheme.t2)),
                   const SizedBox(height: 28),
-                  ValueListenableBuilder(
-                    valueListenable: _urlCtrl,
-                    builder: (context, value, _) => Column(
+                  SegmentedButton<SourceType>(
+                    segments: const [
+                      ButtonSegment(
+                          value: SourceType.komga, label: Text('Komga')),
+                      ButtonSegment(
+                          value: SourceType.custom,
+                          label: Text('Gutter server')),
+                    ],
+                    selected: {_type},
+                    showSelectedIcon: false,
+                    onSelectionChanged: (s) => setState(() {
+                      _type = s.first;
+                      _error = null;
+                      _authUrl = null;
+                    }),
+                  ),
+                  const SizedBox(height: 20),
+                  ListenableBuilder(
+                    listenable: _fields,
+                    builder: (context, _) => Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        TextField(
-                          controller: _urlCtrl,
-                          keyboardType: TextInputType.url,
-                          autocorrect: false,
-                          enableSuggestions: false,
-                          textInputAction: TextInputAction.go,
-                          // A new address starts over: drop the credential
-                          // prompt and error left from the last one.
-                          onChanged: (_) {
-                            if (_authUrl != null || _error != null) {
-                              setState(() {
-                                _authUrl = null;
-                                _error = null;
-                              });
-                            }
-                          },
-                          onSubmitted: (_) =>
-                              value.text.trim().isEmpty || _probing
-                                  ? null
-                                  : _connect(),
-                          decoration: const InputDecoration(
-                            labelText: 'Server address',
-                            hintText: 'comics.example.com',
-                          ),
-                        ),
-                        if (_authUrl != null) ...[
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _userCtrl,
-                            autocorrect: false,
-                            enableSuggestions: false,
-                            autofillHints: const [AutofillHints.username],
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
-                              helperText: 'Any name works for Gutter Server',
+                        _field(_urlCtrl, 'Server address',
+                            hint: _komga
+                                ? 'komga.example.com:25600'
+                                : 'comics.example.com',
+                            keyboard: TextInputType.url,
+                            // A new address starts over: drop the credential
+                            // prompt and error left from the last one.
+                            onChanged: (_) {
+                              if (_authUrl != null || _error != null) {
+                                setState(() {
+                                  _authUrl = null;
+                                  _error = null;
+                                });
+                              }
+                            }),
+                        if (_komga && !_useKey) ...[
+                          _field(_userCtrl, 'Username',
+                              keyboard: TextInputType.emailAddress),
+                          _field(_passCtrl, 'Password', obscure: true),
+                        ],
+                        if (!_komga && _authUrl != null) ...[
+                          _field(_userCtrl, 'Username',
+                              hint: 'Any name works for Gutter Server'),
+                          _field(_passCtrl, 'Password', obscure: true),
+                        ],
+                        if (_komga && _useKey)
+                          _field(_keyCtrl, 'API key', obscure: true),
+                        if (_komga)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: TextButton(
+                              onPressed: () =>
+                                  setState(() => _useKey = !_useKey),
+                              child: Text(_useKey
+                                  ? 'Use username and password'
+                                  : 'Use an API key'),
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          TextField(
-                            controller: _passCtrl,
-                            obscureText: true,
-                            autofillHints: const [AutofillHints.password],
-                            onSubmitted: (_) => _probing ? null : _connect(),
-                            decoration:
-                                const InputDecoration(labelText: 'Password'),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 4),
                         FilledButton(
                           style:
                               FilledButton.styleFrom(backgroundColor: accent),
-                          onPressed: value.text.trim().isEmpty || _probing
-                              ? null
-                              : _connect,
+                          onPressed: _canConnect ? _connect : null,
                           child: _probing
                               ? const SizedBox.square(
                                   dimension: 18,

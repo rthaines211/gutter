@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'providers/pro_provider.dart';
+import 'services/source_auth_client.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +29,8 @@ void main() async {
   // the rest is LRU-cached recently-viewed pages which can be evicted safely.
   PaintingBinding.instance.imageCache.maximumSize = 100;
   PaintingBinding.instance.imageCache.maximumSizeBytes = 256 * 1024 * 1024; // 256 MB
+  // Every CachedNetworkImage fetches through the source's credentials.
+  CachedNetworkImageProvider.defaultCacheManager = SourceImageCacheManager();
 
   await AppLogger.init(
     logDirFactory: () async => getApplicationDocumentsDirectory(),
@@ -48,6 +53,9 @@ void main() async {
       sourceCredentialsProvider.overrideWithValue(credentials),
     ],
   );
+  // Listen to StoreKit from launch: purchases approved while the app was
+  // closed (Ask to Buy, a kill mid-purchase) arrive now, not at a paywall.
+  container.read(proProvider);
 
   HeartbeatWriter(
     heartbeatFile: heartbeatFile,

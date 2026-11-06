@@ -1,6 +1,9 @@
 // lib/widgets/issue_grid_view.dart
 import '../providers/providers.dart';
 import 'package:flutter/material.dart';
+import '../providers/source_provider.dart';
+import '../config/source_urls.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
@@ -9,7 +12,7 @@ import 'issue_list_view.dart'; // WritebackBadge
 import 'read_mark.dart';
 import 'cover_flight_route.dart';
 
-class IssueGridTile extends StatelessWidget {
+class IssueGridTile extends ConsumerWidget {
   final SeriesIssue issue;
   final String serverUrl;
   final Color accent;
@@ -26,10 +29,10 @@ class IssueGridTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isInProgress = issue.status == 'in_progress';
     final isCompleted = issue.status == 'completed';
-    final coverUrl = '$serverUrl/comics/${issue.id}/cover';
+    final coverUrl = ref.watch(activeSourceProvider).comicCover(issue.id);
     final progress = (issue.currentPage != null && issue.totalPages != null && issue.totalPages! > 0)
         ? issue.currentPage! / issue.totalPages!
         : 0.0;

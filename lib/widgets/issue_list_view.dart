@@ -1,5 +1,7 @@
 // lib/widgets/issue_list_view.dart
 import 'package:flutter/material.dart';
+import 'pro_sheet.dart';
+import '../config/source_urls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -108,10 +110,10 @@ class IssueListRow extends ConsumerWidget {
                   opacity: isCompleted ? 0.55 : 1.0,
                   child: CoverAnchor(
                     comicId: issue.id,
-                    imageUrl: '$serverUrl/comics/${issue.id}/cover',
+                    imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
                     child: CachedNetworkImage(
-                      imageUrl: '$serverUrl/comics/${issue.id}/cover',
-                      httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${issue.id}/cover'),
+                      imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
+                      httpHeaders: imageHeadersOf(context, ref.watch(activeSourceProvider).comicCover(issue.id)),
                       fit: BoxFit.cover,
                       placeholder: (_, _) => Container(color: context.scheme.s2),
                       errorWidget: (_, _, _) => Container(color: context.scheme.s2),
@@ -206,6 +208,10 @@ class IssueListRow extends ConsumerWidget {
               comicId: issue.id,
               sourceId: ref.read(activeSourceProvider).id,
               onTap: () {
+                if (!requirePro(context, ref,
+                    reason: 'Downloads are part of Pro.')) {
+                  return;
+                }
                 final source = ref.read(activeSourceProvider);
                 ref.read(downloadManagerProvider)?.enqueue(
                   comicId: issue.id,
@@ -213,7 +219,7 @@ class IssueListRow extends ConsumerWidget {
                   seriesId: seriesId,
                   seriesName: seriesName,
                   comicName: issue.name,
-                  comicUrl: '${source.baseUrl}/comics/${issue.id}',
+                  comicUrl: source.comicDownload(issue.id),
                   headers: {
                     'Content-Type': 'application/json',
                     'X-Device-ID': ref.read(serverConfigProvider).deviceId,

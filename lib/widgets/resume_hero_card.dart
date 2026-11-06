@@ -1,4 +1,6 @@
 import 'dart:math' as math;
+import '../providers/source_provider.dart';
+import '../config/source_urls.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -138,7 +140,7 @@ class ResumeHeroCard extends ConsumerWidget {
     final tablet = LayoutBreakpoint.isTablet(context);
     final info = ref.watch(heroComicInfoProvider(progress.comicId)).value;
 
-    final path = comicIdToPath(progress.comicId);
+    final path = progress.issueName ?? comicIdToPath(progress.comicId);
     final fileName = stripComicExtension(
       path.split('/').where((s) => s.isNotEmpty).lastOrNull ?? path,
     );
@@ -221,12 +223,12 @@ class ResumeHeroCard extends ConsumerWidget {
     final cover = panel(
       CoverAnchor(
         comicId: progress.comicId,
-        imageUrl: '$serverUrl/comics/${progress.comicId}/pages/0',
+        imageUrl: ref.watch(activeSourceProvider).page(progress.comicId, 0),
         radius: 0,
         child: CachedNetworkImage(
           // Full-res page 0: /cover is a 300px thumbnail.
-          imageUrl: '$serverUrl/comics/${progress.comicId}/pages/0',
-          httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${progress.comicId}/pages/0'),
+          imageUrl: ref.watch(activeSourceProvider).page(progress.comicId, 0),
+          httpHeaders: imageHeadersOf(context, ref.watch(activeSourceProvider).page(progress.comicId, 0)),
           memCacheWidth: 1200,
           fit: BoxFit.contain,
           placeholder: (_, _) => const SizedBox.expand(),

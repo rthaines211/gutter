@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../config/source_urls.dart';
 import '../providers/providers.dart';
+import '../providers/source_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -36,7 +38,7 @@ class UpNextCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final comic = ComicTokens.watch(ref, context, AppTheme.accent);
-    final path = comicIdToPath(progress.comicId);
+    final path = progress.issueName ?? comicIdToPath(progress.comicId);
     final name = stripComicExtension(
         path.contains('/') ? path.split('/').last : path);
     final pageLabel = 'P.${progress.currentPage + 1}/${progress.totalPages}';
@@ -67,11 +69,11 @@ class UpNextCard extends ConsumerWidget {
                   children: [
                     CoverAnchor(
                       comicId: progress.comicId,
-                      imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
+                      imageUrl: ref.watch(activeSourceProvider).comicCover(progress.comicId),
                       radius: AppTheme.r18,
                       child: CachedNetworkImage(
-                        imageUrl: '$serverUrl/comics/${progress.comicId}/cover',
-                        httpHeaders: imageHeadersOf(context, '$serverUrl/comics/${progress.comicId}/cover'),
+                        imageUrl: ref.watch(activeSourceProvider).comicCover(progress.comicId),
+                        httpHeaders: imageHeadersOf(context, ref.watch(activeSourceProvider).comicCover(progress.comicId)),
                         fit: BoxFit.cover,
                         placeholder: (_, _) => Container(color: context.scheme.s2),
                         errorWidget: (_, _, _) => Container(color: context.scheme.s2),

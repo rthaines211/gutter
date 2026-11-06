@@ -1,5 +1,7 @@
 // lib/widgets/series_detail_panel.dart
 import 'dart:async';
+import 'pro_sheet.dart';
+import '../config/source_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -208,14 +210,15 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
             onResume: resumeIssue != null ? () => _openIssue(detail, resumeIssue!) : null,
             onDownload: () => _downloadSeries(detail),
             onMarkRead: () => markSeriesRead(ref: ref, detail: detail),
-            onEditMetadata: () => showMetadataEditSheet(
+            // Metadata edits and file renames are Gutter-server features.
+            onEditMetadata: !ref.watch(isCustomSourceProvider) ? null : () => showMetadataEditSheet(
               context: context,
               ref: ref,
               series: detail,
               seriesId: widget.seriesId,
               accent: widget.accent,
             ),
-            onMore: () => showSeriesActionSheet(
+            onMore: !ref.watch(isCustomSourceProvider) ? null : () => showSeriesActionSheet(
               context: context,
               ref: ref,
               detail: detail,
@@ -271,7 +274,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
           NextUpCard(
             issue: resumeIssue,
             accent: widget.accent,
-            coverImageUrl: '$serverUrl/comics/${resumeIssue.id}/cover',
+            coverImageUrl: ref.watch(activeSourceProvider).comicCover(resumeIssue.id),
             onTap: () => _openIssue(detail, resumeIssue),
           ),
           const SizedBox(height: 12),
@@ -563,6 +566,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
   }
 
   Future<void> _downloadSeries(SeriesDetail detail) async {
+    if (!requirePro(context, ref, reason: 'Downloads are part of Pro.')) return;
     HapticFeedback.mediumImpact();
     final source = ref.read(activeSourceProvider);
     final manager = ref.read(downloadManagerProvider);
@@ -588,7 +592,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
     final picked = await showSeriesDownloadSheet(
       context,
       detail: detail,
-      baseUrl: source.baseUrl,
+      source: source,
       // Auth only for the size probe; enqueue gets [headers] so the journal
       // never stores credentials (DownloadManager adds auth at fetch time).
       headers: {...headers, ...source.authHeaders},
@@ -603,7 +607,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
         seriesId: detail.id,
         seriesName: detail.name,
         comicName: issue.name,
-        comicUrl: '${source.baseUrl}/comics/${issue.id}',
+        comicUrl: source.comicDownload(issue.id),
         headers: headers,
       );
     }

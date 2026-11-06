@@ -224,11 +224,12 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     });
     final isOnline = ref.watch(connectivityProvider);
     final isCustom = ref.watch(isCustomSourceProvider);
-    final libraryAsync = isCustom
+    final usesMirror = ref.watch(hasMirrorProvider);
+    final libraryAsync = usesMirror
         ? ref.watch(libraryProvider)
         : ref.watch(opdsLibraryProvider);
     final source = ref.watch(activeSourceProvider);
-    final serverUrl = isCustom ? source.baseUrl : '';
+    final serverUrl = usesMirror ? source.baseUrl : '';
     final filter = ref.watch(libraryFilterProvider);
     final viewMode = ref.watch(libraryViewModeProvider);
     final activeCollection = ref.watch(activeCollectionProvider);
@@ -260,7 +261,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       if (!ref.read(connectivityProvider)) {
                         HapticFeedback.mediumImpact();
                         ref.invalidate(downloadedLibraryProvider);
-                      } else if (!isCustom) {
+                      } else if (!usesMirror) {
                         HapticFeedback.mediumImpact();
                         return ref.refresh(opdsLibraryProvider.future);
                       } else {
@@ -268,10 +269,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         final engine = ref.read(syncEngineProvider);
                         if (engine != null) {
                           try {
-                            await engine.sync();
+                            await engine.sync(force: true);
                           } catch (_) {}
                         }
-                        _rescanLibrary();
+                        if (isCustom) _rescanLibrary();
                       }
                     },
                     child: _selectedSeriesId == null
@@ -324,7 +325,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                     if (!ref.read(connectivityProvider)) {
                       HapticFeedback.mediumImpact();
                       ref.invalidate(downloadedLibraryProvider);
-                    } else if (!isCustom) {
+                    } else if (!usesMirror) {
                       HapticFeedback.mediumImpact();
                       return ref.refresh(opdsLibraryProvider.future);
                     } else {
@@ -332,10 +333,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       final engine = ref.read(syncEngineProvider);
                       if (engine != null) {
                         try {
-                          await engine.sync();
+                          await engine.sync(force: true);
                         } catch (_) {}
                       }
-                      _rescanLibrary();
+                      if (isCustom) _rescanLibrary();
                     }
                   },
                   child: _buildScrollView(tablet, columns, libraryAsync, serverUrl, filter, viewMode, activeCollection, collectionsAsync, isCustom, isOnline),
@@ -863,10 +864,10 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 // error only clears after a sync pull, so kick one off too.
                 unawaited(ref
                         .read(syncEngineProvider)
-                        ?.sync()
+                        ?.sync(force: true)
                         .catchError((_) {}) ??
                     Future.value());
-                if (ref.read(isCustomSourceProvider)) {
+                if (ref.read(hasMirrorProvider)) {
                   ref.invalidate(libraryProvider);
                 } else {
                   ref.invalidate(opdsLibraryProvider);

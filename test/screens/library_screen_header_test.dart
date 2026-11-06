@@ -33,6 +33,7 @@ Future<void> pumpLibrary(WidgetTester t) async {
       sharedPrefsProvider.overrideWithValue(prefs),
       connectivityProvider.overrideWith(_Online.new),
       isCustomSourceProvider.overrideWithValue(false),
+      hasMirrorProvider.overrideWithValue(false),
       opdsLibraryProvider.overrideWith(
           (ref) async => [for (var i = 0; i < 120; i++) _series(i)]),
     ],

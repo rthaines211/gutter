@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/server_source.dart';
+import '../config/source_urls.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../config/scheme.dart';
@@ -10,7 +12,7 @@ import '../providers/download_provider.dart';
 Future<List<SeriesIssue>?> showSeriesDownloadSheet(
   BuildContext context, {
   required SeriesDetail detail,
-  required String baseUrl,
+  required ServerSource source,
   required Map<String, String> headers,
   required Set<String> onDevice,
   required Color accent,
@@ -23,7 +25,7 @@ Future<List<SeriesIssue>?> showSeriesDownloadSheet(
     ),
     builder: (_) => _SeriesDownloadSheet(
       detail: detail,
-      baseUrl: baseUrl,
+      source: source,
       headers: headers,
       onDevice: onDevice,
       accent: accent,
@@ -33,14 +35,14 @@ Future<List<SeriesIssue>?> showSeriesDownloadSheet(
 
 class _SeriesDownloadSheet extends StatefulWidget {
   final SeriesDetail detail;
-  final String baseUrl;
+  final ServerSource source;
   final Map<String, String> headers;
   final Set<String> onDevice;
   final Color accent;
 
   const _SeriesDownloadSheet({
     required this.detail,
-    required this.baseUrl,
+    required this.source,
     required this.headers,
     required this.onDevice,
     required this.accent,
@@ -71,13 +73,16 @@ class _SeriesDownloadSheetState extends State<_SeriesDownloadSheet> {
   Future<void> _measure() async {
     final client = http.Client();
     final sizes = <String, int>{};
+    // Komga's file endpoint may stream the whole book to answer a HEAD, so
+    // its issues go unsized.
+    final sized = widget.source.type != SourceType.komga;
     try {
       // ponytail: 8 at a time; a 300-issue series is ~40 quick round trips.
-      for (var i = 0; i < _all.length; i += 8) {
+      for (var i = 0; sized && i < _all.length; i += 8) {
         await Future.wait(_all.skip(i).take(8).map((issue) async {
           try {
             final res = await client
-                .head(Uri.parse('${widget.baseUrl}/comics/${issue.id}/download'),
+                .head(Uri.parse(widget.source.comicFile(issue.id)),
                     headers: widget.headers)
                 .timeout(const Duration(seconds: 10));
             final len = int.tryParse(res.headers['content-length'] ?? '');

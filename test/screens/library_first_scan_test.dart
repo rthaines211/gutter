@@ -29,7 +29,7 @@ class _FakeApi extends ApiClient {
 class _FakeSync implements SyncEngine {
   int calls = 0;
   @override
-  Future<void> sync() async => calls++;
+  Future<void> sync({bool force = false}) async => calls++;
   @override
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
@@ -37,7 +37,7 @@ class _FakeSync implements SyncEngine {
 class _SlowSync extends _FakeSync {
   final done = Completer<void>();
   @override
-  Future<void> sync() => done.future;
+  Future<void> sync({bool force = false}) => done.future;
 }
 
 Future<void> _pump(WidgetTester t, _FakeApi api, SyncEngine sync) async {

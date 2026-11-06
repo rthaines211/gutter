@@ -1,4 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import '../providers/providers.dart';
+import '../providers/source_provider.dart';
+import '../config/source_urls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,7 +9,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/scheme.dart';
 import '../models/reading_queue.dart';
 import '../providers/mirror_provider.dart';
-import '../providers/providers.dart';
 import '../providers/queue_provider.dart';
 import 'series_detail_screen.dart';
 
@@ -18,7 +20,6 @@ class QueueDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final queuesAsync = ref.watch(queuesProvider);
     final library = ref.watch(mirrorLibraryProvider).value ?? [];
-    final serverUrl = ref.watch(serverConfigProvider).serverUrl;
 
     final queue = queuesAsync.value
         ?.where((q) => q.id == queueId)
@@ -59,7 +60,7 @@ class QueueDetailScreen extends ConsumerWidget {
                     .firstOrNull;
                 final name = series?.name ?? seriesId;
                 final coverUrl =
-                    '$serverUrl/library/${Uri.encodeComponent(seriesId)}/cover';
+                    ref.watch(activeSourceProvider).seriesCover(seriesId);
                 return Dismissible(
                   key: ValueKey(seriesId),
                   direction: DismissDirection.endToStart,

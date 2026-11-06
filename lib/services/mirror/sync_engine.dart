@@ -16,33 +16,54 @@ class SyncEngine {
   final ApiClient client;
   final SyncQueue queue;
 
+  /// Komga has no delta endpoint, so every pull re-reads the whole library:
+  /// within this long of the last pull, only explicit (`force`) syncs pull;
+  /// the rest just push the outbox.
+  final Duration minPullInterval;
+
   Future<void>? _inFlight;
   bool _followUpRequested = false;
+  bool _forceFollowUp = false;
+  DateTime? _lastPull;
 
-  SyncEngine({required this.db, required this.client, required this.queue});
+  SyncEngine({
+    required this.db,
+    required this.client,
+    required this.queue,
+    this.minPullInterval = Duration.zero,
+  });
 
   /// Public for tests only.
   Future<void>? get inFlightForTesting => _inFlight;
 
-  Future<void> sync() {
+  /// [force]: a refresh the user asked for; always pulls.
+  Future<void> sync({bool force = false}) {
     if (_inFlight != null) {
       // A sync that's already past its pull can't see writes made after it
       // started; remember to run once more so callers' mutations land.
       _followUpRequested = true;
+      _forceFollowUp |= force;
       return _inFlight!;
     }
-    _inFlight = _sync().whenComplete(() {
+    _inFlight = _sync(force).whenComplete(() {
       _inFlight = null;
       if (_followUpRequested) {
-        _followUpRequested = false;
-        unawaited(sync().catchError((_) {}));
+        final force = _forceFollowUp;
+        _followUpRequested = _forceFollowUp = false;
+        unawaited(sync(force: force).catchError((_) {}));
       }
     });
     return _inFlight!;
   }
 
-  Future<void> _sync() async {
+  Future<void> _sync(bool force) async {
     await SyncQueueDrainer(queue: queue, client: client).drain();
+    final last = _lastPull;
+    if (!force &&
+        last != null &&
+        DateTime.now().difference(last) < minPullInterval) {
+      return;
+    }
 
     final pending = <String>{};
     final pendingQueues = <String>{};
@@ -77,6 +98,7 @@ class SyncEngine {
         protectedQueueIds: pendingQueues,
         protectedSeriesIds: pendingSeries);
     await db.setSyncState('last_server_time', resp.serverTime.toString());
+    _lastPull = DateTime.now();
 
     await _healMissingSeries(resp.seriesIds);
   }

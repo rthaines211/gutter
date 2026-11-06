@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
+import '../providers/pro_provider.dart';
 import '../providers/stats_provider.dart';
+import '../widgets/pro_sheet.dart';
 import '../widgets/stats_dashboard.dart';
 import '../widgets/stats_history_list.dart';
 import '../providers/accent_provider.dart';
@@ -14,6 +16,30 @@ class StatsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
+    if (!ref.watch(proProvider)) {
+      return Scaffold(
+        backgroundColor: context.scheme.bg,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.insights_outlined, size: 40, color: accent),
+                const SizedBox(height: 12),
+                const Text('Reading stats are part of Pro.'),
+                const SizedBox(height: 12),
+                FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: accent),
+                  onPressed: () => showProSheet(context),
+                  child: const Text('See Gutter Pro'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
     final summaryAsync = ref.watch(statsSummaryProvider);
 
     return Scaffold(

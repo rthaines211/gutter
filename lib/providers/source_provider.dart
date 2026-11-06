@@ -127,6 +127,29 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
     _secureStorage.delete(key: '$_credentialPrefix${id}_apiKey');
   }
 
+  /// Makes [server] (type, URL, credentials) the default source, keeping its
+  /// id so the mirror and downloads stay put. Used by onboarding.
+  void setDefaultServer(ServerSource server) {
+    state = [
+      for (final s in state)
+        if (s.isDefault)
+          ServerSource(
+            id: s.id,
+            name: server.type == SourceType.komga ? 'Komga' : s.name,
+            type: server.type,
+            baseUrl: server.baseUrl,
+            authType: server.authType,
+            username: server.username,
+            password: server.password,
+            apiKey: server.apiKey,
+            isDefault: true,
+          )
+        else
+          s,
+    ];
+    _persist(state);
+  }
+
   void updateDefaultUrl(String url) {
     state = [
       for (final s in state)

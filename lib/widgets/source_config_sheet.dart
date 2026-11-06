@@ -1,5 +1,6 @@
 // lib/widgets/source_config_sheet.dart
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
@@ -25,6 +26,7 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
   late final TextEditingController _passCtrl;
   late final TextEditingController _keyCtrl;
   late AuthType _authType;
+  late SourceType _type;
   bool _testing = false;
   String? _testResult;
 
@@ -39,6 +41,7 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
     _passCtrl = TextEditingController(text: widget.existing?.password ?? '');
     _keyCtrl = TextEditingController(text: widget.existing?.apiKey ?? '');
     _authType = widget.existing?.authType ?? AuthType.none;
+    _type = widget.existing?.type ?? SourceType.komga;
   }
 
   @override
@@ -59,6 +62,16 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
 
     try {
       final source = _buildSource();
+      if (_type == SourceType.komga) {
+        final ok = await clientFor(source,
+                deviceId: ref.read(serverConfigProvider).deviceId)
+            .checkConnection();
+        setState(() {
+          _testing = false;
+          _testResult = ok ? 'Connected' : 'Failed: check the address and login';
+        });
+        return;
+      }
       final client = OPDSClient(source: source);
       final feed = await client.fetchRoot();
       setState(() {
@@ -78,8 +91,8 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
       id: widget.existing?.id ?? generateSourceId(),
       name: _nameCtrl.text.trim().isNotEmpty
           ? _nameCtrl.text.trim()
-          : 'OPDS Source',
-      type: SourceType.opds,
+          : _type == SourceType.komga ? 'Komga' : 'OPDS Source',
+      type: _type,
       baseUrl: _urlCtrl.text.trim(),
       authType: _authType,
       username: _authType == AuthType.basic ? _userCtrl.text : null,
@@ -149,7 +162,7 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
               ),
               const SizedBox(height: 16),
               Text(
-                _isEditing ? 'Edit OPDS Source' : 'Add OPDS Source',
+                _isEditing ? 'Edit Server' : 'Add Server',
                 style: TextStyle(
                   color: context.scheme.tx,
                   fontSize: 18,
@@ -157,10 +170,26 @@ class _SourceConfigSheetState extends ConsumerState<SourceConfigSheet> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildField(context, 'Name', _nameCtrl, 'My Kavita Server'),
+              if (!_isEditing) ...[
+                SegmentedButton<SourceType>(
+                  segments: const [
+                    ButtonSegment(value: SourceType.komga, label: Text('Komga')),
+                    ButtonSegment(value: SourceType.opds, label: Text('OPDS')),
+                  ],
+                  selected: {_type},
+                  showSelectedIcon: false,
+                  onSelectionChanged: (v) => setState(() => _type = v.first),
+                ),
+                const SizedBox(height: 14),
+              ],
+              _buildField(context, 'Name', _nameCtrl,
+                  _type == SourceType.komga ? 'Home Komga' : 'My Kavita Server'),
               const SizedBox(height: 14),
-              _buildField(context, 'Catalog URL', _urlCtrl,
-                  'https://kavita.local/api/opds/abc'),
+              _type == SourceType.komga
+                  ? _buildField(context, 'Server URL', _urlCtrl,
+                      'https://komga.local:25600')
+                  : _buildField(context, 'Catalog URL', _urlCtrl,
+                      'https://kavita.local/api/opds/abc'),
               const SizedBox(height: 14),
               // Auth type selector
               Text('Authentication',
