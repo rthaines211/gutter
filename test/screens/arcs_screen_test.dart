@@ -3,6 +3,7 @@ import 'package:comic_reader_app/providers/arc_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/screens/arcs_screen.dart';
 import 'package:comic_reader_app/widgets/glass_button.dart';
+import 'package:comic_reader_app/widgets/liquid_glass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -110,8 +111,8 @@ void main() {
       await t.pump();
       await t.pump(const Duration(milliseconds: 100));
 
-      // Content's right padding is 20.
-      expect(t.getRect(find.byType(GlassButton)).right,
+      // Content's right padding is 20 (measured on the glass, not its 44pt hit box).
+      expect(t.getRect(find.descendant(of: find.byType(GlassButton), matching: find.byType(LiquidGlass))).right,
           moreOrLessEquals(size.width - 20, epsilon: 1));
 
       expect(find.text('Biggest in your library'), findsOneWidget,
