@@ -256,3 +256,16 @@ On a machine that has never run Gutter: follow only the README, `docker compose 
 with a folder of CBZs, open the status page and watch the scan, add the server in the store
 build of the app with the password, and read a comic. Repeat with no `localcv.db` or keys at all,
 and confirm there are no errors or dead UI.
+
+<!-- flow-decisions:start -->
+## Decisions
+
+| Who | Stage | Decision | Why | Confirmed |
+|---|---|---|---|---|
+| Claude | Build · Review | Console SetScanInterval persists its value to config.yaml even when GUTTER_SCAN_INTERVAL is set; env still wins at next start | Restoring the file value would silently drop the user's console change; the ruling only required env to win at start | pending |
+| Claude | Build · Review | config.example.yaml now ships writeback_disabled: true, matching the new off-by-default writeback | Copying the old example (false) would have silently opted a user into writing their files | pending |
+| Claude | Review · Review | Read-tab first-scan state goes in read_screen.dart's empty-state block (~line 172), reusing a widget pulled out of the Library's inline scan state. No second watchIfBusy kick, because the IndexedStack always mounts LibraryScreen. | One progress widget for both tabs, and the existing Library kick and the ScanBanner sync already run on every tab. | pending |
+| Claude | Review · Review | The image-header helper takes the URL and returns source auth only when the URL is on the source's base URL. | ComicVine/Metron cover URLs (creator bibliography, volume sheet, review guesses) would otherwise receive the server password or API key. | pending |
+| Claude | Review · Review | The outbox drainer treats 401/403 as a pause, not a terminal drop, and source credentials load before runApp. | Otherwise a wrong password, or the cold-launch race before secure storage answers, silently deletes queued offline reading progress. | pending |
+| Claude | Build · Review | main() reads secure-storage secrets into sourceCredentialsProvider; built-in-key merge stays in SourceListNotifier.build() (now synchronous), not in main | Keeps the built-in key logic in one place beside the fresh-install seed while still completing sources before any request | pending |
+<!-- flow-decisions:end -->
