@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/painting.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 
@@ -78,6 +79,9 @@ class CoverSyncer {
         final tmp = File('$path.tmp');
         await tmp.writeAsBytes(resp.bodyBytes, flush: true);
         await tmp.rename(path);
+        // A replaced cover keeps its path, so drop the old decode from the
+        // in-memory cache or tiles keep showing it until the app restarts.
+        evictCover(path);
         await db.markCoverSynced(row.id, row.updatedAt);
         onProgress?.call((p) => p.next(coversDone: p.coversDone + 1));
       } catch (_) {
@@ -85,4 +89,20 @@ class CoverSyncer {
       }
     }
   }
+}
+
+/// Decode width tiles use for local covers ([SeriesGridTile]).
+const coverDecodeWidth = 700;
+
+/// Removes a local cover from Flutter's image cache, both as decoded at full
+/// size and at [coverDecodeWidth]. No-op outside a Flutter binding (tests).
+void evictCover(String path) {
+  try {
+    PaintingBinding.instance; // throws without a binding (plain Dart tests)
+  } catch (_) {
+    return; // nothing is cached anyway
+  }
+  final file = FileImage(File(path));
+  file.evict();
+  ResizeImage(file, width: coverDecodeWidth).evict();
 }

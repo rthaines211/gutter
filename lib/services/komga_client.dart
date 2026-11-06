@@ -254,6 +254,16 @@ String? _author(List<dynamic>? authors, String role) {
   return null;
 }
 
+/// Newest of some ISO-8601 timestamps (same format, so they sort as text).
+String? _latest(Iterable<Object?> ts) => ts
+    .whereType<String>()
+    .fold<String?>(null, (a, b) => a == null || b.compareTo(a) > 0 ? b : a);
+
+/// Cache-busting query for a cover URL: a changed file gets a new URL, so
+/// the image cache and the cover sync fetch it again.
+String _v(Object? stamp) =>
+    stamp is String ? '?v=${Uri.encodeQueryComponent(stamp)}' : '';
+
 int? _year(String? date) =>
     date == null || date.length < 4 ? null : int.tryParse(date.substring(0, 4));
 
@@ -270,14 +280,16 @@ Map<String, dynamic> komgaSeriesToSync(
       (b['metadata'] as Map<String, dynamic>?)?['numberSort'] as num? ?? 0;
   final readable = books.where(_readable).toList()
     ..sort((a, b) => sort(a).compareTo(sort(b)));
+  // A series' cover is its first book's: a changed book means a changed series.
+  final stamp = _latest([series['lastModified'], for (final b in readable) b['lastModified']]);
   return {
     'id': id,
     'name': meta['title'] as String? ?? series['name'] as String? ?? '',
-    'updated_at': series['lastModified'],
+    'updated_at': stamp,
     'created_at': series['created'],
     'folder_path': '',
     'issue_count': readable.length,
-    'cover_url': '/api/v1/series/${Uri.encodeComponent(id)}/thumbnail',
+    'cover_url': '/api/v1/series/${Uri.encodeComponent(id)}/thumbnail${_v(stamp)}',
     'publisher': meta['publisher'],
     'genres': meta['genres'] ?? const [],
     'description': (summary == null || summary.isEmpty) ? agg['summary'] : summary,
@@ -294,7 +306,7 @@ Map<String, dynamic> komgaSeriesToSync(
           'title': (b['metadata'] as Map?)?['title'],
           'summary': (b['metadata'] as Map?)?['summary'],
           'cover_date': (b['metadata'] as Map?)?['releaseDate'],
-          'cover_url': '/api/v1/books/${Uri.encodeComponent(b['id'] as String)}/thumbnail',
+          'cover_url': '/api/v1/books/${Uri.encodeComponent(b['id'] as String)}/thumbnail${_v(b['lastModified'])}',
           'writer': _author((b['metadata'] as Map?)?['authors'] as List?, 'writer'),
           'penciller': _author((b['metadata'] as Map?)?['authors'] as List?, 'penciller'),
         },

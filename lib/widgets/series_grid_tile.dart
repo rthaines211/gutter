@@ -1,4 +1,5 @@
 // lib/widgets/series_grid_tile.dart
+import '../services/mirror/cover_syncer.dart';
 import '../providers/providers.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -162,7 +163,7 @@ class SeriesGridTile extends ConsumerWidget {
 
   // Decode covers at roughly tile size instead of full thumbnail size; halves
   // memory and removes decode jank while scrolling.
-  static const int _decodeWidth = 700;
+  static const int _decodeWidth = coverDecodeWidth;
 
   Widget _coverImage(BuildContext context) {
     final Widget network = series.coverUrl.isNotEmpty
