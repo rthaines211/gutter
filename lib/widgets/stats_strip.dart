@@ -69,7 +69,7 @@ class StatsStrip extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$weekPages pages · $weekSessions issues this week',
+                    '$weekPages ${weekPages == 1 ? 'page' : 'pages'} · $weekSessions ${weekSessions == 1 ? 'issue' : 'issues'} this week',
                     style: context.monoCaption.copyWith(fontSize: 11),
                   ),
                 ],

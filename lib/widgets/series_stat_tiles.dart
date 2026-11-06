@@ -49,7 +49,7 @@ class NextUpCard extends ConsumerWidget {
     if (issue.totalPages == null) return issue.status == 'unread' ? 'Not started' : 'In progress';
     final total = issue.totalPages!;
     final estimate = formatMinutesLeft(total);
-    final pages = '$total pages';
+    final pages = '$total ${total == 1 ? 'page' : 'pages'}';
     return estimate.isEmpty ? pages : '$pages · ~$estimate';
   }
 

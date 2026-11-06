@@ -37,6 +37,13 @@ Future<void> _pump(WidgetTester t, List<DailyPages> pagesPerDay) =>
 
 void main() {
   group('ThisWeekCard', () {
+    testWidgets('one page reads "1 page", not "1 pages"', (t) async {
+      await _pump(t, _daysEndingToday([0, 0, 0, 0, 0, 0, 1]));
+      expect(find.text('1 page'), findsOneWidget);
+      await _pump(t, _daysEndingToday([0, 0, 0, 0, 0, 1, 1]));
+      expect(find.text('2 pages'), findsOneWidget);
+    });
+
     testWidgets('renders exactly 7 bars for a full 7-day week', (t) async {
       await _pump(t, _daysEndingToday([1, 2, 3, 4, 5, 6, 7]));
       expect(find.byKey(const ValueKey('this_week_bar')), findsNWidgets(7));

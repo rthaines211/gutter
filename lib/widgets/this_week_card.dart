@@ -90,7 +90,7 @@ class ThisWeekCard extends StatelessWidget {
                         color: context.scheme.t3,
                       )),
                   const SizedBox(height: 4),
-                  Text('$totalPages pages',
+                  Text('$totalPages ${totalPages == 1 ? 'page' : 'pages'}',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,

@@ -130,7 +130,7 @@ class _HistoryRow extends StatelessWidget {
         : null;
 
     final detailText =
-        '${session.pagesRead} pages · ${session.formattedDuration}';
+        '${session.pagesRead} ${session.pagesRead == 1 ? 'page' : 'pages'} · ${session.formattedDuration}';
     final timeText = _timeAgo(session.startedAt);
 
     return GestureDetector(
