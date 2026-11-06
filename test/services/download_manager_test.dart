@@ -123,6 +123,28 @@ void main() {
       expect((first['headers'] as Map)['X-Device-ID'], 'test');
     });
 
+    test('journal never stores Authorization', () async {
+      final seen = <String, String?>{};
+      final client = MockClient((req) async {
+        seen[req.url.path] = req.headers['Authorization'];
+        if (req.url.path.endsWith('/info')) {
+          return http.Response(jsonEncode({'page_count': 1}), 200);
+        }
+        return http.Response.bytes([1], 200);
+      });
+      final manager = DownloadManager(
+        baseDir: tempDir.path,
+        httpClient: client,
+        authFor: (id) => id == 'src1' ? {'Authorization': 'Bearer k'} : {},
+      );
+      enqueueTestItem(manager, comicId: 'c1');
+
+      await pumpUntil(() => seen.length >= 2);
+      expect(seen['/comics/c1/info'], 'Bearer k');
+      expect(seen['/comics/c1/pages/0'], 'Bearer k');
+      expect(journal().readAsStringSync(), isNot(contains('Authorization')));
+    });
+
     test('init restores pending items and processes them', () async {
       final managerA =
           DownloadManager(baseDir: tempDir.path, httpClient: hangingClient());

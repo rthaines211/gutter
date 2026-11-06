@@ -58,6 +58,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
   /// and scrolling as the body height crosses [_minPinnedHeight].
   final _headerKey = GlobalKey();
   static const _minPinnedHeight = 420.0;
+  bool _scanWatched = false;
   bool _headerPinned = false;
 
   /// Pinned header height, so the pull-to-refresh spinner starts below it.
@@ -216,6 +217,11 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // A new client (server URL or credentials changed, e.g. after onboarding)
+    // gets its own first-scan check: the last one may have hit a 401.
+    ref.listen(apiClientProvider, (_, _) {
+      if (_scanWatched) setState(() => _scanWatched = false);
+    });
     final isOnline = ref.watch(connectivityProvider);
     final isCustom = ref.watch(isCustomSourceProvider);
     final usesMirror = ref.watch(hasMirrorProvider);
@@ -558,11 +564,28 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
           }
 
           if (filteredList.isEmpty) {
+            final unfiltered = filter.isDefault && activeCollection == null;
+            if (unfiltered && ref.read(isCustomSourceProvider)) {
+              if (!_scanWatched) {
+                _scanWatched = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (mounted) {
+                    ref.read(scanStatusProvider.notifier).watchIfBusy();
+                  }
+                });
+              }
+              final scan = ref.watch(scanStatusProvider);
+              if (FirstScanProgress.shows(scan)) {
+                return SliverFillRemaining(child: FirstScanProgress(scan: scan));
+              }
+            }
             return SliverFillRemaining(
               child: Center(
                 child: Text(
-                  filter.isDefault && activeCollection == null
-                      ? 'No series found.\nAdd comics and refresh.'
+                  unfiltered
+                      ? (ref.read(isCustomSourceProvider)
+                          ? 'No comics found in your library folder yet.'
+                          : 'No series found.\nAdd comics and refresh.')
                       : 'No series match the current filters.',
                   textAlign: TextAlign.center,
                   style: TextStyle(color: context.scheme.t2),

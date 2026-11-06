@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/providers.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
@@ -40,6 +41,7 @@ class SeriesListTile extends StatelessWidget {
                 child: series.coverUrl.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: '$serverUrl${series.coverUrl}',
+                        httpHeaders: imageHeadersOf(context, '$serverUrl${series.coverUrl}'),
                         fit: BoxFit.cover,
                         placeholder: (context, url) =>
                             Container(color: context.scheme.s1),

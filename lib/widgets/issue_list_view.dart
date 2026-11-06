@@ -112,6 +112,7 @@ class IssueListRow extends ConsumerWidget {
                     imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
                     child: CachedNetworkImage(
                       imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
+                      httpHeaders: imageHeadersOf(context, ref.watch(activeSourceProvider).comicCover(issue.id)),
                       fit: BoxFit.cover,
                       placeholder: (_, _) => Container(color: context.scheme.s2),
                       errorWidget: (_, _, _) => Container(color: context.scheme.s2),
@@ -217,7 +218,6 @@ class IssueListRow extends ConsumerWidget {
                   headers: {
                     'Content-Type': 'application/json',
                     'X-Device-ID': ref.read(serverConfigProvider).deviceId,
-                    ...source.authHeaders,
                   },
                 );
               },

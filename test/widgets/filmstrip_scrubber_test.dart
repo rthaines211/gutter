@@ -1,4 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:comic_reader_app/models/server_source.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +11,7 @@ import 'package:comic_reader_app/widgets/page_jump_pill.dart';
 
 Widget _wrap(Widget child, Size size, {ThemeData? theme}) {
   return ProviderScope(
+    overrides: [activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: ''))],
     child: MediaQuery(
       data: MediaQueryData(size: size),
       child: MaterialApp(
@@ -53,7 +56,9 @@ void main() {
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
-        ProviderScope(child: MaterialApp(home: Scaffold(body: big()))));
+        ProviderScope(
+            overrides: [activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: ''))],
+            child: MaterialApp(home: Scaffold(body: big()))));
     await tester.pump();
     final images =
         tester.widgetList<CachedNetworkImage>(find.byType(CachedNetworkImage));

@@ -93,7 +93,13 @@ class LabelClient {
   final String baseUrl;
   final http.Client _http;
 
-  LabelClient({required this.baseUrl, http.Client? httpClient})
+  final Map<String, String> authHeaders;
+
+  LabelClient({
+    required this.baseUrl,
+    this.authHeaders = const {},
+    http.Client? httpClient,
+  })
       : _http = httpClient ?? http.Client();
 
   Uri _uri(String path) => Uri.parse('$baseUrl/labeller/$path');
@@ -101,7 +107,7 @@ class LabelClient {
   /// GETs [path]; null on 404, decoded JSON otherwise. Throws [ApiException]
   /// on any other non-2xx status.
   Future<dynamic> _getOrNull(String path) async {
-    final res = await _http.get(_uri(path));
+    final res = await _http.get(_uri(path), headers: authHeaders);
     if (res.statusCode == 404) return null;
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw ApiException(res.statusCode, res.body);
@@ -209,7 +215,7 @@ class LabelClient {
   ) async {
     final res = await _http.post(
       _uri('order'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', ...authHeaders},
       body: jsonEncode({
         'mode': m.apiName,
         'w': w,
@@ -227,7 +233,7 @@ class LabelClient {
   Future<void> save(LabelMode m, String id, Map<String, dynamic> body) async {
     final res = await _http.put(
       _uri('${m.dir}/$id.json'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', ...authHeaders},
       body: jsonEncode(body),
     );
     if (res.statusCode < 200 || res.statusCode >= 300) {
@@ -238,7 +244,7 @@ class LabelClient {
   Future<String> importPage(String book, int page) async {
     final res = await _http.post(
       _uri('import'),
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', ...authHeaders},
       body: jsonEncode({'book': book, 'page': page}),
     );
     if (res.statusCode == 404) {
@@ -390,7 +396,10 @@ class LabelSession extends ChangeNotifier {
         unawaited(
           // onError: a failed prefetch is not worth a FlutterError report.
           precacheImage(
-            CachedNetworkImageProvider(client.imageUrl(id)),
+            CachedNetworkImageProvider(
+              client.imageUrl(id),
+              headers: client.authHeaders,
+            ),
             context,
             onError: (_, _) {},
           ),

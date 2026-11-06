@@ -7,6 +7,7 @@ import '../config/string_utils.dart';
 import '../config/source_urls.dart';
 import '../models/recommendation.dart';
 import '../models/server_source.dart';
+import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../providers/recommendation_provider.dart';
 import '../screens/series_detail_screen.dart';
@@ -185,6 +186,7 @@ class _Cover extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         child: CachedNetworkImage(
           imageUrl: source.seriesCover(rec.seriesId!),
+          httpHeaders: imageHeadersOf(context, source.seriesCover(rec.seriesId!)),
           width: 80, height: 120, fit: BoxFit.cover,
           errorWidget: (_, _, _) => const _GenericCover(),
         ),

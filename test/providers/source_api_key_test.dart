@@ -71,13 +71,31 @@ void builtInKeyTests() {
     FlutterSecureStorage.setMockInitialValues(
         {for (final e in secure.entries) 'source_cred_${saved.id}_${e.key}': e.value});
     final prefs = await SharedPreferences.getInstance();
-    final c = ProviderContainer(
-        overrides: [sharedPrefsProvider.overrideWithValue(prefs)]);
+    final creds = await readSourceCredentials(prefs); // as main() does
+    final c = ProviderContainer(overrides: [
+      sharedPrefsProvider.overrideWithValue(prefs),
+      sourceCredentialsProvider.overrideWithValue(creds),
+    ]);
     addTearDown(c.dispose);
-    c.read(sourceListProvider);
-    await Future<void>.delayed(Duration.zero); // credentials load async
     return c;
   }
+
+  test('stored password is in authHeaders on the first read', () async {
+    final saved = ServerSource.createDefault(url: 'https://my.server')
+        .copyWith(authType: AuthType.basic, username: 'me');
+    SharedPreferences.setMockInitialValues({
+      'server_sources': jsonEncode([saved.toJson()]),
+    });
+    final prefs = await SharedPreferences.getInstance();
+    final c = ProviderContainer(overrides: [
+      sharedPrefsProvider.overrideWithValue(prefs),
+      sourceCredentialsProvider.overrideWithValue(
+          {saved.id: (password: 'pw', apiKey: null)}),
+    ]);
+    addTearDown(c.dispose);
+    expect(c.read(activeSourceProvider).authHeaders,
+        {'Authorization': 'Basic ${base64Encode(utf8.encode('me:pw'))}'});
+  });
 
   test('existing install with no key picks up the built-in key', () async {
     builtInApiKey = 'baked';

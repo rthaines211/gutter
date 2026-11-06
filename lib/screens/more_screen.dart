@@ -25,7 +25,8 @@ class MoreScreen extends ConsumerStatefulWidget {
 }
 
 class _MoreScreenState extends ConsumerState<MoreScreen> {
-  bool? _isOnline;
+  /// Last probe: null = not checked yet, 0 = unreachable, else HTTP status.
+  int? _status;
   Timer? _pollTimer;
 
   @override
@@ -46,8 +47,8 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
 
   Future<void> _checkConnection() async {
     final client = ref.read(apiClientProvider);
-    final online = await client.checkConnection();
-    if (mounted) setState(() => _isOnline = online);
+    final status = await client.probeStatus() ?? 0;
+    if (mounted) setState(() => _status = status);
   }
 
   @override
@@ -59,6 +60,10 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
     final queueCount = downloadState.value?.queue.length ?? 0;
     final completedCount = downloadState.value?.completed.length ?? 0;
     final totalDownloads = queueCount + completedCount;
+    final serverUp = _status != null && _status! >= 200 && _status! < 300;
+    // A 401 means the server answered but rejected our credentials: say so,
+    // rather than calling a reachable server offline.
+    final signedOut = _status == 401;
 
     return Scaffold(
       backgroundColor: context.scheme.bg,
@@ -90,10 +95,19 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                   Expanded(
                     child: _StatusTile(
                       label: 'Server',
-                      value: _isOnline == true ? 'Online' : (_isOnline == false ? 'Offline' : '...'),
-                      icon: Icons.public_rounded,
-                      color: _isOnline == true ? AppTheme.green : context.scheme.t3,
-                      pulse: _isOnline == true,
+                      value: _status == null
+                          ? '...'
+                          : serverUp
+                              ? 'Online'
+                              : signedOut
+                                  ? 'Signed out'
+                                  : 'Offline',
+                      sub: signedOut ? 'Wrong password' : null,
+                      icon: signedOut
+                          ? Icons.lock_outline_rounded
+                          : Icons.public_rounded,
+                      color: serverUp ? AppTheme.green : context.scheme.t3,
+                      pulse: serverUp,
                     ),
                   ),
                 ],

@@ -141,13 +141,15 @@ class KomgaClient extends ApiClient {
   }
 
   @override
-  Future<bool> checkConnection() async {
+  Future<int?> probeStatus() async {
     try {
       await requestJson('GET', '/api/v2/users/me',
           timeout: const Duration(seconds: 5));
-      return true;
+      return 200;
+    } on ApiException catch (e) {
+      return e.statusCode;
     } catch (_) {
-      return false;
+      return null;
     }
   }
 

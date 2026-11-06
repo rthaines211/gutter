@@ -53,11 +53,11 @@ docs/           # Design specs and implementation plans
 - The repo isn't `dart format`-clean: don't format whole files you edit, or the diff fills with unrelated reformatting.
 - Codesigning errors (`errSecInternalComponent`): run `security lock-keychain ~/Library/Keychains/login.keychain-db && security unlock-keychain ~/Library/Keychains/login.keychain-db`. If that fails, run `security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k YOUR_PASSWORD ~/Library/Keychains/login.keychain-db`
 - Prevent recurring keychain lock: `security set-keychain-settings ~/Library/Keychains/login.keychain-db` (disables auto-lock timeout)
-- Backend server scan takes ~2 minutes on first start (583 series). Endpoints won't respond until scan completes.
+- An empty server scans on first start; `/library/refresh/status` reports progress (the Library shows it).
 
 ## Backend API
 
-Configurable base URL (no built-in default in public builds). Backend: the Go/SQLite server, a separate repo. Key endpoints:
+Configurable base URL (no built-in default in public builds). Backend: the Go/SQLite server, a separate repo. Every endpoint needs `Authorization` (Basic with any username + `GUTTER_PASSWORD`, or `Bearer GUTTER_API_KEY`); `/healthz` is open; `GET /` is the status page. Key endpoints:
 
 - `GET /browse?path=` — file system browsing
 - `GET /comics/{id}/pages/{num}` — comic page images

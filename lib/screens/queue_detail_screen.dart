@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../config/source_urls.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +84,7 @@ class QueueDetailScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(4),
                       child: CachedNetworkImage(
                         imageUrl: coverUrl,
+                        httpHeaders: imageHeadersOf(context, coverUrl),
                         width: 36,
                         height: 52,
                         fit: BoxFit.cover,

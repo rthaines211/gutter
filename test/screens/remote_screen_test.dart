@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/providers/remote_provider.dart';
+import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/providers.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/services/api_client.dart';
 import 'package:comic_reader_app/screens/remote_screen.dart';
 import 'package:comic_reader_app/services/remote_session.dart';
@@ -33,6 +35,7 @@ void main() {
 
   Widget build() => ProviderScope(
         overrides: [
+          activeSourceProvider.overrideWithValue(ServerSource.createDefault(url: '')),
           remoteSnapshotProvider.overrideWith((ref) => snapshots.stream),
           remoteConnectedProvider.overrideWith((ref) => connected.stream),
           remoteSessionProvider.overrideWithValue(session),
