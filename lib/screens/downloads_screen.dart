@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
+import '../config/string_utils.dart';
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
 import '../models/download_item.dart';
@@ -236,7 +237,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.comicName,
+                  Text(stripComicExtension(item.comicName),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -311,7 +312,7 @@ class _DownloadsScreenState extends ConsumerState<DownloadsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.comicName,
+                  Text(stripComicExtension(item.comicName),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -560,7 +561,7 @@ class _IssueRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.comicName,
+                  Text(stripComicExtension(item.comicName),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

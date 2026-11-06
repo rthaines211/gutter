@@ -112,38 +112,6 @@ class SeriesGridTile extends ConsumerWidget {
               right: 6,
               child: CaptionBox(text: 'NEW', comic: comic, rightSide: true),
             ),
-          // Newly added badge (from library rescan), once started: an unread
-          // new series already has NEW, and the two overlapped on the tile.
-          if (series.isRecentlyAdded && !series.isCompleted && !series.isUnread)
-            Positioned(
-              top: 6,
-              left: 6,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppTheme.amber,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.auto_awesome, size: 8, color: Colors.black),
-                    SizedBox(width: 2),
-                    Text(
-                      'ADDED',
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: '.SF Mono',
-                        fontFamilyFallback: ['JetBrains Mono', 'monospace'],
-                        letterSpacing: 0.3,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
           if (onDevice == 0)
             const Positioned(
               bottom: 8,
