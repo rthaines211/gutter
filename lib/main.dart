@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'providers/pro_provider.dart';
 import 'services/source_auth_client.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -50,6 +51,9 @@ void main() async {
       sharedPrefsProvider.overrideWithValue(prefs),
     ],
   );
+  // Listen to StoreKit from launch: purchases approved while the app was
+  // closed (Ask to Buy, a kill mid-purchase) arrive now, not at a paywall.
+  container.read(proProvider);
 
   HeartbeatWriter(
     heartbeatFile: heartbeatFile,

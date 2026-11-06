@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:comic_reader_app/services/app_logger.dart';
 import 'package:comic_reader_app/services/komga_client.dart';
+import 'package:comic_reader_app/services/local_session_store.dart';
 
 Map<String, dynamic> book(String id,
         {double sort = 1, int pages = 20, Map<String, dynamic>? progress, bool deleted = false}) =>
@@ -144,11 +146,23 @@ void main() {
   });
 
   test('settings, sessions and queues stay local', () async {
-    final c = client({});
+    final dir = await Directory.systemTemp.createTemp('komga_sessions_');
+    addTearDown(() => dir.delete(recursive: true));
+    final store = LocalSessionStore('${dir.path}/sessions.json');
+    requests = [];
+    final c = KomgaClient(
+        baseUrl: 'http://k', deviceId: 'd', sessions: store,
+        httpClient: MockClient((req) async {
+          requests.add(req);
+          return http.Response('', 404);
+        }));
     expect(c.getSettings(), throwsUnsupportedError);
     await c.postReadingSession(
         comicId: 'b1', seriesId: 's1', startedAt: DateTime(2024), pagesRead: 3, durationS: 60);
     expect(requests, isEmpty);
+    expect((await store.all()).single.pagesRead, 3);
+    expect((await c.fetchStatsSummary()).allTime.pagesRead, 3);
+    expect((await c.fetchStatsHistory()).total, 1);
   });
 
   test('books that are not READY and deleted series are left out', () async {
