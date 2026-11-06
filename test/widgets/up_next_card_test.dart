@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:comic_reader_app/providers/mirror_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,7 +27,10 @@ Future<void> _pump(WidgetTester t, {double width = 400}) async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   await t.pumpWidget(ProviderScope(
-    overrides: [sharedPrefsProvider.overrideWithValue(prefs)],
+    overrides: [
+      sharedPrefsProvider.overrideWithValue(prefs),
+      issueCoverPathsProvider.overrideWith((ref) => Stream.value(const {})),
+    ],
     child: MaterialApp(
       theme: AppTheme.themeData(Scheme.sepiaPaper),
       home: MediaQuery(

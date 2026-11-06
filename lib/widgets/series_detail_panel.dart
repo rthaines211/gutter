@@ -274,7 +274,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
           NextUpCard(
             issue: resumeIssue,
             accent: widget.accent,
-            coverImageUrl: ref.watch(activeSourceProvider).comicCover(resumeIssue.id),
+            coverImageUrl: ref.watch(issueCoverUrlProvider(resumeIssue.id)),
             onTap: () => _openIssue(detail, resumeIssue),
           ),
           const SizedBox(height: 12),

@@ -1,8 +1,7 @@
 // lib/widgets/issue_grid_view.dart
+import '../providers/mirror_provider.dart';
 import '../providers/providers.dart';
 import 'package:flutter/material.dart';
-import '../providers/source_provider.dart';
-import '../config/source_urls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -32,7 +31,7 @@ class IssueGridTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isInProgress = issue.status == 'in_progress';
     final isCompleted = issue.status == 'completed';
-    final coverUrl = ref.watch(activeSourceProvider).comicCover(issue.id);
+    final coverUrl = ref.watch(issueCoverUrlProvider(issue.id));
     final progress = (issue.currentPage != null && issue.totalPages != null && issue.totalPages! > 0)
         ? issue.currentPage! / issue.totalPages!
         : 0.0;

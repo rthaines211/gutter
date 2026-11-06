@@ -8,6 +8,7 @@ import '../config/app_theme.dart';
 import '../config/comic_style.dart';
 import '../config/scheme.dart';
 import '../models/series.dart';
+import '../providers/mirror_provider.dart';
 import '../providers/download_provider.dart';
 import '../providers/source_provider.dart';
 import '../providers/providers.dart';
@@ -110,10 +111,10 @@ class IssueListRow extends ConsumerWidget {
                   opacity: isCompleted ? 0.55 : 1.0,
                   child: CoverAnchor(
                     comicId: issue.id,
-                    imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
+                    imageUrl: ref.watch(issueCoverUrlProvider(issue.id)),
                     child: CachedNetworkImage(
-                      imageUrl: ref.watch(activeSourceProvider).comicCover(issue.id),
-                      httpHeaders: imageHeadersOf(context, ref.watch(activeSourceProvider).comicCover(issue.id)),
+                      imageUrl: ref.watch(issueCoverUrlProvider(issue.id)),
+                      httpHeaders: imageHeadersOf(context, ref.watch(issueCoverUrlProvider(issue.id))),
                       fit: BoxFit.cover,
                       placeholder: (_, _) => Container(color: context.scheme.s2),
                       errorWidget: (_, _, _) => Container(color: context.scheme.s2),
