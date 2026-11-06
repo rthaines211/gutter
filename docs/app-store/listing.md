@@ -1,13 +1,12 @@
 # App Store Listing
 
 Copy for App Store Connect. Only describe what the build actually does;
-recheck this file after any feature change. Panel zoom on Komga arrives with
-on-device detection (Phase 2): add it to the copy then, not before.
+recheck the copy after any feature change.
 
 ## App Information
 
 - **Name:** Gutter (check availability when creating the app record)
-- **Subtitle (30):** Reader for your Komga server
+- **Subtitle (30):** see `fastlane/metadata/en-US/subtitle.txt`
 - **Bundle ID:** `com.ryanhaines.gutter`
 - **Primary category:** Books · **Secondary:** Entertainment
 - **Privacy policy URL:** `https://github.com/rthaines211/gutter/blob/main/PRIVACY.md`
@@ -20,44 +19,15 @@ on-device detection (Phase 2): add it to the copy then, not before.
 - **Type:** Non-consumable · **Product ID:** `com.ryanhaines.gutter.pro`
 - **Reference name:** Gutter Pro · **Price:** $12.99 (tier closest)
 - **Display name:** Gutter Pro
-- **Description (55):** Downloads, spread zoom, more servers and stats.
+- **Description (55):** Downloads, guided zoom, more servers and stats.
 - Attach it to the first version you submit; it needs its own review screenshot (the Pro sheet).
 
-## Promotional text (170)
+## Store copy
 
-Read the comics on your own Komga server, with spread zoom, offline downloads and progress that stays in sync.
-
-## Description
-
-Gutter is a comic reader for your own comic server.
-
-Connect to Komga with your username and password or an API key, and your
-whole library shows up: series, covers, and where you left off.
-
-READING
-• Fit to screen, width or height, with smooth page turns
-• Progress syncs both ways with your server
-
-YOUR LIBRARY
-• Fast, searchable library with filters and sorting
-• Reading queues to plan what's next
-• Works from your saved library when your server is out of reach
-
-GUTTER PRO (one-time purchase, no subscription)
-• Offline downloads: take issues with you
-• Two-page spreads detected and zoomed half by half
-• More than one server
-• Reading stats: streaks, pages per day, top series
-
-PRIVACY
-Gutter collects nothing. No accounts, analytics, ads or tracking. It talks
-only to the servers you add.
-
-Gutter doesn't include or sell comics. You need your own Komga server.
-
-## Keywords (100)
-
-comic,comics,reader,komga,cbz,cbr,manga,self-hosted,library,graphic novel,offline,server
+The name, subtitle, promotional text, description, keywords, release notes
+and URLs live in `fastlane/metadata/en-US/`, and the App Review notes in
+`fastlane/metadata/review_information/notes.txt`. Edit them there, not here.
+Run the `listing-accuracy` check after any feature change.
 
 ## App Privacy
 
