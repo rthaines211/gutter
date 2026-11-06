@@ -5,6 +5,8 @@ import 'providers.dart';
 
 final smartFilterListProvider =
     FutureProvider.autoDispose<List<SmartFilter>>((ref) async {
+  // Smart filters live on a Gutter server; Komga and Kavita have none.
+  if (!ref.watch(isCustomSourceProvider)) return const [];
   final client = ref.watch(apiClientProvider);
   return client.fetchSmartFilters();
 });
