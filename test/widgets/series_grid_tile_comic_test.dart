@@ -51,7 +51,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text('NEW'), findsOneWidget);
-      // One badge: an unread new series shows NEW, not NEW and ADDED.
+      // One badge only: there is no separate ADDED badge.
       expect(find.text('ADDED'), findsNothing);
     });
   }

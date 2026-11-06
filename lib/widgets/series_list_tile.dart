@@ -76,7 +76,8 @@ class SeriesListTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (series.isRecentlyAdded) ...[
+                      // Same rule as the grid tile's NEW badge.
+                      if (series.isUnread && series.isRecentlyAdded && !series.isCompleted) ...[
                         const SizedBox(width: 6),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
@@ -85,7 +86,7 @@ class SeriesListTile extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Text(
-                            'ADDED',
+                            'NEW',
                             style: TextStyle(
                               fontSize: 8,
                               fontWeight: FontWeight.w800,
