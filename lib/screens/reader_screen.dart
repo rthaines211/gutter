@@ -215,6 +215,9 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   /// path.
   bool _awayFromReader = false;
 
+  /// The session tracker was paused by the app going to the background.
+  bool _sessionPausedByLifecycle = false;
+
   /// Undoable jump. [_jumpOrigin] is the page read before the first jump
   /// (null = no chip); [_jumpTarget] the page jumped to. [_jumpUndone] means
   /// the reader is back on the origin and the chip offers Forward.
@@ -446,11 +449,16 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final currentPage = _lastReaderStateCapture?.currentPage ?? widget.initialPage;
-    if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive) {
+    // Not on inactive: in iPhone Duo / iPad Split View the reader stays on
+    // screen while inactive, and Control Center or a notification only
+    // makes it inactive. Only a real pause ends the session.
+    if (state == AppLifecycleState.paused) {
       _sessionTracker.pause(currentPage);
+      _sessionPausedByLifecycle = true;
     } else if (state == AppLifecycleState.resumed) {
-      _sessionTracker.resume(currentPage);
+      // resume() restarts the clock, so only after a real pause.
+      if (_sessionPausedByLifecycle) _sessionTracker.resume(currentPage);
+      _sessionPausedByLifecycle = false;
       // Timers do not run reliably while suspended — recheck the deadline.
       SleepTimer.instance.resync();
       // resync() cancels any overdue warn timer and _armFor won't reschedule

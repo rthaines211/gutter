@@ -17,6 +17,8 @@ class LayoutBreakpoint {
     final views = PlatformDispatcher.instance.views;
     if (views.isEmpty) return 'iPad';
     final d = views.first.display;
-    return d.size.shortestSide / d.devicePixelRatio >= 600 ? 'iPad' : 'iPhone';
+    // 700, not 600: the iPhone Duo's inner screen is 626pt; the smallest
+    // iPad (mini) is 744pt.
+    return d.size.shortestSide / d.devicePixelRatio >= 700 ? 'iPad' : 'iPhone';
   }
 }
