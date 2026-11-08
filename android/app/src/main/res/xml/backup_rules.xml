@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and lower. Downloads and synced covers are re-fetchable and can
+     be GBs (Auto Backup stops at 25 MB); path_provider's documents dir is
+     files/../app_flutter. -->
+<full-backup-content>
+    <exclude domain="root" path="app_flutter/downloads/" />
+    <exclude domain="root" path="app_flutter/covers/" />
+</full-backup-content>

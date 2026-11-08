@@ -20,10 +20,22 @@ import 'services/error_capture.dart';
 import 'services/heartbeat_writer.dart';
 import 'services/memory_pressure_watcher.dart';
 import 'config/flavor.dart';
+import 'config/platform.dart';
 import 'services/push_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Android 15 forces edge-to-edge; draw under transparent bars everywhere
+  // and let SafeArea/MediaQuery padding keep content clear (as on iOS).
+  if (isAndroid) {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarContrastEnforced: false,
+    ));
+  }
 
   // Tuned for iPad memory budget. Prefetcher only holds ~5-8 pages ahead;
   // the rest is LRU-cached recently-viewed pages which can be evicted safely.
@@ -87,7 +99,8 @@ void main() async {
 
   // After the first frame so a cold-start tap can push onto a live navigator.
   // Push is personal-only: the store app has no aps-environment entitlement.
-  if (!isStore) {
+  // APNs only: no Android push.
+  if (!isStore && !isAndroid) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     final push = PushService(
       channel: const MethodChannel('app.comic_reader/push'),

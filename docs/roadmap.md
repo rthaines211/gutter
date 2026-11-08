@@ -31,7 +31,6 @@ and are rough.
 ## Android (~5–8 weeks)
 
 - No `Platform.isIOS` checks, no Cupertino widgets; all plugins support Android.
-- No `android/` folder yet (`flutter create --platforms=android .`).
 - Native work: `files` channel (~30 lines Kotlin); panel model: export
   `panel-ft-r2.pt` to TFLite/ONNX + Kotlin bridge (2–4 days). `push` and
   `open_url` are personal-only, skip.
@@ -40,6 +39,21 @@ and are rough.
 - Play Store: new personal accounts need a closed test with 12 testers for
   14 days before production.
 - First step: run on the emulator against the demo Komga (ask first, heavy build).
+- Started (Lane 2, Wave 1): `android/` exists (`com.ryanhaines.gutter`,
+  "Gutter"). Done: cleartext + user-CA network config, Kotlin `files` channel
+  (free space; backup exclusion via `res/xml` rules), edge-to-edge,
+  predictive back, platform-neutral copy (`isAndroid` in
+  `lib/config/platform.dart`; `deviceNoun` says tablet/phone), hinge-aware
+  split views (`splitPanelFraction`), Play Billing launch restore +
+  acknowledge. Sleep "Run Shortcut" rows hidden (iOS Shortcuts).
+- TODO: port the panel model (TFLite/ONNX + Kotlin `panels` channel). Until
+  then `onDevicePanels` is false on Android: Komga/Kavita get no ZOOM row,
+  Gutter servers keep server-side Panels/Bubbles.
+- TODO: first `flutter build apk` + emulator/device run (not yet built:
+  the session that added `android/` had no Android SDK), upload key +
+  signing config, Play Console app + `com.ryanhaines.gutter.pro` one-time
+  product (see `docs/app-store/play-console.md`), icons, launch theme colour,
+  personal flavor (if wanted).
 
 ## PDF
 

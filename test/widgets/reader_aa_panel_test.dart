@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
+import 'package:comic_reader_app/config/platform.dart';
 import 'package:comic_reader_app/models/reader_settings.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart' show isCustomSourceProvider, sharedPrefsProvider;
@@ -83,6 +84,23 @@ void main() {
     await pump(t, gutterServer: false);
     expect(find.text('Panels'), findsOneWidget);
     expect(find.text('Bubbles'), findsNothing);
+  });
+
+  group('Android (no on-device panel model yet)', () {
+    setUp(() => isAndroid = true);
+    tearDown(() => isAndroid = false);
+
+    testWidgets('on Komga: no ZOOM row at all', (t) async {
+      await pump(t, gutterServer: false);
+      expect(find.text('ZOOM'), findsNothing);
+      expect(find.text('Panels'), findsNothing);
+    });
+
+    testWidgets('on a Gutter server: server panels and bubbles stay', (t) async {
+      await pump(t);
+      expect(find.text('Panels'), findsOneWidget);
+      expect(find.text('Bubbles'), findsOneWidget);
+    });
   });
 
   testWidgets('Paper sets theme to white', (t) async {

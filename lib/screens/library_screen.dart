@@ -243,8 +243,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
       tablet: tablet,
     );
     // Handoff: detail panel is 40% wide in landscape, 46% in portrait.
-    final panelFraction =
-        MediaQuery.orientationOf(context) == Orientation.portrait ? 0.46 : 0.40;
+    final panelFraction = LayoutBreakpoint.splitPanelFraction(context);
 
     return Scaffold(
       backgroundColor: context.scheme.bg,

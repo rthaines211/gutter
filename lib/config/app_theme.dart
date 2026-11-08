@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'platform.dart';
 import 'scheme.dart';
 import 'comic_style.dart';
 
@@ -129,6 +131,13 @@ class AppTheme {
           .textTheme
           .apply(bodyColor: scheme.tx, displayColor: scheme.tx),
       extensions: [scheme],
+      // Android: pages follow the predictive back gesture (the manifest opts
+      // in). Elsewhere the platform defaults stay.
+      pageTransitionsTheme: isAndroid
+          ? const PageTransitionsTheme(builders: {
+              TargetPlatform.android: PredictiveBackPageTransitionsBuilder(),
+            })
+          : null,
     );
   }
 }

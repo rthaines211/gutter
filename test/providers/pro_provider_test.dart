@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
+import 'package:comic_reader_app/config/platform.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/services/pro_store.dart';
@@ -92,6 +93,25 @@ void main() {
     test('a cached unlock survives a relaunch with no store events', () async {
       final (c, _) = await container({'pro_unlocked': true});
       expect(c.read(proProvider), isTrue);
+    });
+
+    test('iOS: no restore at launch (StoreKit re-delivers on its own)', () async {
+      final (c, store) = await container();
+      c.read(proProvider);
+      await pumpEventQueue();
+      expect(store.restores, 0);
+    });
+
+    test('Android: asks Play for owned purchases at launch, and acknowledges them', () async {
+      isAndroid = true;
+      addTearDown(() => isAndroid = false);
+      final (c, store) = await container({'pro_unlocked': true});
+      c.read(proProvider);
+      await pumpEventQueue();
+      expect(store.restores, 1);
+      store.controller.add([purchase(PurchaseStatus.restored, pending: true)]);
+      await pumpEventQueue();
+      expect(store.completed, hasLength(1), reason: 'Play refunds unacknowledged purchases');
     });
 
     test('buy asks the store for the Pro product', () async {

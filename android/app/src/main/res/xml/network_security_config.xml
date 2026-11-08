@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Users point Gutter at their own servers, often plain http on a LAN IP or
+     a .local name, so cleartext is allowed everywhere (iOS: NSAllowsArbitraryLoads).
+     User-installed CAs are trusted too, for servers behind a home CA. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
