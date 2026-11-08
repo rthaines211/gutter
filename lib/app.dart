@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'providers/providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/app_theme.dart';
@@ -31,17 +32,13 @@ class ComicReaderApp extends ConsumerWidget {
       title: appName,
       theme: AppTheme.themeData(scheme),
       navigatorObservers: [
-        BreadcrumbRouteObserver(onRoute: (route) {
-          // The Navigator reports its initial route while it is first built,
-          // and Riverpod asserts on provider writes mid-build (a red screen
-          // at launch in debug builds). Defer those to after the frame.
-          final binding = SchedulerBinding.instance;
-          if (binding.schedulerPhase == SchedulerPhase.persistentCallbacks) {
-            binding.addPostFrameCallback((_) => breadcrumbs.setRoute(route));
-          } else {
-            breadcrumbs.setRoute(route);
-          }
-        }),
+        // The Navigator reports its initial route while it is first built
+        // (from runApp's root attach, outside any frame), and Riverpod
+        // asserts on provider writes mid-build: a red screen at launch in
+        // debug builds. A microtask runs once that build has unwound.
+        BreadcrumbRouteObserver(
+          onRoute: (route) => scheduleMicrotask(() => breadcrumbs.setRoute(route)),
+        ),
         RootRouteObserver(),
       ],
       // No server yet (every fresh store install) reads as offline: skip the
