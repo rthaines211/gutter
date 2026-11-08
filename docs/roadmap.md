@@ -5,16 +5,25 @@ and are rough.
 
 | Priority | Item | Why |
 |---|---|---|
-| Now | Xcode 27.x build (needs macOS 26.6 first) | Fills the iPhone Duo inner screen; App Store will require the SDK |
+| Now | Xcode 27.x build (macOS 27.2 installed; install Xcode 27.2) | Fills the iPhone Duo inner screen; App Store will require the SDK |
 | Now | PDF test on the demo Komga/Kavita (10 min) | Shows whether app users can already read PDFs |
 | Next | Android app | Biggest new audience; Komga/Kavita users need no Gutter server |
 | Then | OPDS + KOReader sync in gutter-server | Cheap; covers e-ink and other reader apps |
-| Then | PDF support in gutter-server | Many DRM-free comic sales (e.g. Humble bundles) ship PDF |
+| Later | PDF support in gutter-server | Some DRM-free sales ship only PDF; Humble comic bundles usually offer CBZ too |
 | Later | Mac server app (DMG first, App Store after a spike) | Only helps Gutter server users |
 | Later | Two-page mode | Helps iPad, Duo, Android tablets and desktop |
 | Later | Windows app | Same Go server and Flutter code; wrapper differs |
 | Skip | Kobo Sync, Send to Kindle | Brittle or one-way; Komga and KCC cover them |
 | Skip | Humble Bundle library integration | No official customer API; see below |
+
+## Parallel work (waves)
+
+- Wave 1 (started 2026-11-08): cloud sessions for OPDS + KOReader sync
+  (gutter-server) and Android (gutter). Mac server app spike waits for Xcode 27.
+- Wave 2: install Xcode 27 with no local agents running; Mac app spike;
+  Android device test; deploy OPDS.
+- Wave 3: full Mac app, two-page mode (after Android merges), Windows.
+- Limit: review and device tests. About 3 lanes at once.
 
 ## iPhone Duo
 
@@ -88,7 +97,7 @@ and are rough.
   that can break and may break Humble's terms; a store app logging into it is
   an App Review risk. Instead: users download with Humble's site or a
   community downloader into their comics folder, and the server scans it.
-  This needs PDF support to be useful.
+  Humble comic bundles usually offer CBZ, which works today.
 
 - Kobo Sync: reverse-engineered Kobo store API, 3–6 weeks, breaks when Kobo
   changes it. Komga handles it.
