@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../providers/providers.dart';
 import 'pro_sheet.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../config/app_theme.dart';
@@ -11,6 +10,7 @@ import '../providers/accent_provider.dart';
 import '../providers/rail_side_provider.dart';
 import '../providers/zone_peek_provider.dart';
 import '../config/layout_breakpoint.dart';
+import '../config/platform.dart';
 import 'reader_settings_form.dart';
 
 /// The one "Aa" reader settings panel, hosted in a popover on iPad and a
@@ -138,18 +138,20 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
           ),
           gap,
           // Balloon data comes only from a Gutter server; panels are found on
-          // the device for other sources.
-          seg(
-            'ZOOM',
-            ['Off', 'Panels', if (gutter) 'Bubbles'],
-            ['off', 'panels', if (gutter) 'bubbles'],
-            _s.zoomMode,
-            (v) => v == 'off' ||
-                    requirePro(context, ref, reason: 'Guided zoom is part of Pro.')
-                ? _s.copyWith(zoomMode: v)
-                : null,
-          ),
-          gap,
+          // the device for other sources (not on Android yet: no row there).
+          if (gutter || onDevicePanels) ...[
+            seg(
+              'ZOOM',
+              ['Off', 'Panels', if (gutter) 'Bubbles'],
+              ['off', 'panels', if (gutter) 'bubbles'],
+              _s.zoomMode,
+              (v) => v == 'off' ||
+                      requirePro(context, ref, reason: 'Guided zoom is part of Pro.')
+                  ? _s.copyWith(zoomMode: v)
+                  : null,
+            ),
+            gap,
+          ],
           section(
             'BACKGROUND',
             SettingsSwatchRow(

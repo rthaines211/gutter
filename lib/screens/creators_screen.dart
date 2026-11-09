@@ -189,10 +189,7 @@ class _CreatorsScreenState extends ConsumerState<CreatorsScreen> {
         isTablet, columns);
 
     if (isTablet && _selected != null) {
-      final panelFraction =
-          MediaQuery.orientationOf(context) == Orientation.portrait
-              ? 0.46
-              : 0.40;
+      final panelFraction = LayoutBreakpoint.splitPanelFraction(context);
       return LayoutBuilder(builder: (context, box) {
         final panelWidth = box.maxWidth * panelFraction;
         final gridWidth = box.maxWidth - panelWidth;

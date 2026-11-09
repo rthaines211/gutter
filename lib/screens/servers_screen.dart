@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../config/app_theme.dart';
+import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
 import '../models/server_source.dart';
 import '../providers/accent_provider.dart';
@@ -81,7 +82,7 @@ class ServersScreen extends ConsumerWidget {
       if (!sameServer(s, found) &&
           !await confirmLeaveServer(ctx, ref, s,
               title: 'Replace ${s.name}?',
-              body: 'Its library and downloads on this iPad are removed.',
+              body: 'Its library and downloads on this ${LayoutBreakpoint.deviceNoun} are removed.',
               action: 'Replace')) {
         return;
       }
@@ -103,8 +104,8 @@ class ServersScreen extends ConsumerWidget {
       BuildContext context, WidgetRef ref, ServerSource s) async {
     if (!await confirmLeaveServer(context, ref, s,
         title: 'Sign out of ${s.name}?',
-        body: 'Its library, downloads and reading stats on this iPad are '
-            'removed.',
+        body: 'Its library, downloads and reading stats on this '
+            '${LayoutBreakpoint.deviceNoun} are removed.',
         action: 'Sign out')) {
       return;
     }

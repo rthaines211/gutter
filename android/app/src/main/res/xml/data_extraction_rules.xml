@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+. Same exclusions as backup_rules.xml. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="app_flutter/downloads/" />
+        <exclude domain="root" path="app_flutter/covers/" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" path="app_flutter/downloads/" />
+        <exclude domain="root" path="app_flutter/covers/" />
+    </device-transfer>
+</data-extraction-rules>

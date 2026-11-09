@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
+import '../config/platform.dart';
 import '../config/scheme.dart';
 import '../models/reader_settings.dart';
 import '../services/sleep_shortcut.dart';
@@ -460,6 +461,8 @@ List<Widget> sleepSettingsRows({
           onChanged: (v) =>
               onChanged(settings.copyWith(sleepWarningSec: int.parse(v))),
         ),
+        // Shortcuts is iOS-only.
+        if (!isAndroid)
         Consumer(
           builder: (context, ref, _) => Column(mainAxisSize: MainAxisSize.min, children: [
             SettingsToggleRow(

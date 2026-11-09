@@ -3,13 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../config/app_theme.dart';
+import '../config/platform.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/pro_provider.dart';
 
-const _features = [
+List<(IconData, String)> get _features => [
   (Icons.download_for_offline_outlined, 'Offline downloads'),
-  (Icons.center_focus_strong_outlined, 'Guided zoom: panels and spreads'),
+  // Android has no on-device panel model yet: panels need a Gutter server.
+  (Icons.center_focus_strong_outlined, onDevicePanels
+      ? 'Guided zoom: panels and spreads'
+      : 'Guided zoom: spreads, and panels on Gutter servers'),
   (Icons.dns_outlined, 'More than one server'),
   (Icons.insights_outlined, 'Reading stats'),
 ];
@@ -64,7 +68,7 @@ class _ProSheetState extends ConsumerState<ProSheet> {
     try {
       await container.read(proProvider.notifier).restore();
     } catch (_) {
-      _say(messenger, "Couldn't reach the App Store. Try again later.");
+      _say(messenger, "Couldn't reach $storeName. Try again later.");
       return;
     }
     await Future<void>.delayed(const Duration(seconds: 5));

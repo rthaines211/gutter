@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../config/flavor.dart';
+import '../config/platform.dart';
 import '../services/pro_store.dart';
 import 'providers.dart';
 
@@ -19,8 +20,13 @@ class ProNotifier extends Notifier<bool> {
   @override
   bool build() {
     if (!isStore) return true;
-    final sub = ref.read(proStoreProvider).purchases.listen(_onPurchases);
+    final store = ref.read(proStoreProvider);
+    final sub = store.purchases.listen(_onPurchases);
     ref.onDispose(sub.cancel);
+    // Play Billing doesn't re-deliver at launch the way StoreKit does: ask for
+    // owned purchases (no UI) so one finished while the app was closed unlocks,
+    // and an unacknowledged one is acknowledged before Play refunds it (3 days).
+    if (isAndroid) store.restore().catchError((_) {});
     return ref.read(sharedPrefsProvider).getBool(_unlockedKey) ?? false;
   }
 
@@ -33,7 +39,8 @@ class ProNotifier extends Notifier<bool> {
         state = true;
         await ref.read(sharedPrefsProvider).setBool(_unlockedKey, true);
       }
-      // StoreKit re-delivers every uncompleted transaction on launch.
+      // StoreKit re-delivers every uncompleted transaction on launch; on
+      // Play, completing acknowledges.
       if (p.pendingCompletePurchase) await store.complete(p);
     }
   }

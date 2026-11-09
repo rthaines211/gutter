@@ -4,6 +4,8 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../config/platform.dart';
+
 /// On-device panel detection for sources without server sidecars (Komga): the
 /// bundled YOLOX-S Core ML model (Apache-2.0, `ios/Runner/PanelDetector.mlpackage`)
 /// behind the `app.comic_reader/panels` channel, then the cutoff, NMS and
@@ -22,6 +24,8 @@ const _channel = MethodChannel('app.comic_reader/panels');
 /// [image]'s panels in reading order, in page pixels; null when the model can't
 /// run here (not iOS, or it failed to load).
 Future<List<ui.Rect>?> detectPanels(ui.Image image) async {
+  // TODO(android): port the model (TFLite/ONNX + Kotlin bridge); see docs/roadmap.md.
+  if (!onDevicePanels) return null;
   final input = await letterbox(image);
   final Float32List? raw;
   try {
