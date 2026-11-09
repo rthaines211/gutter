@@ -8,7 +8,7 @@ and are rough.
 | Now | Xcode 27.x build (macOS 27.2 installed; install Xcode 27.2) | Fills the iPhone Duo inner screen; App Store will require the SDK |
 | Now | PDF test on the demo Komga/Kavita (10 min) | Shows whether app users can already read PDFs |
 | Next | Android app | Biggest new audience; Komga/Kavita users need no Gutter server |
-| Done, untested | OPDS + KOReader sync in gutter-server (gutter-server PR #2, merged 2026-11-08) | Needs deploy and device tests |
+| Done, deployed | OPDS + KOReader sync in gutter-server (gutter-server PR #2, merged 2026-11-08) | Deployed 2026-11-09; kosync API checked; OPDS client test left |
 | Later | PDF support in gutter-server | Some DRM-free sales ship only PDF; Humble comic bundles usually offer CBZ too |
 | Later | Mac server app (DMG first, App Store after a spike) | Only helps Gutter server users |
 | Later | Two-page mode | Helps iPad, Duo, Android tablets and desktop |
@@ -82,10 +82,12 @@ and are rough.
   + empty trash, Kavita forced scan), open it in Gutter on each. If Kavita
   fails, hide or label PDF books from Kavita until fixed.
 
-## OPDS + KOReader sync (done, needs testing)
+## OPDS + KOReader sync (deployed)
 
-- Status: merged in gutter-server PR #2 (2026-11-08). Not deployed and not
-  tried on a device. Setup and known limits: gutter-server
+- Status: merged in gutter-server PR #2 (2026-11-08), deployed 2026-11-09.
+  kosync checked by hand with curl (login, push, pull). No KOReader device, so
+  the KOReader steps below stay untested; OPDS still needs a client test
+  (Panels or Chunky on the iPad). Setup and known limits: gutter-server
   `docs/OPDS-KOREADER.md`.
 - Built: OPDS 1.2 catalog at `/opds/` (series, recent, in-progress, search,
   raw CBZ/CBR download, OPDS-PSE page streaming) and a kosync server at
