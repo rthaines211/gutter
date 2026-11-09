@@ -8,7 +8,7 @@ and are rough.
 | Now | Xcode 27.x build (macOS 27.2 installed; install Xcode 27.2) | Fills the iPhone Duo inner screen; App Store will require the SDK |
 | Now | PDF test on the demo Komga/Kavita (10 min) | Shows whether app users can already read PDFs |
 | Next | Android app | Biggest new audience; Komga/Kavita users need no Gutter server |
-| Then | OPDS + KOReader sync in gutter-server | Cheap; covers e-ink and other reader apps |
+| Done, untested | OPDS + KOReader sync in gutter-server (gutter-server PR #2, merged 2026-11-08) | Needs deploy and device tests |
 | Later | PDF support in gutter-server | Some DRM-free sales ship only PDF; Humble comic bundles usually offer CBZ too |
 | Later | Mac server app (DMG first, App Store after a spike) | Only helps Gutter server users |
 | Later | Two-page mode | Helps iPad, Duo, Android tablets and desktop |
@@ -19,7 +19,8 @@ and are rough.
 ## Parallel work (waves)
 
 - Wave 1 (started 2026-11-08): cloud sessions for OPDS + KOReader sync
-  (gutter-server) and Android (gutter). Mac server app spike waits for Xcode 27.
+  (gutter-server, merged as PR #2, not yet deployed or tested) and Android
+  (gutter). Mac server app spike waits for Xcode 27.
 - Wave 2: install Xcode 27 with no local agents running; Mac app spike;
   Android device test; deploy OPDS.
 - Wave 3: full Mac app, two-page mode (after Android merges), Windows.
@@ -67,14 +68,26 @@ and are rough.
   + empty trash, Kavita forced scan), open it in Gutter on each. If Kavita
   fails, hide or label PDF books from Kavita until fixed.
 
-## OPDS + KOReader sync (~2 weeks)
+## OPDS + KOReader sync (done, needs testing)
 
-- gutter-server has neither today. Komga already has OPDS, Kobo Sync and
-  KOReader Sync.
+- Status: merged in gutter-server PR #2 (2026-11-08). Not deployed and not
+  tried on a device. Setup and known limits: gutter-server
+  `docs/OPDS-KOREADER.md`.
+- Built: OPDS 1.2 catalog at `/opds/` (series, recent, in-progress, search,
+  raw CBZ/CBR download, OPDS-PSE page streaming) and a kosync server at
+  `/kosync/` that maps KOReader pages to Gutter's reading progress both ways.
+- To test after deploy (Wave 2):
+  - KOReader on Kobo: add the catalog, download an issue, stream an issue.
+  - KOReader sync: read a few pages, check the Gutter app shows the same page;
+    then read further in Gutter and check KOReader picks it up.
+  - Panels and Chunky on iPad: browse, stream pages, check the last page read.
+  - A large library: the first sync of an unknown book scans for KOReader
+    digests (capped at 10s per request).
+- Known risks: page order can differ between KOReader and Gutter on oddly
+  named archives; KOReader may not open CBR.
+- Komga already has OPDS, Kobo Sync and KOReader Sync.
 - OPDS (+ OPDS-PSE page streaming) reaches KOReader on Kobo and jailbroken
   Kindles, plus Panels/Chunky and similar apps.
-- KOReader sync is a few progress endpoints. Mapping KEPUB/EPUB positions to
-  page numbers is the risky part.
 - Test first: Kobo on the demo Komga + Gutter on iPad. If progress syncs both
   ways, Komga users already have Kobo support.
 
