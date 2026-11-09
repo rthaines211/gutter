@@ -16,6 +16,7 @@ import '../models/series.dart';
 import '../widgets/cover_flight_route.dart';
 import '../widgets/end_card_page.dart';
 import '../widgets/jump_back_chip.dart';
+import '../services/review_prompt.dart';
 import '../services/api_client.dart';
 import '../widgets/page_reader.dart';
 import '../widgets/scroll_reader.dart';
@@ -1547,10 +1548,12 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       onBackToSeries: () async {
         await _markCurrentCompletedAndFlushSession();
         if (mounted) Navigator.of(context).pop();
+        unawaited(ReviewPrompt.maybeAsk());
       },
       onClose: () async {
         await _markCurrentCompletedAndFlushSession();
         if (mounted) Navigator.of(context).pop();
+        unawaited(ReviewPrompt.maybeAsk());
       },
     );
   }
@@ -1566,6 +1569,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final state = ref.read(readerProvider(_readerKey)).value;
     final pageCount = state?.info?.pageCount ?? 0;
     if (pageCount > 0) {
+      unawaited(ReviewPrompt.recordFinish());
       // Local-first: mark completed in the mirror so shelves update instantly
       // even if the network write fails.
       await ref.read(mirrorDbProvider).saveProgressLocal(
