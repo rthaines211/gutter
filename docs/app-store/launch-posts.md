@@ -36,7 +36,7 @@ servers you add.
 
 Not supported yet: Android (in progress). iOS and iPadOS only.
 
-App Store: https://apps.apple.com/app/id6831270255
+App Store: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255
 Issues and feedback: https://github.com/rthaines211/gutter/issues
 
 Happy to answer questions.
@@ -64,7 +64,7 @@ Things I cared about as a reader:
 It is free to read. Pro is a single $12.99 purchase, not a subscription.
 No ads, no tracking.
 
-App Store: https://apps.apple.com/app/id6831270255
+App Store: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255
 
 ---
 
@@ -83,7 +83,7 @@ Free to read and sync. A one-time $12.99 Pro unlock adds offline
 downloads, guided zoom, more than one server and reading stats. No
 subscription, no analytics.
 
-App Store: https://apps.apple.com/app/id6831270255
+App Store: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255
 Bugs and requests: https://github.com/rthaines211/gutter/issues
 
 If anything acts up against your Komga version, please open an issue with
@@ -109,7 +109,7 @@ Free to read and sync. A one-time $12.99 Pro unlock adds offline
 downloads, guided zoom, more than one server and reading stats. No
 subscription, no analytics.
 
-App Store: https://apps.apple.com/app/id6831270255
+App Store: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255
 Bugs and requests: https://github.com/rthaines211/gutter/issues
 
 If anything acts up against your Kavita version, please open an issue with
@@ -130,7 +130,7 @@ Komga's docs list third-party clients. Open a pull request on the docs repo
 >
 > - Platform: iOS / iPadOS
 > - Price: free, with an optional one-time in-app purchase
-> - App Store: https://apps.apple.com/app/id6831270255
+> - App Store: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255
 > - Source: https://github.com/rthaines211/gutter
 >
 > Happy to change the wording or format to match the page.
