@@ -27,6 +27,7 @@ class ComicReaderApp extends ConsumerWidget {
         ref.watch(activeSourceProvider.select((s) => s.baseUrl.isEmpty));
     return MaterialApp(
       navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
       title: appName,
       theme: AppTheme.themeData(scheme),
       navigatorObservers: [
