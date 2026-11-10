@@ -150,6 +150,50 @@ void main() {
     expect(await queue.pendingCount, 0);
   });
 
+  test('a new address on the same source id starts a sync at once', () async {
+    // Onboarding fills in the blank default source and keeps its id. The
+    // first sync then waited for the next health poll (up to 30 s) while the
+    // first-sync card said "Couldn't reach <server>".
+    final synced = <String>[];
+    final mirrorDb = MirrorDatabase(NativeDatabase.memory());
+    addTearDown(mirrorDb.close);
+    final source = _SourceBox();
+    final container = ProviderContainer(overrides: [
+      // As in the app: the client is rebuilt from the active source.
+      apiClientProvider.overrideWith((ref) => ApiClient(
+            baseUrl: ref.watch(_sourceBoxProvider).baseUrl,
+            deviceId: 'test',
+            httpClient: MockClient((r) async {
+              if (r.url.path == '/sync') synced.add(r.url.host);
+              return http.Response('{}', 200);
+            }),
+          )),
+      syncQueueProvider.overrideWithValue(queue),
+      mirrorDbProvider.overrideWithValue(mirrorDb),
+      _sourceBoxProvider.overrideWith(() => source),
+      activeSourceProvider.overrideWith((ref) => ref.watch(_sourceBoxProvider)),
+    ]);
+    addTearDown(container.dispose);
+    final notifier = container.read(connectivityProvider.notifier);
+    Future<void> settle() async {
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      final drain = notifier.drainInFlightForTesting;
+      if (drain != null) await drain;
+    }
+    addTearDown(settle);
+
+    await settle();
+    expect(synced, isNot(contains('other')));
+
+    source.set(ServerSource.createDefault(url: 'http://other:8080'));
+    // The UI watches the engine; a bare container needs a read to flush the
+    // change to listeners.
+    container.read(syncEngineProvider);
+    await settle();
+
+    expect(synced, contains('other'));
+  });
+
   test('onAppResumed triggers an immediate check', () async {
     var callCount = 0;
     final container = makeContainer(
@@ -286,4 +330,15 @@ void main() {
 
     expect(notifier.syncTimerActiveForTesting, isTrue);
   });
+}
+
+final _sourceBoxProvider =
+    NotifierProvider<_SourceBox, ServerSource>(_SourceBox.new);
+
+class _SourceBox extends Notifier<ServerSource> {
+  @override
+  ServerSource build() =>
+      ServerSource.createDefault(url: 'http://first:8080');
+
+  void set(ServerSource s) => state = s;
 }
