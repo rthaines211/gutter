@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../models/arc.dart';
+import '../../models/bookmark.dart';
 import '../../models/reading_progress.dart';
 import '../../models/reading_queue.dart';
 import '../../models/series.dart';
@@ -119,6 +120,18 @@ class PanelRows extends Table {
   Set<Column> get primaryKey => {comicId, page};
 }
 
+/// Reader bookmarks. Local is the source of truth: no server returns them, and
+/// Komga and Kavita have nowhere to keep them.
+class BookmarkRows extends Table {
+  TextColumn get comicId => text()();
+  IntColumn get pageNum => integer()();
+  TextColumn get note => text().nullable()();
+  TextColumn get createdAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {comicId, pageNum};
+}
+
 /// A series plus progress-derived aggregates the Series payload can't carry.
 class MirrorSeries {
   final Series series;
@@ -146,7 +159,7 @@ String serverTimestamp(DateTime t) {
 
 @DriftDatabase(tables: [
   SeriesRows, IssueRows, ProgressRows, SyncState, QueueRows, QueueItemRows,
-  ArcRows, ArcItemRows, PanelRows,
+  ArcRows, ArcItemRows, PanelRows, BookmarkRows,
 ])
 class MirrorDatabase extends _$MirrorDatabase {
   MirrorDatabase(super.e);
@@ -155,7 +168,7 @@ class MirrorDatabase extends _$MirrorDatabase {
       MirrorDatabase(driftDatabase(name: 'mirror_$sourceId'));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -211,6 +224,9 @@ class MirrorDatabase extends _$MirrorDatabase {
           if (from < 8) {
             await m.createTable(panelRows);
           }
+          if (from < 9) {
+            await m.createTable(bookmarkRows);
+          }
         },
       );
 
@@ -220,6 +236,39 @@ class MirrorDatabase extends _$MirrorDatabase {
           .getSingleOrNull();
 
   Future<void> savePanels(PanelRow row) => into(panelRows).insertOnConflictUpdate(row);
+
+  Future<List<Bookmark>> bookmarksFor(String comicId) async {
+    final rows = await (select(bookmarkRows)
+          ..where((t) => t.comicId.equals(comicId))
+          ..orderBy([(t) => OrderingTerm(expression: t.pageNum)]))
+        .get();
+    return [
+      for (final r in rows)
+        Bookmark(
+          id: '',
+          comicId: r.comicId,
+          pageNum: r.pageNum,
+          note: r.note,
+          createdAt: DateTime.tryParse(r.createdAt) ?? DateTime.now(),
+        ),
+    ];
+  }
+
+  /// Replaces the comic's bookmark set with [bookmarks].
+  Future<void> saveBookmarks(String comicId, List<Bookmark> bookmarks) =>
+      transaction(() async {
+        await (delete(bookmarkRows)..where((t) => t.comicId.equals(comicId)))
+            .go();
+        for (final b in bookmarks) {
+          await into(bookmarkRows).insertOnConflictUpdate(
+              BookmarkRowsCompanion.insert(
+            comicId: comicId,
+            pageNum: b.pageNum,
+            note: Value(b.note),
+            createdAt: b.createdAt.toUtc().toIso8601String(),
+          ));
+        }
+      });
 
   /// Applies a /sync delta inside one transaction: upsert changed series
   /// (replacing their issue lists), upsert pulled progress, then prune

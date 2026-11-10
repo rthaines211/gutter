@@ -82,6 +82,51 @@ void main() {
     await disposeReader(tester);
   });
 
+  testWidgets('a bookmark is still there when the comic is reopened',
+      (tester) async {
+    var h = await pumpReader(tester, server: server, tempDir: env);
+    await settleImages(tester);
+    h.notifierOf(tester).toggleBookmark(2);
+    await tester.pump();
+    await tester.runAsync(() => h.notifierOf(tester).saveProgressNow());
+    await settleImages(tester, rounds: 5);
+    final db = h.mirrorDb;
+    await disposeReader(tester);
+
+    h = await pumpReader(tester, server: server, tempDir: env, mirrorDb: db);
+    await settleImages(tester);
+    expect(h.stateOf(tester).bookmarks.map((b) => b.pageNum), [2]);
+
+    // Removing it is remembered too.
+    h.notifierOf(tester).toggleBookmark(2);
+    await tester.pump();
+    await tester.runAsync(() => h.notifierOf(tester).saveProgressNow());
+    await settleImages(tester, rounds: 5);
+    await disposeReader(tester);
+
+    h = await pumpReader(tester, server: server, tempDir: env, mirrorDb: db);
+    await settleImages(tester);
+    expect(h.stateOf(tester).bookmarks, isEmpty);
+    await disposeReader(tester);
+  });
+
+  testWidgets('the bookmark PUT carries no client id', (tester) async {
+    // The server's bookmark id is an integer; a string id failed the whole
+    // progress write with a 400 on servers before the fix.
+    final h = await pumpReader(tester, server: server, tempDir: env);
+    await settleImages(tester);
+    h.notifierOf(tester).toggleBookmark(1);
+    await tester.pump();
+    await tester.runAsync(() => h.notifierOf(tester).saveProgressNow());
+    await settleImages(tester, rounds: 5);
+    final puts = server.requestsWhere(
+        (r) => r.method == 'PUT' && r.path == '/reading/c1');
+    final sent = (puts.last.jsonBody!['bookmarks'] as List).single as Map;
+    expect(sent.containsKey('id'), isFalse);
+    expect(sent['page_num'], 1);
+    await disposeReader(tester);
+  });
+
   testWidgets('reopening at saved page resumes there', (tester) async {
     // Session 1: read to page 6.
     var h = await pumpReader(tester, server: server, tempDir: env);
