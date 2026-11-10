@@ -1,1 +1,5 @@
-First release.
+Bookmarks now stay. A page you bookmark is still marked when you open the comic again, on Gutter, Komga and Kavita servers.
+
+Fixed: with a bookmark set, a finished issue could fail to reach a Gutter server.
+
+After you have finished a few issues, Gutter may ask once whether you would like to rate it. That is the only time it will ask.
