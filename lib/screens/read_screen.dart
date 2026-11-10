@@ -167,7 +167,7 @@ class ReadScreen extends ConsumerWidget {
               comic: comic,
               title: 'Up next',
               trailing: '${data.upNext.length} IN QUEUE',
-              height: 230,
+              height: UpNextCard.shelfHeight(context),
               children: data.upNext.map((p) => UpNextCard(
                 progress: p,
                 serverUrl: serverUrl,
