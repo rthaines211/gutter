@@ -14,7 +14,8 @@ void main() {
   });
   tearDown(() => isStore = false);
 
-  test('asks once, only after the 10th finished issue', () async {
+  test('asks once, only after the 3rd finished issue', () async {
+    expect(ReviewPrompt.threshold, 3);
     for (var i = 0; i < ReviewPrompt.threshold - 1; i++) {
       await ReviewPrompt.recordFinish();
     }

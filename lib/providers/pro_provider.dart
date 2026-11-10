@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/flavor.dart';
 import '../config/platform.dart';
@@ -9,6 +10,22 @@ import '../services/pro_store.dart';
 import 'providers.dart';
 
 const _unlockedKey = 'pro_unlocked';
+
+const zoomTrialKey = 'zoom_trial_comic';
+
+/// Guided zoom without Pro: it works in one issue, the first it is turned on
+/// in. True when [comicId] is that issue; claims it when there is none yet.
+// ponytail: kept in prefs, so a reinstall gives another free issue.
+bool zoomTrialCovers(SharedPreferences prefs, String comicId) {
+  final trial = prefs.getString(zoomTrialKey);
+  if (trial == null) {
+    prefs.setString(zoomTrialKey, comicId);
+    return true;
+  }
+  return trial == comicId;
+}
+
+const zoomTrialOver = 'Guided zoom was free for one issue. It is part of Pro.';
 
 final proStoreProvider = Provider<ProStore>((ref) => InAppPurchaseProStore());
 

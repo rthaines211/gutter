@@ -208,6 +208,7 @@ Future<ReaderHarness> pumpReader(
   Stream<Map<String, dynamic>> Function()? remoteCommands,
   // Pass the previous session's database to test what survives a reopen.
   MirrorDatabase? mirrorDb,
+  Map<String, Object> extraPrefs = const {},
 }) async {
   // The first-run tap-zone hint is covered by its own widget test; mark it
   // already-shown here so it never overlays the reader in these tests. The
@@ -216,6 +217,7 @@ Future<ReaderHarness> pumpReader(
     'server_url': server.url,
     'tap_zone_onboarding_v2_shown': true,
     'bedtime_reminder_on': false,
+    ...extraPrefs,
   });
   final prefs = await SharedPreferences.getInstance();
   final db = mirrorDb ?? MirrorDatabase(NativeDatabase.memory());

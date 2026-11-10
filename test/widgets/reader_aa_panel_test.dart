@@ -20,8 +20,10 @@ void main() {
     Size size = const Size(360, 700),
     ReaderSettings settings = const ReaderSettings(),
     bool gutterServer = true,
+    String? comicId,
+    Map<String, Object> prefsValues = const {},
   }) async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues(prefsValues);
     final prefs = await SharedPreferences.getInstance();
     t.view.physicalSize = size;
     t.view.devicePixelRatio = 1;
@@ -42,6 +44,7 @@ void main() {
               child: SizedBox(
                 width: 360,
                 child: ReaderAaPanel(
+                  comicId: comicId,
                   settings: settings,
                   onChanged: (s) => changed = s,
                   setBrightness: (v) async => brightnessSet.add(v),
@@ -76,6 +79,37 @@ void main() {
     await t.pumpAndSettle();
     expect(changed, isNull);
     expect(find.text('Restore Purchases'), findsOneWidget);
+  });
+
+  group('store without Pro: one free issue of guided zoom', () {
+    setUp(() => isStore = true);
+    tearDown(() => isStore = false);
+
+    testWidgets('the first issue it is turned on in gets it', (t) async {
+      await pump(t, comicId: 'c1');
+      await t.tap(find.text('Panels'));
+      await t.pumpAndSettle();
+      expect(changed?.zoomMode, 'panels');
+      expect(find.text('Restore Purchases'), findsNothing);
+      final prefs = await SharedPreferences.getInstance();
+      expect(prefs.getString('zoom_trial_comic'), 'c1');
+    });
+
+    testWidgets('that issue keeps it', (t) async {
+      await pump(t, comicId: 'c1', prefsValues: {'zoom_trial_comic': 'c1'});
+      await t.tap(find.text('Panels'));
+      await t.pumpAndSettle();
+      expect(changed?.zoomMode, 'panels');
+    });
+
+    testWidgets('another issue opens the paywall and says why', (t) async {
+      await pump(t, comicId: 'c2', prefsValues: {'zoom_trial_comic': 'c1'});
+      await t.tap(find.text('Panels'));
+      await t.pumpAndSettle();
+      expect(changed, isNull);
+      expect(find.text('Restore Purchases'), findsOneWidget);
+      expect(find.textContaining('free for one issue'), findsOneWidget);
+    });
   });
 
   testWidgets('store on Komga: Panels (on-device), no Bubbles', (t) async {

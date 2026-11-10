@@ -357,6 +357,26 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       final a = prev?.value, b = next.value;
       if (b == null) return;
       SleepTimer.instance.warningLead = Duration(seconds: b.sleepWarningSec);
+      // Without Pro, guided zoom runs in one issue only. Elsewhere it goes
+      // back to Off, so every reader of the setting agrees, with a note.
+      // ponytail: on a Gutter server this also turns it off for the user's
+      // other devices; fine unless one of them has Pro and this one doesn't.
+      if (b.zoomMode != 'off' && !ref.read(proProvider)) {
+        final free = zoomTrialCovers(ref.read(sharedPrefsProvider), _comicId);
+        if (!free) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!mounted) return;
+            ref.read(settingsProvider.notifier).save(b.copyWith(zoomMode: 'off'));
+            _clipHint(zoomTrialOver);
+          });
+          return;
+        }
+        if (a != null && a.zoomMode == 'off') {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) _clipHint('Guided zoom is free for this issue. It is part of Pro.');
+          });
+        }
+      }
       final zoomChanged = (a?.zoomMode ?? 'off') != b.zoomMode; // dim is read at build; no re-step
       final lockChanged = (a?.zoomLock ?? false) != b.zoomLock && (b.zoomMode != 'off' || (a?.zoomMode ?? 'off') != 'off');
       if (zoomChanged || lockChanged) _refreshBubbleSteps();
@@ -1716,6 +1736,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
         child: SafeArea(
           top: false,
           child: ReaderAaPanel(
+            comicId: _comicId,
             settings: settings,
             onChanged: (next) {
               _saveSettings(next, prev);
@@ -2598,6 +2619,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
               ),
               child: LiquidGlass(
                 child: ReaderAaPanel(
+                  comicId: _comicId,
                   settings: settings,
                   onChanged: (next) => _saveSettings(next, settings),
                 ),
