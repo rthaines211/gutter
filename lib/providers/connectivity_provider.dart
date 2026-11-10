@@ -41,13 +41,17 @@ class ConnectivityNotifier extends Notifier<bool> {
     // At launch the engine may not exist yet (docsDir future unresolved), so
     // the first microtask drain can no-op. Kick a drain the moment the engine
     // becomes available so the initial sync is deterministic.
+    // Listeners can fire while the widget tree builds, and a sync writes its
+    // progress to a provider at once ("Tried to modify a provider while the
+    // widget tree was building" failed the launch sync). So they start the
+    // drain in a microtask.
     ref.listen(syncEngineProvider, (prev, next) {
-      if (prev == null && next != null) unawaited(_drain());
+      if (prev == null && next != null) Future.microtask(_drain);
     });
     // Switching sources swaps the mirror database; the new source may never
     // have synced. Kick a drain so its mirror populates immediately.
     ref.listen(activeSourceProvider, (prev, next) {
-      if (prev != null && prev.id != next.id) unawaited(_drain());
+      if (prev != null && prev.id != next.id) Future.microtask(_drain);
     });
     // A replaced engine means a new client or mirror: onboarding fills in the
     // blank default source in place (same id), and a login edit does too.
@@ -57,8 +61,6 @@ class ConnectivityNotifier extends Notifier<bool> {
     // listener above is too early to see it.
     ref.listen(syncEngineProvider, (prev, next) {
       if (prev != null && next != null && !identical(prev, next)) {
-        // Not inline: this can fire while the widget tree builds, and a
-        // sync writes its progress to a provider at once.
         Future.microtask(() => _drain(force: true));
       }
     });

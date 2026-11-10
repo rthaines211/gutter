@@ -66,8 +66,10 @@ and are rough.
   and upload-key signing are in (`android/key.properties`, untracked).
 - TODO: Play Console app + `com.ryanhaines.gutter.pro` one-time product (see
   `docs/app-store/play-console.md`), closed test, personal flavor (if wanted).
-  The signed release bundle builds (2026-11-10, 57 MB). Not checked yet: a
-  real device, phone layout, downloads, Play Billing.
+  The signed release bundle builds (2026-11-10, 57 MB). Checked on
+  emulators (debug build): tablet and phone layouts, the Pro sheet, a
+  4-issue download and reading it in airplane mode. Not checked yet: a real
+  device, the release build on a device, Play Billing.
 
 ## PDF
 

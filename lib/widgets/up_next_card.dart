@@ -34,6 +34,17 @@ class UpNextCard extends ConsumerWidget {
     required this.onTap,
   });
 
+  static double _width(BuildContext context) =>
+      LayoutBreakpoint.isTablet(context) ? 150.0 : 130.0;
+
+  /// Height of the shelf row that holds these cards: the 2:3 cover, the text
+  /// block's padding and gap (8 + 4 + 10), and its two lines, which grow with
+  /// the system text size.
+  static double shelfHeight(BuildContext context) =>
+      _width(context) * 1.5 +
+      22 +
+      MediaQuery.textScalerOf(context).scale(38);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final comic = ComicTokens.watch(ref, context, AppTheme.accent);
@@ -41,7 +52,7 @@ class UpNextCard extends ConsumerWidget {
     final name = stripComicExtension(
         path.contains('/') ? path.split('/').last : path);
     final pageLabel = 'P.${progress.currentPage + 1}/${progress.totalPages}';
-    final width = LayoutBreakpoint.isTablet(context) ? 150.0 : 130.0;
+    final width = _width(context);
 
     return GestureDetector(
       onTap: onTap,

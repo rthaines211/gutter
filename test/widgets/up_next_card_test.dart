@@ -48,6 +48,48 @@ Future<void> _pump(WidgetTester t, {double width = 400}) async {
 }
 
 void main() {
+  // The Read tab's shelf was a fixed 230 tall; the card is taller (cover at
+  // 2:3 plus two text lines), so the title and page line were cut off.
+  for (final width in [400.0, 900.0]) {
+    testWidgets('fits its shelf at $width wide', (t) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      await t.pumpWidget(ProviderScope(
+        overrides: [
+          sharedPrefsProvider.overrideWithValue(prefs),
+          issueCoverPathsProvider.overrideWith((ref) => Stream.value(const {})),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.themeData(Scheme.sepiaPaper),
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(width, 800)),
+            child: Scaffold(
+              body: Builder(
+                builder: (context) => Align(
+                  alignment: Alignment.topLeft,
+                  child: SizedBox(
+                    height: UpNextCard.shelfHeight(context),
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        UpNextCard(
+                          progress: _progress,
+                          serverUrl: 'http://localhost:8080',
+                          onTap: () {},
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ));
+      expect(t.takeException(), isNull);
+    });
+  }
+
   testWidgets('is 130 wide on phone', (t) async {
     await _pump(t, width: 400);
     final size = t.getSize(find.byType(UpNextCard));

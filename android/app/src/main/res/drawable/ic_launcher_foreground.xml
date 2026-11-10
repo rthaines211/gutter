@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- assets/brand/longbox-mark.svg (120 grid) scaled 0.66 about its centre so
-     the mark stays inside the adaptive icon's 66dp safe zone. -->
+<!-- assets/brand/longbox-mark.svg (120 grid) scaled 0.56 about its centre so
+     the whole mark, shelf ends included, stays inside the adaptive icon's
+     66dp safe circle (round masks and the Android 12 splash clip to it). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <group
-        android:scaleX="0.66"
-        android:scaleY="0.66"
-        android:translateX="14.4"
-        android:translateY="13.74">
+        android:scaleX="0.56"
+        android:scaleY="0.56"
+        android:translateX="20.4"
+        android:translateY="19.84">
         <path
             android:fillColor="#F8F0DD"
             android:pathData="M24,26h12a2,2 0 0 1 2,2v64a2,2 0 0 1 -2,2h-12a2,2 0 0 1 -2,-2v-64a2,2 0 0 1 2,-2z" />
