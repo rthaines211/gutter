@@ -1,4 +1,4 @@
-Gutter is a comic reader for the comics you already keep on your own server.
+Gutter is a comic reader for the comics you already keep on your own server. Reading and progress sync are free. Pro is one purchase, not a subscription.
 
 Connect to Komga or Kavita with your username and password or an API key, or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
 
