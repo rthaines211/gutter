@@ -38,9 +38,12 @@ What the Android build expects in Play Console. Keep it true to the build.
 
 ## Signing
 
-- Create an upload key (`keytool -genkey -v -keystore ~/gutter-upload.jks
-  -keyalg RSA -keysize 2048 -validity 10000 -alias upload`), keep it out of
-  the repo (`*.jks` and `key.properties` are gitignored in `android/`), and
-  enrol in Play App Signing.
-- `android/app/build.gradle.kts` still signs release with the debug key; wire
-  it to `key.properties` before the first upload.
+- The upload key is `~/gutter-upload.jks` (alias `upload`). Its password is
+  only in `android/key.properties` (untracked; `*.jks` and `key.properties`
+  are gitignored in `android/`). Back up both files: with Play App Signing a
+  lost upload key can be reset by Google, but only through support.
+- `android/app/build.gradle.kts` signs release builds with that key when
+  `key.properties` exists, and with the debug key when it does not.
+- Build the upload with `flutter build appbundle --release`; the file is
+  `build/app/outputs/bundle/release/app-release.aab`. Enrol in Play App
+  Signing at the first upload.

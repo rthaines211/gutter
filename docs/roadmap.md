@@ -59,11 +59,15 @@ and are rough.
 - TODO: port the panel model (TFLite/ONNX + Kotlin `panels` channel). Until
   then `onDevicePanels` is false on Android: Komga/Kavita get no ZOOM row,
   Gutter servers keep server-side Panels/Bubbles.
-- TODO: first `flutter build apk` + emulator/device run (not yet built:
-  the session that added `android/` had no Android SDK), upload key +
-  signing config, Play Console app + `com.ryanhaines.gutter.pro` one-time
-  product (see `docs/app-store/play-console.md`), icons, launch theme colour,
-  personal flavor (if wanted).
+- Built and run 2026-11-09 (JDK 21 from Homebrew, SDK in
+  `/opt/homebrew/share/android-commandlinetools`, `flutter config` points at
+  both). On a Pixel Tablet emulator (API 36) against the demo Komga:
+  onboarding, first sync, Read tab and the reader work. Icon, launch colour
+  and upload-key signing are in (`android/key.properties`, untracked).
+- TODO: Play Console app + `com.ryanhaines.gutter.pro` one-time product (see
+  `docs/app-store/play-console.md`), closed test, personal flavor (if wanted).
+  Not done yet: the release bundle (`flutter build appbundle`). Not checked
+  yet: a real device, phone layout, downloads, Play Billing.
 
 ## PDF
 
