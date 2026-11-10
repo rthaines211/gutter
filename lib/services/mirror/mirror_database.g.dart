@@ -3196,6 +3196,318 @@ class PanelRowsCompanion extends UpdateCompanion<PanelRow> {
   }
 }
 
+class $BookmarkRowsTable extends BookmarkRows
+    with TableInfo<$BookmarkRowsTable, BookmarkRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BookmarkRowsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _comicIdMeta = const VerificationMeta(
+    'comicId',
+  );
+  @override
+  late final GeneratedColumn<String> comicId = GeneratedColumn<String>(
+    'comic_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pageNumMeta = const VerificationMeta(
+    'pageNum',
+  );
+  @override
+  late final GeneratedColumn<int> pageNum = GeneratedColumn<int>(
+    'page_num',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<String> createdAt = GeneratedColumn<String>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [comicId, pageNum, note, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bookmark_rows';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BookmarkRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('comic_id')) {
+      context.handle(
+        _comicIdMeta,
+        comicId.isAcceptableOrUnknown(data['comic_id']!, _comicIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_comicIdMeta);
+    }
+    if (data.containsKey('page_num')) {
+      context.handle(
+        _pageNumMeta,
+        pageNum.isAcceptableOrUnknown(data['page_num']!, _pageNumMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pageNumMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {comicId, pageNum};
+  @override
+  BookmarkRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BookmarkRow(
+      comicId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}comic_id'],
+      )!,
+      pageNum: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}page_num'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $BookmarkRowsTable createAlias(String alias) {
+    return $BookmarkRowsTable(attachedDatabase, alias);
+  }
+}
+
+class BookmarkRow extends DataClass implements Insertable<BookmarkRow> {
+  final String comicId;
+  final int pageNum;
+  final String? note;
+  final String createdAt;
+  const BookmarkRow({
+    required this.comicId,
+    required this.pageNum,
+    this.note,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['comic_id'] = Variable<String>(comicId);
+    map['page_num'] = Variable<int>(pageNum);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['created_at'] = Variable<String>(createdAt);
+    return map;
+  }
+
+  BookmarkRowsCompanion toCompanion(bool nullToAbsent) {
+    return BookmarkRowsCompanion(
+      comicId: Value(comicId),
+      pageNum: Value(pageNum),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory BookmarkRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BookmarkRow(
+      comicId: serializer.fromJson<String>(json['comicId']),
+      pageNum: serializer.fromJson<int>(json['pageNum']),
+      note: serializer.fromJson<String?>(json['note']),
+      createdAt: serializer.fromJson<String>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'comicId': serializer.toJson<String>(comicId),
+      'pageNum': serializer.toJson<int>(pageNum),
+      'note': serializer.toJson<String?>(note),
+      'createdAt': serializer.toJson<String>(createdAt),
+    };
+  }
+
+  BookmarkRow copyWith({
+    String? comicId,
+    int? pageNum,
+    Value<String?> note = const Value.absent(),
+    String? createdAt,
+  }) => BookmarkRow(
+    comicId: comicId ?? this.comicId,
+    pageNum: pageNum ?? this.pageNum,
+    note: note.present ? note.value : this.note,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  BookmarkRow copyWithCompanion(BookmarkRowsCompanion data) {
+    return BookmarkRow(
+      comicId: data.comicId.present ? data.comicId.value : this.comicId,
+      pageNum: data.pageNum.present ? data.pageNum.value : this.pageNum,
+      note: data.note.present ? data.note.value : this.note,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkRow(')
+          ..write('comicId: $comicId, ')
+          ..write('pageNum: $pageNum, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(comicId, pageNum, note, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BookmarkRow &&
+          other.comicId == this.comicId &&
+          other.pageNum == this.pageNum &&
+          other.note == this.note &&
+          other.createdAt == this.createdAt);
+}
+
+class BookmarkRowsCompanion extends UpdateCompanion<BookmarkRow> {
+  final Value<String> comicId;
+  final Value<int> pageNum;
+  final Value<String?> note;
+  final Value<String> createdAt;
+  final Value<int> rowid;
+  const BookmarkRowsCompanion({
+    this.comicId = const Value.absent(),
+    this.pageNum = const Value.absent(),
+    this.note = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BookmarkRowsCompanion.insert({
+    required String comicId,
+    required int pageNum,
+    this.note = const Value.absent(),
+    required String createdAt,
+    this.rowid = const Value.absent(),
+  }) : comicId = Value(comicId),
+       pageNum = Value(pageNum),
+       createdAt = Value(createdAt);
+  static Insertable<BookmarkRow> custom({
+    Expression<String>? comicId,
+    Expression<int>? pageNum,
+    Expression<String>? note,
+    Expression<String>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (comicId != null) 'comic_id': comicId,
+      if (pageNum != null) 'page_num': pageNum,
+      if (note != null) 'note': note,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BookmarkRowsCompanion copyWith({
+    Value<String>? comicId,
+    Value<int>? pageNum,
+    Value<String?>? note,
+    Value<String>? createdAt,
+    Value<int>? rowid,
+  }) {
+    return BookmarkRowsCompanion(
+      comicId: comicId ?? this.comicId,
+      pageNum: pageNum ?? this.pageNum,
+      note: note ?? this.note,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (comicId.present) {
+      map['comic_id'] = Variable<String>(comicId.value);
+    }
+    if (pageNum.present) {
+      map['page_num'] = Variable<int>(pageNum.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<String>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BookmarkRowsCompanion(')
+          ..write('comicId: $comicId, ')
+          ..write('pageNum: $pageNum, ')
+          ..write('note: $note, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MirrorDatabase extends GeneratedDatabase {
   _$MirrorDatabase(QueryExecutor e) : super(e);
   $MirrorDatabaseManager get managers => $MirrorDatabaseManager(this);
@@ -3208,6 +3520,7 @@ abstract class _$MirrorDatabase extends GeneratedDatabase {
   late final $ArcRowsTable arcRows = $ArcRowsTable(this);
   late final $ArcItemRowsTable arcItemRows = $ArcItemRowsTable(this);
   late final $PanelRowsTable panelRows = $PanelRowsTable(this);
+  late final $BookmarkRowsTable bookmarkRows = $BookmarkRowsTable(this);
   late final Index idxIssueSeries = Index(
     'idx_issue_series',
     'CREATE INDEX idx_issue_series ON issue_rows (series_id)',
@@ -3234,6 +3547,7 @@ abstract class _$MirrorDatabase extends GeneratedDatabase {
     arcRows,
     arcItemRows,
     panelRows,
+    bookmarkRows,
     idxIssueSeries,
     idxQueueItemQueue,
     idxArcItemArc,
@@ -5014,6 +5328,187 @@ typedef $$PanelRowsTableProcessedTableManager =
       PanelRow,
       PrefetchHooks Function()
     >;
+typedef $$BookmarkRowsTableCreateCompanionBuilder =
+    BookmarkRowsCompanion Function({
+      required String comicId,
+      required int pageNum,
+      Value<String?> note,
+      required String createdAt,
+      Value<int> rowid,
+    });
+typedef $$BookmarkRowsTableUpdateCompanionBuilder =
+    BookmarkRowsCompanion Function({
+      Value<String> comicId,
+      Value<int> pageNum,
+      Value<String?> note,
+      Value<String> createdAt,
+      Value<int> rowid,
+    });
+
+class $$BookmarkRowsTableFilterComposer
+    extends Composer<_$MirrorDatabase, $BookmarkRowsTable> {
+  $$BookmarkRowsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get comicId => $composableBuilder(
+    column: $table.comicId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get pageNum => $composableBuilder(
+    column: $table.pageNum,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BookmarkRowsTableOrderingComposer
+    extends Composer<_$MirrorDatabase, $BookmarkRowsTable> {
+  $$BookmarkRowsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get comicId => $composableBuilder(
+    column: $table.comicId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get pageNum => $composableBuilder(
+    column: $table.pageNum,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BookmarkRowsTableAnnotationComposer
+    extends Composer<_$MirrorDatabase, $BookmarkRowsTable> {
+  $$BookmarkRowsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get comicId =>
+      $composableBuilder(column: $table.comicId, builder: (column) => column);
+
+  GeneratedColumn<int> get pageNum =>
+      $composableBuilder(column: $table.pageNum, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$BookmarkRowsTableTableManager
+    extends
+        RootTableManager<
+          _$MirrorDatabase,
+          $BookmarkRowsTable,
+          BookmarkRow,
+          $$BookmarkRowsTableFilterComposer,
+          $$BookmarkRowsTableOrderingComposer,
+          $$BookmarkRowsTableAnnotationComposer,
+          $$BookmarkRowsTableCreateCompanionBuilder,
+          $$BookmarkRowsTableUpdateCompanionBuilder,
+          (
+            BookmarkRow,
+            BaseReferences<_$MirrorDatabase, $BookmarkRowsTable, BookmarkRow>,
+          ),
+          BookmarkRow,
+          PrefetchHooks Function()
+        > {
+  $$BookmarkRowsTableTableManager(_$MirrorDatabase db, $BookmarkRowsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BookmarkRowsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BookmarkRowsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BookmarkRowsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> comicId = const Value.absent(),
+                Value<int> pageNum = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String> createdAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BookmarkRowsCompanion(
+                comicId: comicId,
+                pageNum: pageNum,
+                note: note,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String comicId,
+                required int pageNum,
+                Value<String?> note = const Value.absent(),
+                required String createdAt,
+                Value<int> rowid = const Value.absent(),
+              }) => BookmarkRowsCompanion.insert(
+                comicId: comicId,
+                pageNum: pageNum,
+                note: note,
+                createdAt: createdAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BookmarkRowsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$MirrorDatabase,
+      $BookmarkRowsTable,
+      BookmarkRow,
+      $$BookmarkRowsTableFilterComposer,
+      $$BookmarkRowsTableOrderingComposer,
+      $$BookmarkRowsTableAnnotationComposer,
+      $$BookmarkRowsTableCreateCompanionBuilder,
+      $$BookmarkRowsTableUpdateCompanionBuilder,
+      (
+        BookmarkRow,
+        BaseReferences<_$MirrorDatabase, $BookmarkRowsTable, BookmarkRow>,
+      ),
+      BookmarkRow,
+      PrefetchHooks Function()
+    >;
 
 class $MirrorDatabaseManager {
   final _$MirrorDatabase _db;
@@ -5036,4 +5531,6 @@ class $MirrorDatabaseManager {
       $$ArcItemRowsTableTableManager(_db, _db.arcItemRows);
   $$PanelRowsTableTableManager get panelRows =>
       $$PanelRowsTableTableManager(_db, _db.panelRows);
+  $$BookmarkRowsTableTableManager get bookmarkRows =>
+      $$BookmarkRowsTableTableManager(_db, _db.bookmarkRows);
 }
