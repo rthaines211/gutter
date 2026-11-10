@@ -240,6 +240,7 @@ class ReaderNotifier extends AsyncNotifier<ReaderState> {
       comicPath: comicPath,
       info: info,
       chapters: loadedChapters,
+      bookmarks: await _mirrorDb.bookmarksFor(comicId),
       seriesIssues: resolvedIssues,
       currentIssueIndex: resolvedIndex,
     );
@@ -314,6 +315,8 @@ class ReaderNotifier extends AsyncNotifier<ReaderState> {
       ];
     }
     state = AsyncData(current.copyWith(bookmarks: updated));
+    // The mirror is what the next open reads; the PUT below is a copy.
+    unawaited(_mirrorDb.saveBookmarks(current.comicId, updated));
     _scheduleSave();
   }
 

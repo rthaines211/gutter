@@ -27,7 +27,8 @@ class Bookmark {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      // No 'id': the server's is an integer and it rejected the whole
+      // progress write when it got this string.
       'comic_id': comicId,
       'page_num': pageNum,
       if (note != null) 'note': note,

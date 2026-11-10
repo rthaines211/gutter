@@ -206,6 +206,8 @@ Future<ReaderHarness> pumpReader(
   // lib/riverpod.dart show-list); dynamic is required for the spread into ProviderScope.overrides
   List<dynamic> extraOverrides = const [],
   Stream<Map<String, dynamic>> Function()? remoteCommands,
+  // Pass the previous session's database to test what survives a reopen.
+  MirrorDatabase? mirrorDb,
 }) async {
   // The first-run tap-zone hint is covered by its own widget test; mark it
   // already-shown here so it never overlays the reader in these tests. The
@@ -216,8 +218,8 @@ Future<ReaderHarness> pumpReader(
     'bedtime_reminder_on': false,
   });
   final prefs = await SharedPreferences.getInstance();
-  final db = MirrorDatabase(NativeDatabase.memory());
-  addTearDown(db.close);
+  final db = mirrorDb ?? MirrorDatabase(NativeDatabase.memory());
+  if (mirrorDb == null) addTearDown(db.close);
   final queue =
       SyncQueue(queuePath: '${tempDir.path}/sync_queue_${_dbCounter++}.json');
 
