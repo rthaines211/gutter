@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../providers/pro_provider.dart';
 import '../providers/providers.dart';
 import 'pro_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,12 +21,16 @@ class ReaderAaPanel extends ConsumerStatefulWidget {
     super.key,
     required this.settings,
     required this.onChanged,
+    this.comicId,
     this.setBrightness,
     this.readBrightness,
   });
 
   final ReaderSettings settings;
   final ValueChanged<ReaderSettings> onChanged;
+
+  /// The issue being read: without Pro, guided zoom works in one issue.
+  final String? comicId;
 
   /// Injectable for tests; default to the `screen_brightness` plugin.
   final Future<void> Function(double)? setBrightness;
@@ -38,6 +43,18 @@ class ReaderAaPanel extends ConsumerStatefulWidget {
 class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
   // Local copy: a modal sheet host never rebuilds us with new settings.
   late ReaderSettings _s = widget.settings;
+
+  /// Pro, or this is the free issue; otherwise opens the paywall.
+  bool _zoomAllowed() {
+    if (ref.read(proProvider)) return true;
+    final id = widget.comicId;
+    if (id != null && zoomTrialCovers(ref.read(sharedPrefsProvider), id)) {
+      return true;
+    }
+    showProSheet(context,
+        reason: id == null ? 'Guided zoom is part of Pro.' : zoomTrialOver);
+    return false;
+  }
   double _brightness = 0.5;
   bool _more = false;
 
@@ -145,8 +162,7 @@ class _ReaderAaPanelState extends ConsumerState<ReaderAaPanel> {
               ['Off', 'Panels', if (gutter) 'Bubbles'],
               ['off', 'panels', if (gutter) 'bubbles'],
               _s.zoomMode,
-              (v) => v == 'off' ||
-                      requirePro(context, ref, reason: 'Guided zoom is part of Pro.')
+              (v) => v == 'off' || _zoomAllowed()
                   ? _s.copyWith(zoomMode: v)
                   : null,
             ),

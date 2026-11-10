@@ -1,7 +1,5 @@
-Bookmarks now stay. A page you bookmark is still marked when you open the comic again, on Gutter, Komga and Kavita servers.
+Try guided zoom for free: turn on Panels in the reader's Aa menu and it works for that whole issue. It stays part of Gutter Pro for the rest of your library.
 
-Fixed: with a bookmark set, a finished issue could fail to reach a Gutter server.
+Fixed: titles in the Up Next row on the Read tab were cut off.
 
-Fixed: after you sign in, your library now starts to load at once. Before, it could show "Couldn't reach" for up to 30 seconds.
-
-After you have finished a few issues, Gutter may ask once whether you would like to rate it. That is the only time it will ask.
+Fixed: the first sync after you open the app could fail and start a few seconds late.

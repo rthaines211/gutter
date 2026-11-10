@@ -7,7 +7,8 @@ import '../config/flavor.dart';
 /// [threshold] issues. Apple's dialog caps itself at 3 a year and may not
 /// show at all, so asking once is enough.
 class ReviewPrompt {
-  static const threshold = 10;
+  // 3, not 10: few new readers finish 10 issues in their first weeks.
+  static const threshold = 3;
   static const _countKey = 'review_finished_count';
   static const _askedKey = 'review_prompt_asked';
 
