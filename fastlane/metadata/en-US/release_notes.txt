@@ -2,4 +2,6 @@ Bookmarks now stay. A page you bookmark is still marked when you open the comic 
 
 Fixed: with a bookmark set, a finished issue could fail to reach a Gutter server.
 
+Fixed: after you sign in, your library now starts to load at once. Before, it could show "Couldn't reach" for up to 30 seconds.
+
 After you have finished a few issues, Gutter may ask once whether you would like to rate it. That is the only time it will ask.

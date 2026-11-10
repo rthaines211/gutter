@@ -49,6 +49,19 @@ class ConnectivityNotifier extends Notifier<bool> {
     ref.listen(activeSourceProvider, (prev, next) {
       if (prev != null && prev.id != next.id) unawaited(_drain());
     });
+    // A replaced engine means a new client or mirror: onboarding fills in the
+    // blank default source in place (same id), and a login edit does too.
+    // Without this the first sync waited for the next health poll under a
+    // "Couldn't reach" card. Forced: a different server was never "pulled
+    // recently". The client is built after the source changes, so the source
+    // listener above is too early to see it.
+    ref.listen(syncEngineProvider, (prev, next) {
+      if (prev != null && next != null && !identical(prev, next)) {
+        // Not inline: this can fire while the widget tree builds, and a
+        // sync writes its progress to a provider at once.
+        Future.microtask(() => _drain(force: true));
+      }
+    });
     // The test switch overrides the real state both ways.
     ref.listen(simulateOfflineProvider, (_, _) => state = _public);
     ref.onDispose(() {
@@ -159,16 +172,21 @@ class ConnectivityNotifier extends Notifier<bool> {
         Timer.periodic(_foregroundSyncInterval, (_) => unawaited(_drain()));
   }
 
-  Future<void> _drain() async {
+  Future<void> _drain({bool force = false}) async {
     // Guard: the launch microtask / resume listener can fire after the
     // container is disposed (tests, source switches); ref.read would throw.
     if (!ref.mounted) return;
     // OPDS sources have no /sync endpoint — only custom backends mirror.
     if (!ref.read(hasMirrorProvider)) return;
+    if (_currentDrain != null) {
+      if (!force) return;
+      // A drain on the replaced engine is in flight; run after it.
+      await _currentDrain;
+      if (!ref.mounted || _currentDrain != null) return;
+    }
     final engine = ref.read(syncEngineProvider);
     if (engine == null) return;
-    if (_currentDrain != null) return;
-    final f = engine.sync().catchError((Object e) {
+    final f = engine.sync(force: force).catchError((Object e) {
       AppLogger.instance.sync(
         level: LogLevel.warn,
         message: 'sync failed',

@@ -15,8 +15,11 @@ import 'source_provider.dart';
 /// One mirror database per server source. Kept alive for the app's lifetime
 /// (switching sources swaps the database file).
 final mirrorDbProvider = Provider<MirrorDatabase>((ref) {
-  final source = ref.watch(activeSourceProvider);
-  final db = MirrorDatabase.open(source.id);
+  // Only the id names the file. Watching the whole source reopened the
+  // database on every address or login edit and failed any sync in flight
+  // ("Channel was closed before receiving a response").
+  final id = ref.watch(activeSourceProvider.select((s) => s.id));
+  final db = MirrorDatabase.open(id);
   ref.onDispose(db.close);
   return db;
 });
