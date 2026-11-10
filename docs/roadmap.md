@@ -66,8 +66,8 @@ and are rough.
   and upload-key signing are in (`android/key.properties`, untracked).
 - TODO: Play Console app + `com.ryanhaines.gutter.pro` one-time product (see
   `docs/app-store/play-console.md`), closed test, personal flavor (if wanted).
-  Not done yet: the release bundle (`flutter build appbundle`). Not checked
-  yet: a real device, phone layout, downloads, Play Billing.
+  The signed release bundle builds (2026-11-10, 57 MB). Not checked yet: a
+  real device, phone layout, downloads, Play Billing.
 
 ## PDF
 
