@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The mark's ink tile (assets/brand/longbox-mark.svg). -->
+    <color name="ic_launcher_background">#1B1720</color>
+    <!-- Paper, the same colour as the iOS launch screen. -->
+    <color name="launch_background">#EFE4CC</color>
+</resources>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- assets/brand/longbox-mark.svg (120 grid) scaled 0.66 about its centre so
+     the mark stays inside the adaptive icon's 66dp safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.66"
+        android:scaleY="0.66"
+        android:translateX="14.4"
+        android:translateY="13.74">
+        <path
+            android:fillColor="#F8F0DD"
+            android:pathData="M24,26h12a2,2 0 0 1 2,2v64a2,2 0 0 1 -2,2h-12a2,2 0 0 1 -2,-2v-64a2,2 0 0 1 2,-2z" />
+        <path
+            android:fillColor="#F8F0DD"
+            android:pathData="M68,30h12a2,2 0 0 1 2,2v60a2,2 0 0 1 -2,2h-12a2,2 0 0 1 -2,-2v-60a2,2 0 0 1 2,-2z" />
+        <path
+            android:fillColor="#F8F0DD"
+            android:pathData="M90,36h8a2,2 0 0 1 2,2v54a2,2 0 0 1 -2,2h-8a2,2 0 0 1 -2,-2v-54a2,2 0 0 1 2,-2z" />
+        <group
+            android:pivotX="52"
+            android:pivotY="56"
+            android:rotation="-8">
+            <path
+                android:fillColor="#0A84FF"
+                android:pathData="M44,18h17v76H44z" />
+        </group>
+        <path
+            android:pathData="M18,100h84"
+            android:strokeColor="#F8F0DD"
+            android:strokeLineCap="round"
+            android:strokeWidth="7" />
+    </group>
+</vector>
