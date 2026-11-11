@@ -1,1 +1,1 @@
-manga,book,cbr,import,local,graphic,novel,panel,guided,zoom,offline,download,sync,self,hosted,server,viewer
+manga,book,cbr,import,local,graphic,novel,panel,guided,zoom,offline,download,sync,self,hosted,server
