@@ -24,3 +24,33 @@ Notes:
   competitor names and publisher names.
 - English (UK/Australia/Canada) fields replace the U.S. field in those
   stores, so they would need the full U.S. set; not added.
+
+## Translated listings
+
+`fastlane/metadata/` now also holds `fr-FR`, `es-MX`, `pt-BR` and `de-DE`
+with a translated subtitle, promotional text, description and release notes.
+The name and the URLs are the same as English.
+
+**The translations were machine-written. A native speaker must check each
+locale before it goes into App Store Connect.** Nothing here is uploaded yet.
+
+| Locale | Folder | Keywords | Length |
+|---|---|---|---|
+| French | `fr-FR` | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,japanese` | 98 |
+| Spanish (Mexico) | `es-MX` | `selfhosted,nas,homelab,library,collection,digital,stats,streak,queue,bookmark,comics,lector,comic` | 97 |
+| Portuguese (Brazil) | `pt-BR` | `manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,webtoon` | 100 |
+| German | `de-DE` | `manga,lesen,leser,cbz,cbr,graphic,novel,panel,zoom,offline,download,sync,server,nas,webtoon,sammlung` | 100 |
+
+Notes:
+- French and Spanish (Mexico) keep the keyword strings from the table above
+  without change, because the US storefront also indexes them. Their
+  subtitles ("Vos comics sur Komga et Kavita", "Historietas en Komga y
+  Kavita") do not use "lecteur", "bd", "lector" or "cómics", so no keyword
+  repeats the subtitle.
+- Portuguese (Brazil) and German have keywords in the local language. The
+  subtitles are "Leitor de HQ: Komga e Kavita" and "Comic-Reader: Komga &
+  Kavita", so `leitor`, `hq`, `comic` and `reader` are not in the fields.
+- Screen labels that the app shows in English (Panels, Aa, Up Next, Read)
+  stay in English in the release notes: the app has no translations.
+- The same limits apply as for English: no `opds`, `epub`, `pdf`, competitor
+  names or publisher names. "webtoon" stands on vertical scroll mode.
