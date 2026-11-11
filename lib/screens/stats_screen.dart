@@ -8,6 +8,7 @@ import '../providers/stats_provider.dart';
 import '../widgets/pro_sheet.dart';
 import '../widgets/stats_dashboard.dart';
 import '../widgets/stats_history_list.dart';
+import '../widgets/stats_share_card.dart';
 import '../providers/accent_provider.dart';
 
 class StatsScreen extends ConsumerWidget {
@@ -63,12 +64,27 @@ class StatsScreen extends ConsumerWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(20, 4, 20, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      const Text('Stats', style: AppTheme.titleLarge),
-                      const SizedBox(height: 2),
-                      Text('Your reading activity', style: context.monoLabel),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Stats', style: AppTheme.titleLarge),
+                            const SizedBox(height: 2),
+                            Text('Your reading activity', style: context.monoLabel),
+                          ],
+                        ),
+                      ),
+                      // Hidden until there is something to show (and while loading).
+                      if (summaryAsync.value case final summary? when !StatsShareCard.isEmpty(summary))
+                        Builder(
+                          builder: (context) => IconButton(
+                            tooltip: 'Share your stats',
+                            icon: Icon(Icons.ios_share, color: accent),
+                            onPressed: () => shareStatsCard(context, summary, accent),
+                          ),
+                        ),
                     ],
                   ),
                 ),
