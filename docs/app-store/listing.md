@@ -9,8 +9,8 @@ recheck the copy after any feature change.
 - **Subtitle (30):** see `fastlane/metadata/en-US/subtitle.txt`
 - **Bundle ID:** `com.ryanhaines.gutter`
 - **Primary category:** Books · **Secondary:** Entertainment
-- **Privacy policy URL:** `https://github.com/rthaines211/gutter/blob/main/PRIVACY.md`
-- **Support URL:** `https://github.com/rthaines211/gutter/issues`
+- **Privacy policy URL:** `https://getgutter.app/privacy`
+- **Support URL:** `https://getgutter.app/support`
 - **Age rating:** 12+ (the app shows whatever the user's own server holds; answer "Infrequent/Mild" for mature themes only if Apple's questionnaire requires a rating for unrestricted user content)
 - **Price:** Free, with the in-app purchase below
 
