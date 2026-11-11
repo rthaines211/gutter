@@ -11,6 +11,7 @@ import '../services/api_client.dart';
 import '../services/kavita_client.dart';
 import '../services/komga_client.dart';
 import '../services/label_client.dart';
+import '../services/local_client.dart';
 import 'connectivity_provider.dart';
 import 'source_provider.dart';
 
@@ -32,6 +33,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
     ref.watch(activeSourceProvider),
     deviceId: ref.watch(serverConfigProvider).deviceId,
     sessions: ref.watch(localSessionStoreProvider),
+    docsDir: ref.watch(docsDirProvider).value,
     onRequestOutcome: (reachedServer) =>
         ref.read(connectivityProvider.notifier).reportOutcome(reachedServer),
   );
@@ -41,8 +43,16 @@ final apiClientProvider = Provider<ApiClient>((ref) {
 ApiClient clientFor(ServerSource source,
         {required String deviceId,
         RequestOutcomeCallback? onRequestOutcome,
-        LocalSessionStore? sessions}) =>
+        LocalSessionStore? sessions,
+        String? docsDir}) =>
     switch (source.type) {
+      SourceType.local => LocalClient(
+          libraryDir:
+              docsDir == null ? null : '$docsDir/downloads/${source.id}',
+          deviceId: deviceId,
+          onRequestOutcome: onRequestOutcome,
+          sessions: sessions,
+        ),
       SourceType.komga => KomgaClient(
           baseUrl: source.baseUrl,
           deviceId: deviceId,

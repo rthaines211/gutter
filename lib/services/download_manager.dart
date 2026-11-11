@@ -39,6 +39,9 @@ class DownloadManager {
   /// [_DownloadMeta] or the journal, so credentials stay out of queue.json.
   final Map<String, String> Function(String sourceId)? authFor;
 
+  /// Called after [delete] removed a comic of [sourceId] from disk.
+  final void Function(String sourceId)? onDeleted;
+
   /// Each comic is downloaded page by page from the server's page endpoint,
   /// so page N on disk is the server's page N. Every queued comic's pages are
   /// handed to [fetcher] up front (a background fetcher keeps them all going
@@ -49,6 +52,7 @@ class DownloadManager {
     http.Client? httpClient,
     PageFetcher? fetcher,
     this.authFor,
+    this.onDeleted,
   })  : _baseDir = baseDir,
         _httpClient = httpClient ?? http.Client(),
         _fetcher = fetcher ?? HttpFetcher(httpClient ?? http.Client());
@@ -326,6 +330,18 @@ class DownloadManager {
     if (await dir.exists()) await dir.delete(recursive: true);
     _completed.removeWhere(
         (i) => i.comicId == comicId && i.sourceId == sourceId);
+    _emit();
+    onDeleted?.call(sourceId);
+  }
+
+  /// Lists a comic that is already complete on disk (a local import) as
+  /// downloaded, without a relaunch. No-op if it's incomplete or known.
+  Future<void> adopt(String comicId, String sourceId) async {
+    if (!_isDownloadedOnDisk(comicId, sourceId) || _isKnown(comicId, sourceId)) {
+      return;
+    }
+    _completed.add(await _completedFromDisk(
+        Directory(p.join(_downloadsRoot, sourceId, comicId)), comicId, sourceId));
     _emit();
   }
 

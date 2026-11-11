@@ -7,8 +7,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import '../models/download_item.dart';
 import '../models/series.dart';
+import '../models/server_source.dart';
 import '../services/page_fetcher.dart';
 import '../services/download_manager.dart';
+import 'mirror_provider.dart';
 import 'providers.dart';
 import 'source_provider.dart';
 import 'cache_providers.dart';
@@ -34,6 +36,14 @@ final downloadManagerProvider = Provider<DownloadManager?>((ref) {
         if (s.id == sourceId) return s.authHeaders;
       }
       return const {};
+    },
+    // A local source's library is what's on disk: list it again.
+    onDeleted: (sourceId) {
+      if (!ref.mounted) return;
+      final s = ref.read(activeSourceProvider);
+      if (s.id == sourceId && s.type == SourceType.local) {
+        ref.read(syncEngineProvider)?.sync(force: true).ignore();
+      }
     },
   );
   ref.onDispose(() => manager.dispose());
