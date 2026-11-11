@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
 import 'package:comic_reader_app/config/platform.dart';
 import 'package:comic_reader_app/models/server_source.dart';
-import 'package:comic_reader_app/providers/navigation_provider.dart';
+import 'package:comic_reader_app/providers/server_actions.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/screens/onboarding_screen.dart';
@@ -394,7 +394,7 @@ void main() {
   });
 
   group('read files on this device', () {
-    final action = find.textContaining('Read files on this');
+    final action = find.text('Import comics from Files');
 
     for (final store in [true, false]) {
       testWidgets('sets up the local source (store: $store)', (t) async {
@@ -404,8 +404,9 @@ void main() {
         final blankId = c.read(activeSourceProvider).id;
         expect(c.read(activeSourceProvider).baseUrl, isEmpty);
 
-        await t.ensureVisible(action);
-        await t.tap(action);
+        expect(action, findsOneWidget);
+        // Once a file is picked, the import calls this.
+        c.read(serverActionsProvider).useLocal();
         await t.pump();
 
         final s = c.read(activeSourceProvider);
@@ -413,7 +414,6 @@ void main() {
         // Not empty, so the app leaves onboarding; same id, still default.
         expect(s.baseUrl, isNotEmpty);
         expect((s.id, s.isDefault), (blankId, true));
-        expect(c.read(navigationProvider), NavDestination.library);
         expect(c.read(sourceListProvider).length, 1);
       });
     }

@@ -164,24 +164,33 @@ void main() {
 
   group('local source', () {
     const local = ServerSource.local(id: 'loc');
-    final add = find.textContaining('Read files on this');
+    final add = find.text('Import comics from Files');
 
     testWidgets('adding it is free and needs no Pro, next to a server',
         (t) async {
       isStore = true;
       addTearDown(() => isStore = false);
       final c = await _pump(t, [_one], noDownloads: true);
+      // No picker under test: the tap is free (no Pro sheet), and with no
+      // file picked no source is made.
       await t.tap(add);
       await t.pumpAndSettle();
-
       expect(find.byType(ProSheet), findsNothing);
+      expect(c.read(sourceListProvider).length, 1);
+
+      // Once a file is picked, the import calls this.
+      final id = c.read(serverActionsProvider).useLocal();
+      await t.pumpAndSettle();
       final sources = c.read(sourceListProvider);
       expect(sources.map((s) => s.type), [SourceType.custom, SourceType.local]);
       // A fresh id, and it becomes the active source.
-      expect(sources.last.id, isNot('loc'));
-      expect(c.read(activeSourceProvider).id, sources.last.id);
-      // One local source only; a second server is still Pro.
-      expect(add, findsNothing);
+      expect(sources.last.id, allOf(id, isNot('loc')));
+      expect(c.read(activeSourceProvider).id, id);
+      // One local source only: a second call reuses it.
+      expect(c.read(serverActionsProvider).useLocal(), id);
+      expect(c.read(sourceListProvider).length, 2);
+      // Import stays offered; a second server is still Pro.
+      expect(add, findsOneWidget);
       await t.tap(find.text('Add server'));
       await t.pumpAndSettle();
       expect(find.byType(ProSheet), findsOneWidget);

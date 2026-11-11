@@ -20,9 +20,11 @@ import 'package:comic_reader_app/providers/cache_providers.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
 import 'package:comic_reader_app/providers/download_provider.dart';
 import 'package:comic_reader_app/providers/local_import_provider.dart';
+import 'package:comic_reader_app/providers/navigation_provider.dart';
 import 'package:comic_reader_app/providers/mirror_provider.dart';
 import 'package:comic_reader_app/providers/pro_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
+import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/screens/library_screen.dart';
 import 'package:comic_reader_app/services/app_logger.dart';
 import 'package:comic_reader_app/services/download_manager.dart';
@@ -131,6 +133,27 @@ void main() {
     final done = c.read(downloadManagerProvider)!.currentState.completed;
     expect(done.map((i) => i.seriesName), ['Saga']);
     expect(done.single.sourceId, 'loc');
+  });
+
+  test('pickAndImport(intoLocal): opens the Library, and a cancel does nothing',
+      () async {
+    final good = writeZip(tmp, 'Saga 001.cbz', {'1.png': png});
+    var picked = <String>[];
+    final c = await container(picker: () async => picked);
+    await c.read(docsDirProvider.future);
+    c.read(navigationProvider.notifier).go(NavDestination.downloads);
+    final import = c.read(localImportProvider.notifier);
+
+    expect(await import.pickAndImport(intoLocal: true), isEmpty);
+    expect(c.read(navigationProvider), NavDestination.downloads);
+
+    picked = [good];
+    expect((await import.pickAndImport(intoLocal: true)).single.problem, isNull);
+    expect(c.read(navigationProvider), NavDestination.library);
+    expect(c.read(activeSourceProvider).id, 'loc');
+    // The readers look pages up by the download names (001, 002…).
+    final comicId = c.read(downloadManagerProvider)!.currentState.completed.single.comicId;
+    expect(File(p.join(tmp.path, 'downloads', 'loc', comicId, 'pages', '001.png')).existsSync(), true);
   });
 
   test('every import problem has its own message', () {

@@ -83,6 +83,10 @@ String localId(String prefix, String name) {
   return '$prefix${hex(h >>> 32)}${hex(h & 0xffffffff)}';
 }
 
+/// The file name (no extension) of 0-based page [index], as
+/// DownloadManager writes it.
+String pageFileName(int index) => (index + 1).toString().padLeft(3, '0');
+
 const _imageExts = {'.jpg', '.jpeg', '.png', '.webp', '.gif'};
 
 /// Whether a zip entry is a comic page. The name is untrusted: an absolute
@@ -164,7 +168,8 @@ ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId,
     var size = 0;
     for (var i = 0; i < pages.length; i++) {
       final ext = p.extension(pages[i].name).toLowerCase();
-      final dest = p.join(pagesDir, '${i + 1}$ext');
+      // Same names as a download (`001`, `002`…): the readers match on them.
+      final dest = p.join(pagesDir, '${pageFileName(i)}$ext');
       final out = OutputFileStream(dest);
       try {
         pages[i].writeContent(out);
@@ -186,7 +191,7 @@ ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId,
     if (!cover.existsSync()) {
       cover.parent.createSync(recursive: true);
       final first = p.extension(pages.first.name).toLowerCase();
-      File(p.join(pagesDir, '1$first')).copySync(cover.path);
+      File(p.join(pagesDir, '${pageFileName(0)}$first')).copySync(cover.path);
     }
 
     // metadata.json marks the comic complete, so it goes last, atomically.

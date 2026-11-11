@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
-import '../config/layout_breakpoint.dart';
 import '../config/platform.dart';
-import '../providers/navigation_provider.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../models/server_source.dart';
+import '../widgets/local_import_button.dart';
 import '../services/kavita_client.dart';
 import '../widgets/longbox_mark.dart';
 import '../config/server_url.dart';
@@ -127,15 +126,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       apiKey: basic ? null : _keyCtrl.text.trim(),
       isDefault: true,
     );
-  }
-
-  /// No server: the blank default source becomes the local one (same id),
-  /// which rebuilds the app into the shell, on the Library.
-  void _useThisDevice() {
-    ref.read(navigationProvider.notifier).go(NavDestination.library);
-    ref
-        .read(sourceListProvider.notifier)
-        .setDefaultServer(const ServerSource.local(id: 'default'));
   }
 
   Future<String?> _defaultKavitaLogin(ServerSource s) => KavitaClient(
@@ -356,11 +346,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   // No server needed. iOS only in v1 (no Android picker).
                   if (widget.onConnected == null && !isAndroid) ...[
                     const SizedBox(height: 12),
-                    TextButton(
-                      onPressed: _probing ? null : _useThisDevice,
-                      child: Text(
-                          'Read files on this ${LayoutBreakpoint.deviceNoun}'),
-                    ),
+                    const LocalImportButton(intoLocal: true),
                   ],
                 ],
               ),

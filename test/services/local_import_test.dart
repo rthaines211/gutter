@@ -78,10 +78,10 @@ void main() {
     final dir = p.join(docs, 'downloads', 'local', got.comicId);
     expect(isDownloadComplete(dir), true);
     final pages = Directory(p.join(dir, 'pages')).listSync().map((f) => p.basename(f.path)).toSet();
-    expect(pages, {'1.jpg', '2.png', '3.jpg'});
-    expect(File(p.join(dir, 'pages', '1.jpg')).readAsBytesSync(), [1]);
-    expect(File(p.join(dir, 'pages', '2.png')).readAsBytesSync(), [2, 2]);
-    expect(File(p.join(dir, 'pages', '3.jpg')).readAsBytesSync(), [10]);
+    expect(pages, {'001.jpg', '002.png', '003.jpg'});
+    expect(File(p.join(dir, 'pages', '001.jpg')).readAsBytesSync(), [1]);
+    expect(File(p.join(dir, 'pages', '002.png')).readAsBytesSync(), [2, 2]);
+    expect(File(p.join(dir, 'pages', '003.jpg')).readAsBytesSync(), [10]);
 
     final meta = jsonDecode(File(p.join(dir, 'metadata.json')).readAsStringSync());
     expect(meta['series_id'], got.seriesId);
@@ -135,7 +135,7 @@ void main() {
     expect(written()..sort(), [
       p.join('docs', 'covers', 'local', '${got.seriesId}.jpg'),
       p.join(dir, 'metadata.json'),
-      p.join(dir, 'pages', '1.jpg'),
+      p.join(dir, 'pages', '001.jpg'),
     ]);
   });
 

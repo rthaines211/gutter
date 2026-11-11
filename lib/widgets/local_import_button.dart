@@ -11,14 +11,26 @@ import '../providers/local_import_provider.dart';
 /// what happened to each. [compact] is the Library header's icon button.
 class LocalImportButton extends ConsumerWidget {
   final bool compact;
-  const LocalImportButton({super.key, this.compact = false});
+
+  /// The one-step entry from onboarding and Servers: see
+  /// [LocalImportNotifier.pickAndImport].
+  final bool intoLocal;
+  const LocalImportButton(
+      {super.key, this.compact = false, this.intoLocal = false});
 
   Future<void> _import(BuildContext context, WidgetRef ref) async {
     HapticFeedback.selectionClick();
     final messenger = ScaffoldMessenger.of(context);
     final List<ImportOutcome> outcomes;
     try {
-      outcomes = await ref.read(localImportProvider.notifier).pickAndImport();
+      final navigator = Navigator.of(context);
+      outcomes = await ref
+          .read(localImportProvider.notifier)
+          .pickAndImport(intoLocal: intoLocal);
+      // From Servers (a pushed screen): back to the shell, on the Library.
+      if (intoLocal && outcomes.isNotEmpty && navigator.mounted) {
+        navigator.popUntil((r) => r.isFirst);
+      }
     } catch (_) {
       messenger.showSnackBar(
           const SnackBar(content: Text('Could not open the file picker.')));
@@ -66,7 +78,9 @@ class LocalImportButton extends ConsumerWidget {
     final busy = progress != null;
     final label = busy
         ? 'Importing ${progress.done + 1 > progress.total ? progress.total : progress.done + 1} of ${progress.total}'
-        : 'Import comics';
+        : intoLocal
+            ? 'Import comics from Files'
+            : 'Import comics';
     final onPressed = busy ? null : () => _import(context, ref);
     if (compact) {
       return IconButton(
@@ -77,6 +91,13 @@ class LocalImportButton extends ConsumerWidget {
             ? const SizedBox.square(
                 dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
             : Icon(Icons.add, color: accent),
+      );
+    }
+    if (intoLocal) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(Icons.folder_open, color: accent),
+        label: Text(label, style: TextStyle(color: accent)),
       );
     }
     return FilledButton.icon(

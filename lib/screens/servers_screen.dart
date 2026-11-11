@@ -8,6 +8,7 @@ import '../config/scheme.dart';
 import '../config/platform.dart';
 import '../models/download_item.dart';
 import '../models/server_source.dart';
+import '../widgets/local_import_button.dart';
 import '../providers/download_provider.dart';
 import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
@@ -73,19 +74,12 @@ class ServersScreen extends ConsumerWidget {
               onPressed: () => _add(context, ref),
             ),
           ),
-          // Free, and next to any servers. iOS only in v1.
-          if (!isAndroid && !sources.any(_local))
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: OutlinedButton.icon(
-                icon: Icon(Icons.folder_open, color: accent),
-                label: Text('Read files on this ${LayoutBreakpoint.deviceNoun}',
-                    style: TextStyle(color: accent)),
-                onPressed: () {
-                  HapticFeedback.selectionClick();
-                  ref.read(serverActionsProvider).addLocal();
-                },
-              ),
+          // Free, and next to any servers. iOS only in v1. One step: pick
+          // files, and they open in the Library.
+          if (!isAndroid)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: LocalImportButton(intoLocal: true),
             ),
         ],
       ),
