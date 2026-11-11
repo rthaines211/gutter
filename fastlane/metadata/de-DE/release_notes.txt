@@ -1,0 +1,5 @@
+Probiere den geführten Zoom kostenlos aus: Schalte im Aa-Menü des Readers „Panels“ ein, und er funktioniert für die ganze Ausgabe. Für den Rest deiner Bibliothek bleibt er Teil von Gutter Pro.
+
+Behoben: Titel in der Zeile „Up Next“ im Tab „Read“ wurden abgeschnitten.
+
+Behoben: Die erste Synchronisierung nach dem Öffnen der App konnte fehlschlagen und einige Sekunden verspätet starten.

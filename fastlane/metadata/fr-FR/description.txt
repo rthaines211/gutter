@@ -1,0 +1,32 @@
+Gutter est un lecteur pour les comics que vous conservez déjà sur votre propre serveur. La lecture et la synchronisation de la progression sont gratuites. Pro est un achat unique, pas un abonnement.
+
+Connectez-vous à Komga ou Kavita avec votre nom d'utilisateur et votre mot de passe ou avec une clé d'API, ou bien à un serveur Gutter auto-hébergé. Votre bibliothèque s'affiche avec ses séries, ses couvertures et l'endroit où vous vous êtes arrêté.
+
+LECTURE
+• Mode page ou défilement vertical
+• De gauche à droite, ou de droite à gauche pour les mangas
+• Ajustement à l'écran, à la largeur ou à la hauteur
+• Changement de page par glissement, en fondu ou instantané
+• Choix de la disposition des zones tactiles, du fond de page et de la luminosité
+• Changement de page avec les boutons de volume, en option
+• Minuteur de mise en veille pour lire au lit
+
+VOTRE BIBLIOTHÈQUE
+• Bibliothèque avec recherche, filtres et tri
+• Files de lecture pour prévoir vos prochaines lectures
+• La progression se synchronise dans les deux sens avec votre serveur
+• Votre bibliothèque reste consultable quand le serveur est injoignable
+
+GUTTER PRO
+Un achat unique, pas un abonnement. Vous ne paierez jamais de mise à niveau : un seul achat couvre toutes les versions futures.
+• Téléchargements hors ligne : emportez vos numéros avec vous
+• Zoom guidé : parcourez une page case par case (les cases sont détectées sur votre appareil, donc cela fonctionne avec Komga et Kavita), ainsi que les doubles pages. Vous pouvez essayer gratuitement le zoom par cases sur un numéro
+• Plus d'un serveur
+• Statistiques de lecture : pages par jour, séries de jours consécutifs et plus encore
+
+La lecture, le streaming et la synchronisation de la progression sont gratuits.
+
+CONFIDENTIALITÉ
+Gutter ne collecte rien. Pas de compte, pas d'outils d'analyse, pas de publicité, pas de pistage. L'app ne communique qu'avec les serveurs que vous ajoutez.
+
+Gutter ne contient et ne vend aucun comic. Il vous faut votre propre serveur Komga, Kavita ou Gutter. Le serveur Gutter est gratuit et open source : github.com/rthaines211/gutter-server

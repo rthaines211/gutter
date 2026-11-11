@@ -1,0 +1,32 @@
+Gutter ist ein Comic-Reader für die Comics, die du schon auf deinem eigenen Server hast. Lesen und die Synchronisierung des Lesefortschritts sind kostenlos. Pro ist ein Einmalkauf, kein Abo.
+
+Verbinde dich mit Komga oder Kavita per Benutzername und Passwort oder per API-Schlüssel, oder mit einem selbst gehosteten Gutter-Server. Deine Bibliothek erscheint mit Serien, Covern und der Stelle, an der du aufgehört hast.
+
+LESEN
+• Seitenmodus oder vertikaler Scrollmodus
+• Von links nach rechts oder von rechts nach links, für Manga
+• Anpassen an Bildschirm, Breite oder Höhe
+• Umblättern mit Schieben, Überblenden oder ohne Animation
+• Auswahl an Tippzonen-Layouts, Seitenhintergrund und Helligkeit
+• Optional: Umblättern mit den Lautstärketasten
+• Sleep-Timer fürs Lesen im Bett
+
+DEINE BIBLIOTHEK
+• Durchsuchbare Bibliothek mit Filtern und Sortierung
+• Lesewarteschlangen, um zu planen, was du als Nächstes liest
+• Der Fortschritt wird in beide Richtungen mit deinem Server synchronisiert
+• Du kannst deine Bibliothek weiter durchstöbern, wenn der Server nicht erreichbar ist
+
+GUTTER PRO
+Ein Einmalkauf, kein Abo. Du zahlst nie für ein Versions-Upgrade: Ein Kauf deckt alle künftigen Versionen ab.
+• Offline-Downloads: Nimm Ausgaben mit
+• Geführter Zoom: Gehe eine Seite Panel für Panel durch (die Panels werden auf deinem Gerät erkannt, deshalb funktioniert es mit Komga und Kavita), ebenso Doppelseiten. Den Panel-Zoom kannst du bei einer Ausgabe kostenlos ausprobieren
+• Mehr als ein Server
+• Lesestatistiken: Seiten pro Tag, Streaks und mehr
+
+Lesen, Streaming und die Synchronisierung des Fortschritts sind kostenlos.
+
+DATENSCHUTZ
+Gutter erfasst nichts. Keine Konten, keine Analysen, keine Werbung, kein Tracking. Die App spricht nur mit den Servern, die du hinzufügst.
+
+Gutter enthält und verkauft keine Comics. Du brauchst einen eigenen Komga-, Kavita- oder Gutter-Server. Der Gutter-Server ist kostenlos und Open Source: github.com/rthaines211/gutter-server
