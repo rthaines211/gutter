@@ -184,4 +184,28 @@ void main() {
     expect(got.pageCount, 1);
     expect(File(p.join(dir, 'pages', '7.jpg')).existsSync(), false);
   });
+
+  test('a zip that unpacks to more than the ceiling is too large', () {
+    final zip = writeZip(tmp, 'Big 001.cbz', {'1.jpg': [1, 1], '2.jpg': [2, 2]});
+    expect(
+        () => importCbzSync(zip, docs, 'local', maxBytes: 3),
+        throwsA(isA<LocalImportException>()
+            .having((e) => e.error, 'error', LocalImportError.tooLarge)));
+    expect(written(), isEmpty);
+    // At the ceiling is fine.
+    expect(importCbzSync(zip, docs, 'local', maxBytes: 4).pageCount, 2);
+    expect(maxUnpackedBytes, 4 * 1024 * 1024 * 1024);
+  });
+
+  test('any failure, not only a bad zip, leaves no partial comic', () {
+    // The covers directory can't be made: a plain file is in the way.
+    File(p.join(docs, 'covers'))
+      ..createSync(recursive: true)
+      ..writeAsStringSync('in the way');
+    final zip = writeZip(tmp, 'Saga 001.cbz', {'1.jpg': [1]});
+    expect(() => importCbzSync(zip, docs, 'local'),
+        throwsA(isA<FileSystemException>()));
+    expect(Directory(p.join(docs, 'downloads', 'local', localId('c', 'Saga 001')))
+        .existsSync(), false);
+  });
 }

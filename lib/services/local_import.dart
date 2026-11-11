@@ -7,7 +7,11 @@ import 'package:path/path.dart' as p;
 
 import 'download_manager.dart' show isDownloadComplete;
 
-enum LocalImportError { notAZip, noImages, alreadyImported }
+enum LocalImportError { notAZip, noImages, alreadyImported, tooLarge }
+
+/// ponytail: one fixed ceiling on what a zip may unpack to (a zip bomb
+/// would fill the disk); compare with free space if 4 GB is ever too low.
+const maxUnpackedBytes = 4 * 1024 * 1024 * 1024;
 
 class LocalImportException implements Exception {
   final LocalImportError error;
@@ -108,7 +112,8 @@ Future<ImportedComic> importCbz({
 }) =>
     Isolate.run(() => importCbzSync(cbzPath, docsDir, sourceId));
 
-ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId) {
+ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId,
+    {int maxBytes = maxUnpackedBytes}) {
   final fileName = p.basename(cbzPath);
   Never fail(LocalImportError e) => throw LocalImportException(e, fileName);
 
@@ -149,6 +154,10 @@ ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId) {
       fail(LocalImportError.notAZip);
     }
     if (pages.isEmpty) fail(LocalImportError.noImages);
+    // The declared sizes, checked before anything is written.
+    if (pages.fold<int>(0, (n, f) => n + f.size) > maxBytes) {
+      fail(LocalImportError.tooLarge);
+    }
 
     final pagesDir = p.join(comicDir, 'pages');
     Directory(pagesDir).createSync(recursive: true);
@@ -159,12 +168,16 @@ ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId) {
       final out = OutputFileStream(dest);
       try {
         pages[i].writeContent(out);
+      } on FileSystemException {
+        rethrow; // disk full: not the zip's fault
       } catch (_) {
         fail(LocalImportError.notAZip);
       } finally {
         out.closeSync();
       }
       size += File(dest).lengthSync();
+      // A size the zip lied about.
+      if (size > maxBytes) fail(LocalImportError.tooLarge);
     }
 
     // ponytail: the first issue imported gives the series its cover, not
@@ -200,8 +213,11 @@ ImportedComic importCbzSync(String cbzPath, String docsDir, String sourceId) {
       number: parsed.number,
       pageCount: pages.length,
     );
-  } on LocalImportException {
-    if (dir.existsSync()) dir.deleteSync(recursive: true);
+  } catch (_) {
+    // Any failure (a bad zip, a full disk): leave no partial comic behind.
+    try {
+      if (dir.existsSync()) dir.deleteSync(recursive: true);
+    } catch (_) {}
     rethrow;
   } finally {
     input.closeSync();

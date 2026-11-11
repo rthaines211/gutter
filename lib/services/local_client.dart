@@ -77,8 +77,9 @@ class LocalClient extends ApiClient with LocalReaderData {
             'created_at': stamps.first,
             'folder_path': '',
             'issue_count': issues.length,
-            // The importer writes the cover file itself; nothing to fetch.
-            'cover_url': '',
+            // `local:` URLs are answered from the page files by
+            // SourceAuthClient: the series cover is its first issue's.
+            'cover_url': '/comics/${issues.first['comic_id']}/cover',
             'genres': const [],
             'issues': [
               for (final i in issues)
@@ -86,7 +87,7 @@ class LocalClient extends ApiClient with LocalReaderData {
                   'id': i['comic_id'],
                   'name': name(i),
                   'number': i['number'],
-                  'cover_url': '',
+                  'cover_url': '/comics/${i['comic_id']}/cover',
                   'total_pages': i['page_count'],
                 },
             ],

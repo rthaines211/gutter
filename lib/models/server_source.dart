@@ -55,14 +55,16 @@ class ServerSource {
     );
   }
 
-  /// The one "On this device" source.
-  const ServerSource.local()
+  /// The "On this device" source. A fresh [id] each time it's added: a
+  /// forgotten source's id is never reused.
+  const ServerSource.local({required String id, bool isDefault = false})
       : this(
-          id: 'local',
+          id: id,
           name: 'On this device',
           type: SourceType.local,
           baseUrl: localBaseUrl,
           authType: AuthType.none,
+          isDefault: isDefault,
         );
 
   Map<String, String> get authHeaders {

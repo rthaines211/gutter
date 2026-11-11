@@ -6,7 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:comic_reader_app/config/flavor.dart';
+import 'package:comic_reader_app/config/platform.dart';
 import 'package:comic_reader_app/models/server_source.dart';
+import 'package:comic_reader_app/providers/navigation_provider.dart';
 import 'package:comic_reader_app/providers/providers.dart';
 import 'package:comic_reader_app/providers/source_provider.dart';
 import 'package:comic_reader_app/screens/onboarding_screen.dart';
@@ -387,6 +390,45 @@ void main() {
       await _pump(t, (_, _) async => 200,
           gutter: false, onConnected: (_) async {});
       expect(find.text('Add server'), findsOneWidget);
+    });
+  });
+
+  group('read files on this device', () {
+    final action = find.textContaining('Read files on this');
+
+    for (final store in [true, false]) {
+      testWidgets('sets up the local source (store: $store)', (t) async {
+        isStore = store;
+        addTearDown(() => isStore = false);
+        final c = await _pump(t, (_, _) async => null, gutter: false);
+        final blankId = c.read(activeSourceProvider).id;
+        expect(c.read(activeSourceProvider).baseUrl, isEmpty);
+
+        await t.ensureVisible(action);
+        await t.tap(action);
+        await t.pump();
+
+        final s = c.read(activeSourceProvider);
+        expect(s.type, SourceType.local);
+        // Not empty, so the app leaves onboarding; same id, still default.
+        expect(s.baseUrl, isNotEmpty);
+        expect((s.id, s.isDefault), (blankId, true));
+        expect(c.read(navigationProvider), NavDestination.library);
+        expect(c.read(sourceListProvider).length, 1);
+      });
+    }
+
+    testWidgets('not offered on Android', (t) async {
+      isAndroid = true;
+      addTearDown(() => isAndroid = false);
+      await _pump(t, (_, _) async => null, gutter: false);
+      expect(action, findsNothing);
+    });
+
+    testWidgets('not in the Servers add/edit form', (t) async {
+      await _pump(t, (_, _) async => null,
+          gutter: false, onConnected: (_) async {});
+      expect(action, findsNothing);
     });
   });
 }

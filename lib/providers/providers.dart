@@ -110,6 +110,10 @@ final isCustomSourceProvider = Provider<bool>((ref) {
   return source.type == SourceType.custom;
 });
 
+/// Whether the active source is "On this device": imported files, no server.
+final isLocalSourceProvider = Provider<bool>(
+    (ref) => ref.watch(activeSourceProvider).type == SourceType.local);
+
 /// Whether the Gutter server's personal features run (Remote, push,
 /// Creators, Review, Arcs): a personal build on a Gutter server. Komga and
 /// Kavita answer those endpoints with their web app's HTML, OPDS with 404s.
@@ -120,7 +124,11 @@ final gutterFeaturesProvider = Provider<bool>(
 /// and its credentials. Watched by the app root.
 final sourceAuthSyncProvider = Provider<void>((ref) {
   final source = ref.watch(activeSourceProvider);
-  SourceAuthClient.use(source.baseUrl, source.authHeaders);
+  final docsDir = source.type == SourceType.local
+      ? ref.watch(docsDirProvider).value
+      : null;
+  SourceAuthClient.use(source.baseUrl, source.authHeaders,
+      localDir: docsDir == null ? null : '$docsDir/downloads/${source.id}');
 });
 
 /// Whether the active source syncs into the mirror (Gutter, Komga, Kavita).

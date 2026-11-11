@@ -209,6 +209,7 @@ class _SeriesDetailPanelState extends ConsumerState<SeriesDetailPanel> {
             onClose: widget.onClose,
             onResume: resumeIssue != null ? () => _openIssue(detail, resumeIssue!) : null,
             onDownload: () => _downloadSeries(detail),
+            showDownload: !ref.watch(isLocalSourceProvider),
             onMarkRead: () => markSeriesRead(ref: ref, detail: detail),
             // Metadata edits and file renames are Gutter-server features.
             onEditMetadata: !ref.watch(isCustomSourceProvider) ? null : () => showMetadataEditSheet(

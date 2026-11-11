@@ -95,6 +95,14 @@ class ServerActions {
     if (old != null) await _forget(old.id);
   }
 
+  /// Adds the "On this device" source next to any servers and switches to
+  /// it. Free: not a server, so not behind the "more than one server" gate.
+  void addLocal() {
+    final local = ServerSource.local(id: generateSourceId());
+    _ref.read(sourceListProvider.notifier).add(local);
+    _ref.read(activeSourceIdProvider.notifier).select(local.id);
+  }
+
   /// Signs out of [s] and forgets it. The last server leaves a blank default
   /// source (fresh id, no URL), so the app shows onboarding.
   Future<void> signOut(ServerSource s) async {

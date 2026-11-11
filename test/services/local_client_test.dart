@@ -43,7 +43,7 @@ void main() {
       sourceId: 'local');
 
   test('the local source counts as set up and maps to LocalClient', () {
-    const s = ServerSource.local();
+    const s = ServerSource.local(id: 'local');
     expect(s.baseUrl, isNotEmpty);
     expect(s.authHeaders, isEmpty);
     expect(ServerSource.fromJson(s.toJson()).type, SourceType.local);
@@ -84,7 +84,7 @@ void main() {
     final saga = r.series.firstWhere((s) => s['id'] == s2.seriesId);
     expect(saga['name'], 'Saga');
     expect(saga['issue_count'], 2);
-    expect(saga['cover_url'], '');
+    expect(saga['cover_url'], '/comics/${s2.comicId}/cover');
     expect([for (final i in saga['issues'] as List) i['id']], [s2.comicId, s10.comicId]);
     expect((saga['issues'] as List).first['number'], '2');
     expect((saga['issues'] as List).first['total_pages'], 3);

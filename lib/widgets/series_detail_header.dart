@@ -30,6 +30,9 @@ class SeriesDetailHeader extends ConsumerWidget {
   final VoidCallback? onClose;
   final VoidCallback? onResume;
   final VoidCallback? onDownload;
+
+  /// False on a local source: its comics are already on the device.
+  final bool showDownload;
   final VoidCallback? onMarkRead;
   final VoidCallback? onEditMetadata;
   final VoidCallback? onMore;
@@ -55,6 +58,7 @@ class SeriesDetailHeader extends ConsumerWidget {
     this.onClose,
     this.onResume,
     this.onDownload,
+    this.showDownload = true,
     this.onMarkRead,
     this.onEditMetadata,
     this.onMore,
@@ -503,11 +507,13 @@ class SeriesDetailHeader extends ConsumerWidget {
         final height = stacked ? 52.0 : 42.0;
         return Row(
           children: [
+            if (showDownload) ...[
             Expanded(
               child: _actionButton(context, Icons.download_rounded, 'Download',
                   onDownload, stacked, height),
             ),
             const SizedBox(width: 8),
+            ],
             Expanded(
               child: _actionButton(context, Icons.check_circle_outline,
                   'Mark Read', onMarkRead, stacked, height),
