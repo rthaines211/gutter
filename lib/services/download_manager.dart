@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import '../models/download_item.dart';
+import 'local_pages.dart';
 import 'page_fetcher.dart';
 
 /// A download is complete iff its metadata.json exists. It's written last,
@@ -39,8 +40,9 @@ class DownloadManager {
   /// [_DownloadMeta] or the journal, so credentials stay out of queue.json.
   final Map<String, String> Function(String sourceId)? authFor;
 
-  /// Called after [delete] removed a comic of [sourceId] from disk.
-  final void Function(String sourceId)? onDeleted;
+  /// Called after [delete] removed a comic of [sourceId] from disk;
+  /// [seriesId] is the series it was listed under ('' if it wasn't listed).
+  final void Function(String sourceId, String seriesId)? onDeleted;
 
   /// Each comic is downloaded page by page from the server's page endpoint,
   /// so page N on disk is the server's page N. Every queued comic's pages are
@@ -328,10 +330,16 @@ class DownloadManager {
   Future<void> delete(String comicId, String sourceId) async {
     final dir = Directory(p.join(_downloadsRoot, sourceId, comicId));
     if (await dir.exists()) await dir.delete(recursive: true);
+    forgetLocalPages(p.join(dir.path, 'pages'));
+    final seriesId = _completed
+            .where((i) => i.comicId == comicId && i.sourceId == sourceId)
+            .firstOrNull
+            ?.seriesId ??
+        '';
     _completed.removeWhere(
         (i) => i.comicId == comicId && i.sourceId == sourceId);
     _emit();
-    onDeleted?.call(sourceId);
+    onDeleted?.call(sourceId, seriesId);
   }
 
   /// Lists a comic that is already complete on disk (a local import) as
@@ -340,8 +348,10 @@ class DownloadManager {
     if (!_isDownloadedOnDisk(comicId, sourceId) || _isKnown(comicId, sourceId)) {
       return;
     }
-    _completed.add(await _completedFromDisk(
-        Directory(p.join(_downloadsRoot, sourceId, comicId)), comicId, sourceId));
+    final dir = Directory(p.join(_downloadsRoot, sourceId, comicId));
+    // A re-import of the same name may have other page files.
+    forgetLocalPages(p.join(dir.path, 'pages'));
+    _completed.add(await _completedFromDisk(dir, comicId, sourceId));
     _emit();
   }
 

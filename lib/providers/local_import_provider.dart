@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
@@ -7,12 +10,15 @@ import 'download_provider.dart';
 import 'mirror_provider.dart';
 import 'source_provider.dart';
 
-/// Lets the person pick comic files; returns paths the app can read (empty
-/// when they cancel).
-/// ponytail: no picker yet. Stage 3 implements it natively on the `files`
-/// channel; until then this throws and tests override it.
+/// Lets the person pick comic files (the system Files picker; iOS only, see
+/// `ComicPicker` in AppDelegate.swift). Returns the paths of *copies* in the
+/// app's temp directory, empty when they cancel; the import deletes each
+/// copy when it is done with it.
 final comicFilePickerProvider = Provider<Future<List<String>> Function()>(
-    (ref) => () => throw UnimplementedError('The file picker is not built yet'));
+    (ref) => () async =>
+        await const MethodChannel('app.comic_reader/files')
+            .invokeListMethod<String>('pickComics') ??
+        const []);
 
 /// One picked file: [problem] is null when it was imported.
 typedef ImportOutcome = ({String fileName, String? problem});
@@ -55,6 +61,11 @@ class LocalImportNotifier extends Notifier<({int done, int total})?> {
           problem = importProblem(e.error);
         } catch (_) {
           problem = 'Could not be imported.';
+        } finally {
+          // The picker's copy: don't keep the comic twice.
+          try {
+            await File(path).delete();
+          } catch (_) {}
         }
         outcomes.add((fileName: p.basename(path), problem: problem));
         state = (done: outcomes.length, total: paths.length);

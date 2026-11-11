@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 
 import 'package:comic_reader_app/models/download_item.dart';
 import 'package:comic_reader_app/services/download_manager.dart';
+import 'package:comic_reader_app/services/local_pages.dart';
 import 'package:comic_reader_app/services/page_fetcher.dart';
 
 /// Serves `/comics/<id>/info` with [pages] pages and `/comics/<id>/pages/<n>`
@@ -635,14 +636,32 @@ void main() {
     test('delete reports the source so a local library can re-list', () async {
       final deleted = <String>[];
       final manager = DownloadManager(
-          baseDir: dir.path, httpClient: hangingClient(), onDeleted: deleted.add);
+          baseDir: dir.path,
+          httpClient: hangingClient(),
+          onDeleted: (source, series) => deleted.add('$source/$series'));
       addTearDown(manager.dispose);
       writeComic('c1');
       await manager.init();
       await manager.delete('c1', 'local');
-      expect(deleted, ['local']);
+      expect(deleted, ['local/s1']);
       expect(manager.currentState.completed, isEmpty);
       expect(Directory(p.join(dir.path, 'downloads', 'local', 'c1')).existsSync(), false);
+    });
+
+    test('delete and adopt drop the cached page listing', () async {
+      final manager = DownloadManager(baseDir: dir.path, httpClient: hangingClient());
+      addTearDown(manager.dispose);
+      writeComic('c1');
+      await manager.init();
+      final pages = p.join(dir.path, 'downloads', 'local', 'c1', 'pages');
+      expect(localPageFile(pages, 0)?.path, p.join(pages, '1.jpg'));
+      await manager.delete('c1', 'local');
+      expect(localPageFile(pages, 0), isNull);
+      // The same name imported again, with a different page file.
+      writeComic('c1');
+      File(p.join(pages, '1.jpg')).renameSync(p.join(pages, '1.png'));
+      await manager.adopt('c1', 'local');
+      expect(localPageFile(pages, 0)?.path, p.join(pages, '1.png'));
     });
   });
 }

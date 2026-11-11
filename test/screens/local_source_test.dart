@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +12,8 @@ import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:comic_reader_app/config/platform.dart';
+import 'package:comic_reader_app/models/creator_profile.dart';
+import 'package:comic_reader_app/models/download_item.dart';
 import 'package:comic_reader_app/models/series.dart';
 import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/cache_providers.dart';
@@ -26,6 +29,7 @@ import 'package:comic_reader_app/services/download_manager.dart';
 import 'package:comic_reader_app/services/local_client.dart';
 import 'package:comic_reader_app/services/local_import.dart';
 import 'package:comic_reader_app/services/mirror/mirror_database.dart';
+import 'package:comic_reader_app/widgets/connectivity_overlay.dart';
 import 'package:comic_reader_app/widgets/download_button.dart';
 import 'package:comic_reader_app/widgets/issue_list_view.dart';
 import 'package:comic_reader_app/widgets/local_import_button.dart';
@@ -50,7 +54,8 @@ late Directory tmp;
 
 Future<ProviderContainer> container(
     {Future<List<String>> Function()? picker,
-    List<String> picked = const []}) async {
+    List<String> picked = const [],
+    bool realConnectivity = false}) async {
   SharedPreferences.setMockInitialValues({
     'server_sources': jsonEncode([local.toJson()]),
     'active_source_id': local.id,
@@ -61,7 +66,7 @@ Future<ProviderContainer> container(
   final c = ProviderContainer(overrides: [
     sharedPrefsProvider.overrideWithValue(prefs),
     proStoreProvider.overrideWithValue(FakeProStore()),
-    connectivityProvider.overrideWith(_Online.new),
+    if (!realConnectivity) connectivityProvider.overrideWith(_Online.new),
     docsDirProvider.overrideWith((_) async => tmp.path),
     mirrorDbProvider.overrideWith((ref) {
       final db = MirrorDatabase(NativeDatabase.memory());
@@ -201,19 +206,148 @@ void main() {
 
   });
 
-  testWidgets('the unbuilt picker shows a message, not a crash', (t) async {
-    // The real seam throws until stage 3.
-    final bare = ProviderContainer();
-    addTearDown(bare.dispose);
-    expect(() => bare.read(comicFilePickerProvider)(), throwsUnimplementedError);
+  group('file picker channel', () {
+    const channel = MethodChannel('app.comic_reader/files');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    tearDown(() => messenger.setMockMethodCallHandler(channel, null));
 
-    final c = await container(picker: () => throw UnimplementedError());
+    testWidgets('pickComics gives the picked paths; cancel gives none', (t) async {
+      Object? answer = ['/tmp/a.cbz', '/tmp/b.cbz'];
+      final calls = <String>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call.method);
+        return answer;
+      });
+      final c = ProviderContainer();
+      addTearDown(c.dispose);
+      expect(await c.read(comicFilePickerProvider)(), ['/tmp/a.cbz', '/tmp/b.cbz']);
+      answer = <String>[];
+      expect(await c.read(comicFilePickerProvider)(), isEmpty);
+      answer = null;
+      expect(await c.read(comicFilePickerProvider)(), isEmpty);
+      expect(calls, ['pickComics', 'pickComics', 'pickComics']);
+    });
+
+    testWidgets('no picker on this platform: a message, not a crash', (t) async {
+      // No handler, as on Android.
+      final c = await container(
+          picker: () => throw MissingPluginException('pickComics'));
+      await t.pumpWidget(UncontrolledProviderScope(
+          container: c,
+          child: const MaterialApp(home: Scaffold(body: LocalImportButton()))));
+      await t.tap(find.text('Import comics'));
+      await t.pump();
+      expect(find.text('Could not open the file picker.'), findsOneWidget);
+    });
+  });
+
+  test('the picker\'s copies are deleted, imported or not', () async {
+    final good = writeZip(tmp, 'Saga 001.cbz', {'1.png': png});
+    final bad = p.join(tmp.path, 'Bad.cbz');
+    File(bad).writeAsStringSync('not a zip');
+    final c = await container(picked: [good, bad]);
+    await c.read(docsDirProvider.future);
+    final outcomes = await c.read(localImportProvider.notifier).pickAndImport();
+    expect(outcomes.map((o) => o.problem), [null, 'Not a CBZ file.']);
+    expect(File(good).existsSync(), false);
+    expect(File(bad).existsSync(), false);
+    // The comic itself is in the library.
+    expect(c.read(downloadManagerProvider)!.currentState.completed.length, 1);
+  });
+
+  group('iCloud backup flags', () {
+    const channel = MethodChannel('app.comic_reader/files');
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    tearDown(() => messenger.setMockMethodCallHandler(channel, null));
+    const server = ServerSource(
+        id: 'srv',
+        name: 'Komga',
+        type: SourceType.komga,
+        baseUrl: 'https://k.example',
+        authType: AuthType.none);
+
+    testWidgets('servers are excluded, the local source is not, and the '
+        'shared parent is cleared last', (t) async {
+      final calls = <Object?>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        expect(call.method, 'excludeFromBackup');
+        calls.add(call.arguments);
+        return null;
+      });
+      final root = p.join(tmp.path, 'downloads');
+      await t.runAsync(() => applyBackupFlags(tmp.path, const [server, local]));
+      expect(calls, [
+        {'path': p.join(root, 'srv'), 'exclude': true},
+        {'path': p.join(root, 'loc'), 'exclude': false},
+        {'path': root, 'exclude': false},
+      ]);
+      // The flag lives on the directory, so each one exists.
+      expect(Directory(p.join(root, 'srv')).existsSync(), true);
+      expect(Directory(p.join(root, 'loc')).existsSync(), true);
+    });
+
+    testWidgets('a server directory that cannot be flagged keeps the parent '
+        'excluded', (t) async {
+      final calls = <Object?>[];
+      messenger.setMockMethodCallHandler(channel, (call) async {
+        calls.add(call.arguments);
+        throw PlatformException(code: 'io');
+      });
+      await t.runAsync(() => applyBackupFlags(tmp.path, const [server, local]));
+      expect(calls.length, 1);
+    });
+  });
+
+  test('a local series\' cover goes with its last issue', () {
+    final cover = File(p.join(tmp.path, 'covers', 'loc', 's1.jpg'))
+      ..createSync(recursive: true);
+    DownloadItem item(String series) => DownloadItem(
+        comicId: 'c',
+        sourceId: 'loc',
+        seriesId: series,
+        seriesName: '',
+        comicName: '',
+        totalBytes: 0,
+        downloadedBytes: 0,
+        status: DownloadStatus.completed,
+        addedAt: DateTime(2026));
+    removeOrphanLocalCover(tmp.path, 'loc', 's1', [item('s1')]);
+    expect(cover.existsSync(), true);
+    removeOrphanLocalCover(tmp.path, 'loc', '', const []);
+    expect(cover.existsSync(), true);
+    removeOrphanLocalCover(tmp.path, 'loc', 's1', [item('s2')]);
+    expect(cover.existsSync(), false);
+    // Already gone: no throw.
+    removeOrphanLocalCover(tmp.path, 'loc', 's1', const []);
+  });
+
+  testWidgets('real connectivity: the local source never shows the Offline '
+      'strip', (t) async {
+    final c = await container(realConnectivity: true);
+    await t.runAsync(() => c.read(docsDirProvider.future));
     await t.pumpWidget(UncontrolledProviderScope(
         container: c,
-        child: const MaterialApp(home: Scaffold(body: LocalImportButton()))));
-    await t.tap(find.text('Import comics'));
-    await t.pump();
-    expect(find.text('Could not open the file picker.'), findsOneWidget);
+        child: const MaterialApp(
+            home: ConnectivityOverlay(child: SizedBox.expand()))));
+    await settle(t);
+    // A health check, a sync, and a call the local client has no answer for.
+    await t.runAsync(() async {
+      await c.read(connectivityProvider.notifier).check();
+      await c.read(syncEngineProvider)!.sync(force: true);
+      await c.read(apiClientProvider).fetchCreators().catchError((_) => <CreatorSummary>[]);
+    });
+    await settle(t);
+
+    expect(c.read(connectivityProvider), true);
+    expect(t.widget<AnimatedSlide>(find.byType(AnimatedSlide)).offset,
+        const Offset(0, -1));
+    expect(await t.runAsync(() => c.read(mirrorDbProvider).getSyncState('last_server_time')),
+        isNotNull);
+    // The real notifier's timers end with the container.
+    await t.pumpWidget(const SizedBox());
+    c.dispose();
   });
 
   group('download controls', () {
