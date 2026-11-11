@@ -95,6 +95,38 @@ class ServerActions {
     if (old != null) await _forget(old.id);
   }
 
+  /// Adds the "On this device" source next to any servers and switches to
+  /// it. Free: not a server, so not behind the "more than one server" gate.
+  void addLocal() {
+    final local = ServerSource.local(id: generateSourceId());
+    _ref.read(sourceListProvider.notifier).add(local);
+    _ref.read(activeSourceIdProvider.notifier).select(local.id);
+  }
+
+  /// Makes the "On this device" source the active one and returns its id:
+  /// the one there is, else the blank default (onboarding; same id), else a
+  /// new one next to the servers.
+  String useLocal() {
+    final sources = _ref.read(sourceListProvider);
+    for (final s in sources) {
+      if (s.type == SourceType.local) {
+        _ref.read(activeSourceIdProvider.notifier).select(s.id);
+        return s.id;
+      }
+    }
+    for (final s in sources) {
+      if (s.isDefault && s.baseUrl.isEmpty) {
+        _ref
+            .read(sourceListProvider.notifier)
+            .setDefaultServer(ServerSource.local(id: s.id));
+        _ref.read(activeSourceIdProvider.notifier).select(s.id);
+        return s.id;
+      }
+    }
+    addLocal();
+    return _ref.read(activeSourceProvider).id;
+  }
+
   /// Signs out of [s] and forgets it. The last server leaves a blank default
   /// source (fresh id, no URL), so the app shows onboarding.
   Future<void> signOut(ServerSource s) async {

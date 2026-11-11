@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -7,8 +8,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import '../models/download_item.dart';
 import '../models/series.dart';
+import '../models/server_source.dart';
 import '../services/page_fetcher.dart';
 import '../services/download_manager.dart';
+import '../services/mirror/cover_syncer.dart' show evictCover;
+import 'mirror_provider.dart';
 import 'providers.dart';
 import 'source_provider.dart';
 import 'cache_providers.dart';
@@ -24,7 +28,8 @@ final downloadManagerProvider = Provider<DownloadManager?>((ref) {
   final docsDir = ref.watch(_docsDirProvider).value;
   if (docsDir == null) return null;
   final client = http.Client();
-  final manager = DownloadManager(
+  late final DownloadManager manager;
+  manager = DownloadManager(
     baseDir: docsDir,
     httpClient: client,
     // Keeps downloading while the app is suspended.
@@ -35,11 +40,26 @@ final downloadManagerProvider = Provider<DownloadManager?>((ref) {
       }
       return const {};
     },
+    // A local source's library is what's on disk: list it again.
+    onDeleted: (sourceId, seriesId) {
+      if (!ref.mounted) return;
+      final local = ref.read(sourceListProvider).any(
+          (s) => s.id == sourceId && s.type == SourceType.local);
+      if (!local) return;
+      removeOrphanLocalCover(
+          docsDir, sourceId, seriesId, manager.currentState.completed);
+      if (ref.read(activeSourceProvider).id == sourceId) {
+        ref.read(syncEngineProvider)?.sync(force: true).ignore();
+      }
+    },
   );
   ref.onDispose(() => manager.dispose());
   // Restores the queue journal and sweeps half-finished downloads.
   manager.init();
-  _excludeFromBackup(p.join(docsDir, 'downloads'));
+  // Now, and again when a server is added or the local source is set up.
+  ref.listen(sourceListProvider,
+      (_, sources) => applyBackupFlags(docsDir, sources),
+      fireImmediately: true);
   return manager;
 });
 
@@ -54,15 +74,48 @@ Future<int?> deviceFreeBytes() async {
   }
 }
 
-/// Keeps downloads out of iCloud backup. The flag lives on the directory,
-/// so it's set (idempotently) every launch in case the dir was recreated.
-Future<void> _excludeFromBackup(String dir) async {
+/// iCloud backup, per source: a server's downloads can be fetched again, so
+/// its directory is excluded; comics imported into a local source exist
+/// nowhere else, so its directory stays in. Installs before local sources
+/// had the flag on the shared `downloads/` parent (which excludes everything
+/// under it): it is cleared last, once every server directory has its own.
+/// The flag lives on the directory, so this runs (idempotently) every launch.
+/// ponytail: `downloads/queue.json` (the queue journal, no credentials) is
+/// now backed up too.
+@visibleForTesting
+Future<void> applyBackupFlags(String docsDir, List<ServerSource> sources) async {
+  const channel = MethodChannel('app.comic_reader/files');
+  final root = p.join(docsDir, 'downloads');
   try {
-    await Directory(dir).create(recursive: true);
-    await const MethodChannel('app.comic_reader/files')
-        .invokeMethod('excludeFromBackup', dir);
+    for (final s in sources) {
+      final dir = p.join(root, s.id);
+      await Directory(dir).create(recursive: true);
+      await channel.invokeMethod('excludeFromBackup',
+          {'path': dir, 'exclude': s.type != SourceType.local});
+    }
+    await channel
+        .invokeMethod('excludeFromBackup', {'path': root, 'exclude': false});
   } catch (_) {
-    // Not iOS / no handler (tests): nothing to exclude from.
+    // No handler (tests), or a directory failed: the parent keeps whatever
+    // flag it had, so nothing a server gave us gets into the backup.
+  }
+}
+
+/// Deletes a local series' cover file once [completed] (the comics still on
+/// the device) holds none of its issues.
+@visibleForTesting
+void removeOrphanLocalCover(String docsDir, String sourceId, String seriesId,
+    List<DownloadItem> completed) {
+  if (seriesId.isEmpty ||
+      completed.any((i) => i.sourceId == sourceId && i.seriesId == seriesId)) {
+    return;
+  }
+  final path = p.join(docsDir, 'covers', sourceId, '$seriesId.jpg');
+  try {
+    File(path).deleteSync();
+    evictCover(path);
+  } catch (_) {
+    // Already gone.
   }
 }
 

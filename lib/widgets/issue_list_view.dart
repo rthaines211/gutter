@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
 import '../config/comic_style.dart';
+import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
+import '../config/string_utils.dart';
 import '../models/series.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/download_provider.dart';
@@ -204,7 +206,15 @@ class IssueListRow extends ConsumerWidget {
               CaptionBox(text: 'READING', comic: comic),
             ],
 
-            // Download button
+            // An imported comic is already on the device: delete, not
+            // download.
+            if (ref.watch(isLocalSourceProvider))
+              IconButton(
+                tooltip: 'Delete',
+                icon: Icon(Icons.delete_outline, size: 20, color: context.scheme.t2),
+                onPressed: () => confirmDeleteImported(context, ref, issue),
+              )
+            else
             DownloadButton(
               comicId: issue.id,
               sourceId: ref.read(activeSourceProvider).id,
@@ -233,4 +243,31 @@ class IssueListRow extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Asks, then deletes an imported comic from the device. The download
+/// manager's delete starts the sync that takes it out of the Library.
+Future<void> confirmDeleteImported(
+    BuildContext context, WidgetRef ref, SeriesIssue issue) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: ctx.scheme.s1,
+      title: Text('Delete ${stripComicExtension(issue.name)}?'),
+      content: Text('It is removed from this ${LayoutBreakpoint.deviceNoun}. '
+          'The file you imported it from is not touched.'),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel')),
+        TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete')),
+      ],
+    ),
+  );
+  if (ok != true) return;
+  await ref
+      .read(downloadManagerProvider)
+      ?.delete(issue.id, ref.read(activeSourceProvider).id);
 }

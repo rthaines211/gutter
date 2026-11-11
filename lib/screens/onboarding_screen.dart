@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
+import '../config/platform.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/providers.dart';
 import '../providers/source_provider.dart';
 import '../models/server_source.dart';
+import '../widgets/local_import_button.dart';
 import '../services/kavita_client.dart';
 import '../widgets/longbox_mark.dart';
 import '../config/server_url.dart';
@@ -340,6 +342,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     Text(_error!,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: context.scheme.t2)),
+                  ],
+                  // No server needed. iOS only in v1 (no Android picker).
+                  if (widget.onConnected == null && !isAndroid) ...[
+                    const SizedBox(height: 12),
+                    const LocalImportButton(intoLocal: true),
                   ],
                 ],
               ),

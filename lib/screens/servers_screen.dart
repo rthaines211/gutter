@@ -5,7 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
+import '../config/platform.dart';
+import '../models/download_item.dart';
 import '../models/server_source.dart';
+import '../widgets/local_import_button.dart';
+import '../providers/download_provider.dart';
 import '../providers/accent_provider.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/server_actions.dart';
@@ -21,6 +25,8 @@ class ServersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sources = ref.watch(sourceListProvider);
+    // The local source's row counts its comics.
+    if (sources.any(_local)) ref.watch(downloadStateProvider);
     final active = ref.watch(activeSourceProvider);
     final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
     return Scaffold(
@@ -31,10 +37,13 @@ class ServersScreen extends ConsumerWidget {
         children: [
           for (final s in sources.where((s) => s.baseUrl.isNotEmpty))
             ListTile(
-              title: Text(s.name, style: TextStyle(color: context.scheme.tx)),
+              title: Text(_local(s) ? _localName : s.name,
+                  style: TextStyle(color: context.scheme.tx)),
               subtitle: Text(
-                  '${s.type.label} · '
-                  '${Uri.tryParse(s.baseUrl)?.host ?? s.baseUrl}',
+                  _local(s)
+                      ? _comics(_comicCount(ref, s))
+                      : '${s.type.label} · '
+                          '${Uri.tryParse(s.baseUrl)?.host ?? s.baseUrl}',
                   style: TextStyle(color: context.scheme.t2)),
               leading: Icon(s.id == active.id ? Icons.check : null,
                   color: accent),
@@ -47,9 +56,13 @@ class ServersScreen extends ConsumerWidget {
                 onSelected: (v) => v == 'edit'
                     ? _edit(context, ref, s)
                     : _signOut(context, ref, s),
-                itemBuilder: (_) => const [
-                  PopupMenuItem(value: 'edit', child: Text('Edit')),
-                  PopupMenuItem(value: 'signout', child: Text('Sign out')),
+                itemBuilder: (_) => [
+                  // Nothing to edit on a source with no address or login.
+                  if (!_local(s))
+                    const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                  PopupMenuItem(
+                      value: 'signout',
+                      child: Text(_local(s) ? 'Remove' : 'Sign out')),
                 ],
               ),
             ),
@@ -61,10 +74,29 @@ class ServersScreen extends ConsumerWidget {
               onPressed: () => _add(context, ref),
             ),
           ),
+          // Free, and next to any servers. iOS only in v1. One step: pick
+          // files, and they open in the Library.
+          if (!isAndroid)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: LocalImportButton(intoLocal: true),
+            ),
         ],
       ),
     );
   }
+
+  static bool _local(ServerSource s) => s.type == SourceType.local;
+  static String get _localName => 'On this ${LayoutBreakpoint.deviceNoun}';
+  static String _comics(int n) => '$n ${n == 1 ? 'comic' : 'comics'}';
+
+  /// Comics imported into (or downloaded from) [s] on this device.
+  static int _comicCount(WidgetRef ref, ServerSource s) =>
+      (ref.read(downloadManagerProvider)?.currentState.completed ??
+              const <DownloadItem>[])
+          .where((i) =>
+              i.sourceId == s.id && i.status == DownloadStatus.completed)
+          .length;
 
   void _add(BuildContext context, WidgetRef ref) {
     if (!requirePro(context, ref,
@@ -103,10 +135,15 @@ class ServersScreen extends ConsumerWidget {
   Future<void> _signOut(
       BuildContext context, WidgetRef ref, ServerSource s) async {
     if (!await confirmLeaveServer(context, ref, s,
-        title: 'Sign out of ${s.name}?',
-        body: 'Its library, downloads and reading stats on this '
-            '${LayoutBreakpoint.deviceNoun} are removed.',
-        action: 'Sign out')) {
+        title: _local(s) ? 'Remove $_localName?' : 'Sign out of ${s.name}?',
+        body: _local(s)
+            ? 'This deletes ${_comics(_comicCount(ref, s))} from this '
+                '${LayoutBreakpoint.deviceNoun}, with their reading progress '
+                'and stats. The original files you imported from are not '
+                'touched.'
+            : 'Its library, downloads and reading stats on this '
+                '${LayoutBreakpoint.deviceNoun} are removed.',
+        action: _local(s) ? 'Delete' : 'Sign out')) {
       return;
     }
     final last = ref.read(sourceListProvider).length == 1;

@@ -4,13 +4,20 @@ enum SourceType {
   custom('Gutter'),
   opds('OPDS'),
   komga('Komga'),
-  kavita('Kavita');
+  kavita('Kavita'),
+
+  /// No server: comics imported from files (`LocalClient`).
+  local('On this device');
 
   const SourceType(this.label);
 
   /// The server software's name, as the Servers list shows it.
   final String label;
 }
+
+/// A local source's `baseUrl`. Not empty, because an empty address means
+/// "no server set up yet" (onboarding shows, the Servers list hides it).
+const localBaseUrl = 'local:';
 
 enum AuthType { none, basic, apiKey }
 
@@ -47,6 +54,18 @@ class ServerSource {
       isDefault: true,
     );
   }
+
+  /// The "On this device" source. A fresh [id] each time it's added: a
+  /// forgotten source's id is never reused.
+  const ServerSource.local({required String id, bool isDefault = false})
+      : this(
+          id: id,
+          name: 'On this device',
+          type: SourceType.local,
+          baseUrl: localBaseUrl,
+          authType: AuthType.none,
+          isDefault: isDefault,
+        );
 
   Map<String, String> get authHeaders {
     switch (authType) {

@@ -8,6 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:comic_reader_app/config/flavor.dart';
+import 'package:comic_reader_app/config/platform.dart';
+import 'package:comic_reader_app/providers/download_provider.dart';
+import 'package:comic_reader_app/services/download_manager.dart';
 import 'package:comic_reader_app/models/server_source.dart';
 import 'package:comic_reader_app/providers/cache_providers.dart';
 import 'package:comic_reader_app/providers/connectivity_provider.dart';
@@ -46,7 +49,7 @@ class _Connectivity extends ConnectivityNotifier {
 var drains = 0;
 
 Future<ProviderContainer> _pump(WidgetTester t, List<ServerSource> sources,
-    {bool online = true}) async {
+    {bool online = true, bool noDownloads = false}) async {
   SharedPreferences.setMockInitialValues({
     'server_sources': jsonEncode(sources.map((s) => s.toJson()).toList()),
     'active_source_id': sources.first.id,
@@ -58,6 +61,7 @@ Future<ProviderContainer> _pump(WidgetTester t, List<ServerSource> sources,
     proStoreProvider.overrideWithValue(FakeProStore()),
     docsDirProvider.overrideWith((_) async => docs.path),
     connectivityProvider.overrideWith(() => _Connectivity(online)),
+    if (noDownloads) downloadManagerProvider.overrideWithValue(null),
   ]);
   addTearDown(c.dispose);
   // The server rejects everything: the drain sends nothing.
@@ -156,5 +160,92 @@ void main() {
     await t.tap(find.text('Komga'));
     await t.pump();
     expect(c.read(activeSourceIdProvider), 'two');
+  });
+
+  group('local source', () {
+    const local = ServerSource.local(id: 'loc');
+    final add = find.text('Import comics from Files');
+
+    testWidgets('adding it is free and needs no Pro, next to a server',
+        (t) async {
+      isStore = true;
+      addTearDown(() => isStore = false);
+      final c = await _pump(t, [_one], noDownloads: true);
+      // No picker under test: the tap is free (no Pro sheet), and with no
+      // file picked no source is made.
+      await t.tap(add);
+      await t.pumpAndSettle();
+      expect(find.byType(ProSheet), findsNothing);
+      expect(c.read(sourceListProvider).length, 1);
+
+      // Once a file is picked, the import calls this.
+      final id = c.read(serverActionsProvider).useLocal();
+      await t.pumpAndSettle();
+      final sources = c.read(sourceListProvider);
+      expect(sources.map((s) => s.type), [SourceType.custom, SourceType.local]);
+      // A fresh id, and it becomes the active source.
+      expect(sources.last.id, allOf(id, isNot('loc')));
+      expect(c.read(activeSourceProvider).id, id);
+      // One local source only: a second call reuses it.
+      expect(c.read(serverActionsProvider).useLocal(), id);
+      expect(c.read(sourceListProvider).length, 2);
+      // Import stays offered; a second server is still Pro.
+      expect(add, findsOneWidget);
+      await t.tap(find.text('Add server'));
+      await t.pumpAndSettle();
+      expect(find.byType(ProSheet), findsOneWidget);
+    });
+
+    testWidgets('not offered on Android', (t) async {
+      isAndroid = true;
+      addTearDown(() => isAndroid = false);
+      await _pump(t, [_one]);
+      expect(add, findsNothing);
+    });
+
+    testWidgets('its row has no Edit, and Remove says what is deleted',
+        (t) async {
+      for (final id in ['c1', 'c2']) {
+        File(p.join(docs.path, 'downloads', 'loc', id, 'metadata.json'))
+          ..createSync(recursive: true)
+          ..writeAsStringSync('{}');
+        Directory(p.join(docs.path, 'downloads', 'loc', id, 'pages')).createSync();
+      }
+      final manager = DownloadManager(baseDir: docs.path);
+      addTearDown(manager.dispose);
+      await t.runAsync(manager.init);
+      SharedPreferences.setMockInitialValues({
+        'server_sources': jsonEncode([_one.toJson(), local.toJson()]),
+        'active_source_id': 'loc',
+      });
+      FlutterSecureStorage.setMockInitialValues({});
+      final c = ProviderContainer(overrides: [
+        sharedPrefsProvider.overrideWithValue(await SharedPreferences.getInstance()),
+        proStoreProvider.overrideWithValue(FakeProStore()),
+        docsDirProvider.overrideWith((_) async => docs.path),
+        connectivityProvider.overrideWith(() => _Connectivity(true)),
+        downloadManagerProvider.overrideWithValue(manager),
+      ]);
+      addTearDown(c.dispose);
+      await t.pumpWidget(UncontrolledProviderScope(
+          container: c, child: const MaterialApp(home: ServersScreen())));
+      await t.pump();
+
+      expect(find.textContaining('On this i'), findsOneWidget);
+      expect(find.text('2 comics'), findsOneWidget);
+      await t.tap(find.byTooltip('On this device options'));
+      await t.pumpAndSettle();
+      expect(find.text('Edit'), findsNothing);
+      await t.tap(find.text('Remove'));
+      await t.pumpAndSettle();
+      expect(find.textContaining('This deletes 2 comics from this i'),
+          findsOneWidget);
+
+      await t.tap(find.widgetWithText(TextButton, 'Delete'));
+      await _settle(t);
+      expect(c.read(sourceListProvider).map((s) => s.id), ['one']);
+      expect(c.read(activeSourceProvider).id, 'one');
+      expect(Directory(p.join(docs.path, 'downloads', 'loc')).existsSync(), false);
+    });
   });
 }

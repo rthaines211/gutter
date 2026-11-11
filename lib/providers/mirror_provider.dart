@@ -61,9 +61,10 @@ final syncEngineProvider = Provider<SyncEngine?>((ref) {
     client: ref.watch(apiClientProvider),
     queue: queue,
     // Each Komga or Kavita pull re-reads the whole library.
-    minPullInterval: ref.watch(activeSourceProvider).type != SourceType.custom
-        ? const Duration(minutes: 10)
-        : Duration.zero,
+    minPullInterval: switch (ref.watch(activeSourceProvider).type) {
+      SourceType.custom || SourceType.local => Duration.zero,
+      _ => const Duration(minutes: 10),
+    },
     onProgress: _progressSink(ref),
   );
 });

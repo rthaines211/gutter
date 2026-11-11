@@ -8,6 +8,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
 import '../config/layout_breakpoint.dart';
+import '../config/platform.dart';
+import '../widgets/local_import_button.dart';
 import '../config/scheme.dart';
 import '../config/library_sections.dart';
 import '../models/library_filter.dart';
@@ -452,6 +454,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                 ),
               ] else
                 const Spacer(),
+              if (ref.watch(isLocalSourceProvider) && !isAndroid)
+                const LocalImportButton(compact: true),
               const LibraryModePill(),
               const SizedBox(width: 8),
               GestureDetector(
@@ -599,6 +603,27 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
               if (FirstScanProgress.shows(scan)) {
                 return SliverFillRemaining(child: FirstScanProgress(scan: scan));
               }
+            }
+            if (unfiltered && ref.watch(isLocalSourceProvider)) {
+              return SliverFillRemaining(
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'No comics on this ${LayoutBreakpoint.deviceNoun} yet.\n'
+                        'Import CBZ files to read them here.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: context.scheme.t2),
+                      ),
+                      if (!isAndroid) ...[
+                        const SizedBox(height: 16),
+                        const LocalImportButton(),
+                      ],
+                    ],
+                  ),
+                ),
+              );
             }
             if (unfiltered &&
                 FirstSyncCard.shows(ref.watch(syncProgressProvider))) {

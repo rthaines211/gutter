@@ -19,3 +19,6 @@ File? localPageFile(String pagesDir, int page) {
   });
   return files[page + 1];
 }
+
+/// Drops the cached listing of [pagesDir]: its comic was deleted or imported.
+void forgetLocalPages(String pagesDir) => _index.remove(pagesDir);
