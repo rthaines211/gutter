@@ -1,5 +1,3 @@
-Teste o zoom guiado de graça: ative Panels no menu Aa do leitor e ele funciona naquela edição inteira. No restante da sua biblioteca, ele continua fazendo parte do Gutter Pro.
+Novidade: leia quadrinhos sem servidor. Toque em “Import comics from Files” (primeira tela, ou Servers) e escolha arquivos CBZ do seu iPhone ou iPad. Importar e ler é gratuito.
 
-Corrigido: os títulos da fileira Up Next na aba Read apareciam cortados.
-
-Corrigido: a primeira sincronização depois de abrir o app podia falhar e começar com alguns segundos de atraso.
+Novidade: compartilhe suas estatísticas de leitura como imagem, na tela Stats.
