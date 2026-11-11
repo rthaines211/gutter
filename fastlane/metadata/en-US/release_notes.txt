@@ -1,5 +1,3 @@
-Try guided zoom for free: turn on Panels in the reader's Aa menu and it works for that whole issue. It stays part of Gutter Pro for the rest of your library.
+New: read comics with no server. Tap Import comics from Files (first screen, or Servers) and pick CBZ files from your iPhone or iPad. Import and reading are free.
 
-Fixed: titles in the Up Next row on the Read tab were cut off.
-
-Fixed: the first sync after you open the app could fail and start a few seconds late.
+New: share your reading stats as an image, from the Stats screen.
