@@ -9,6 +9,8 @@ Demo server (public-domain and CC BY comics, read-only reviewer account):
 
 Steps: open the app, keep Komga selected, enter the address, username and password, then tap Connect. The library loads. Tap any series, then an issue to read. Swipe or tap the page edges to turn pages. Swipe up for the reader controls.
 
+No server (new in 1.0.3): on the first screen, or under Servers, tap Import comics from Files and pick one or more .cbz files from the Files app. The comics open in the Library on the "On this iPad/iPhone" source. Import and reading of local files are free and need no account or network.
+
 In-app purchase: "Gutter Pro" is a one-time, non-consumable unlock ($12.99). It adds offline downloads, guided zoom (panel by panel, with panels found on the device, and through two-page spreads), more than one server, and reading stats. Guided zoom can be tried without the purchase in one issue (swipe up in the reader, Aa > ZOOM > Panels); in any other issue the same control opens the Gutter Pro sheet. To see it: tap the download icon on any issue, or Settings > Gutter Pro (on iPhone: More > Settings > Gutter Pro; on iPad: the gear in the sidebar). Restore Purchases is on the same sheet. Reading, streaming and progress sync are free.
 
 Volume buttons (2.5.9): turning pages with the volume buttons is off by default. Users can turn it on under the reader's Aa > More reader settings > Volume keys (swipe up on a page to show the reader controls). When on, the buttons turn pages only while a comic is open.
