@@ -1,4 +1,4 @@
-Gutter is a comic reader for people who run their own comic server. It has no content of its own and no accounts with us. On first launch it asks for the address of the user's server and their login.
+Gutter is a comic reader for a person's own comics: CBZ files on the device, or the library on their own comic server. It has no content of its own and no accounts with us. On first launch it asks for the address of the user's server and their login, and also offers Import comics from Files for use with no server.
 
 Demo server (public-domain and CC BY comics, read-only reviewer account):
 - Server type: Komga (selected by default)
