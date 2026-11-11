@@ -1,0 +1,5 @@
+Essayez gratuitement le zoom guidé : activez Panels dans le menu Aa du lecteur et il fonctionne pour tout ce numéro. Pour le reste de votre bibliothèque, il fait toujours partie de Gutter Pro.
+
+Corrigé : les titres de la rangée Up Next de l'onglet Read étaient tronqués.
+
+Corrigé : la première synchronisation après l'ouverture de l'app pouvait échouer et démarrer avec quelques secondes de retard.
