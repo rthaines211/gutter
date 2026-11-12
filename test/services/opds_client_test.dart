@@ -221,6 +221,60 @@ void main() {
       expect(issues, hasLength(1));
       expect((issues.single as Map)['name'], 'Book b1');
     });
+
+    test('Stump: the root "All books" list does not take books from series',
+        () async {
+      String nav(String id, String title, String href) =>
+          '<entry><id>$id</id><title>$title</title>'
+          '<link rel="subsection" href="$href"/></entry>';
+      final book = _book('b1', '/opds/v1.2/books/b1/pages/{pageNumber}');
+      final requests = <http.Request>[];
+      final sync = await feedClient({
+        'https://comics.example.com/opds/v1.2/catalog': '$_feedHead'
+            '${nav('allBooks', 'All books', '/opds/v1.2/books')}'
+            '${nav('latestBooks', 'Latest books', '/opds/v1.2/books/latest')}'
+            '${nav('allSeries', 'All series', '/opds/v1.2/series')}</feed>',
+        'https://comics.example.com/opds/v1.2/books': '$_feedHead$book</feed>',
+        'https://comics.example.com/opds/v1.2/series': '$_feedHead'
+            '${nav('s1', 'Planet Comics', '/opds/v1.2/series/s1')}</feed>',
+        'https://comics.example.com/opds/v1.2/series/s1':
+            '$_feedHead$book</feed>',
+      }, requests, catalogPath: '/opds/v1.2/catalog')
+          .fetchSync(since: 0);
+      expect([for (final s in sync.series) s['name']], ['Planet Comics']);
+      expect(requests.map((r) => r.url.path),
+          isNot(contains('/opds/v1.2/books')));
+    });
+
+    test('Codex: root views with topCollection queries, order links skipped',
+        () async {
+      String nav(String title, String href) =>
+          '<entry><id>${href.replaceAll('&', '&amp;')}</id><title>$title</title>'
+          '<link rel="subsection" href="${href.replaceAll('&', '&amp;')}"/></entry>';
+      const o = 'https://comics.example.com';
+      final book = _book('b1', '/opds/bin/c/1/{pageNumber}/page.jpg');
+      final requests = <http.Request>[];
+      final sync = await feedClient({
+        '$o/opds/v1.2/': '$_feedHead'
+            '${nav('Latest Unread', '/opds/v1.2/series?topCollection=series&orderBy=created_at')}'
+            '${nav('Oldest Unread', '/opds/v1.2/series?topCollection=series&orderBy=date')}'
+            '${nav('Folder View', '/opds/v1.2/folders?topCollection=folders')}</feed>',
+        '$o/opds/v1.2/folders?topCollection=folders': '$_feedHead'
+            '${nav('Start of catalog', '/opds/v1.2/')}'
+            '${nav('Order By Date', '/opds/v1.2/folders?topCollection=folders&orderBy=date')}'
+            '${nav('Planet Comics', '/opds/v1.2/folders/2?topCollection=folders')}</feed>',
+        '$o/opds/v1.2/folders/2?topCollection=folders': '$_feedHead'
+            '${nav('Order By Date', '/opds/v1.2/folders/2?topCollection=folders&orderBy=date')}'
+            '$book</feed>',
+      }, requests, catalogPath: '/opds/v1.2/')
+          .fetchSync(since: 0);
+      expect([for (final s in sync.series) s['name']], ['Planet Comics']);
+      expect([for (final r in requests) r.url.toString()], [
+        '$o/opds/v1.2/',
+        '$o/opds/v1.2/folders?topCollection=folders',
+        '$o/opds/v1.2/folders/2?topCollection=folders',
+      ]);
+    });
   });
 
   group('same-origin only', () {
