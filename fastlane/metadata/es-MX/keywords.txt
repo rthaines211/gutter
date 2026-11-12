@@ -1,1 +1,1 @@
-selfhosted,nas,homelab,library,collection,digital,stats,streak,queue,bookmark,comics,lector,comic
+selfhosted,nas,homelab,library,collection,opds,stats,streak,queue,bookmark,comics,lector,comic

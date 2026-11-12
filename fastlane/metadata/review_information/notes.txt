@@ -17,4 +17,6 @@ Volume buttons (2.5.9): turning pages with the volume buttons is off by default.
 
 Network security: the app connects only to servers the user types in, which are usually on their home network or behind their own reverse proxy, often over plain HTTP. That is why App Transport Security allows arbitrary loads. The app talks to no other servers.
 
+OPDS (new in 1.0.3): the server type list also has OPDS, for any OPDS 1.x catalog with page streaming (OPDS-PSE). The demo server has one at the same address plus /opds/v1.2/catalog, with the same username and password. With OPDS, progress stays on the device.
+
 Privacy: no data is collected. No analytics, ads or tracking. Settings, progress and downloads stay on the device and the user's own server.

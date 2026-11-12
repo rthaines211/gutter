@@ -2,7 +2,7 @@ O Gutter é um leitor para os quadrinhos que você já tem: arquivos CBZ no seu 
 
 Sem servidor? Toque em “Import comics from Files” e escolha seus arquivos CBZ. Sem conta e sem nada para configurar.
 
-Tem um servidor? Conecte-se ao Komga ou ao Kavita com seu nome de usuário e senha ou com uma chave de API, ou a um servidor Gutter auto-hospedado. Sua biblioteca aparece com as séries, as capas e o ponto em que você parou.
+Tem um servidor? Conecte-se ao Komga ou ao Kavita com seu nome de usuário e senha ou com uma chave de API, a qualquer catálogo OPDS com streaming de páginas (OPDS-PSE), ou a um servidor Gutter auto-hospedado. Sua biblioteca aparece com as séries, as capas e o ponto em que você parou.
 
 LEITURA
 • Modo página ou rolagem vertical
@@ -17,7 +17,7 @@ SUA BIBLIOTECA
 • Biblioteca com busca, filtros e ordenação
 • Filas de leitura para planejar o que ler em seguida
 • Importe arquivos CBZ do app Arquivos
-• Com um servidor, o progresso é sincronizado nos dois sentidos
+• Com Komga, Kavita ou um servidor Gutter, o progresso é sincronizado nos dois sentidos
 • Sua biblioteca continua navegável quando o servidor está fora de alcance
 
 GUTTER PRO
@@ -32,4 +32,4 @@ Leitura, streaming, importação de arquivos e sincronização do progresso são
 PRIVACIDADE
 O Gutter não coleta nada. Sem contas, análises de uso, anúncios ou rastreamento. Ele se comunica apenas com os servidores que você adiciona.
 
-O Gutter não inclui nem vende quadrinhos. Você precisa dos seus próprios arquivos CBZ, ou do seu próprio servidor Komga, Kavita ou Gutter. O servidor Gutter é gratuito e de código aberto: github.com/rthaines211/gutter-server
+O Gutter não inclui nem vende quadrinhos. Você precisa dos seus próprios arquivos CBZ, ou do seu próprio servidor Komga, Kavita, OPDS ou Gutter. O servidor Gutter é gratuito e de código aberto: github.com/rthaines211/gutter-server

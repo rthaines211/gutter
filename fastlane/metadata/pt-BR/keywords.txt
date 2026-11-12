@@ -1,1 +1,1 @@
-manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,webtoon
+manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,opds

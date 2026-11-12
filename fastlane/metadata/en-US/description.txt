@@ -2,7 +2,7 @@ Gutter is a comic reader for the comics you already own: CBZ files on your iPhon
 
 No server? Tap Import comics from Files and pick your CBZ files. There is no account and nothing to set up.
 
-Have a server? Connect to Komga or Kavita with your username and password or an API key, or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
+Have a server? Connect to Komga or Kavita with your username and password or an API key, to any OPDS catalog with page streaming (OPDS-PSE), or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
 
 READING
 • Page mode or vertical scroll mode
@@ -17,7 +17,7 @@ YOUR LIBRARY
 • Import CBZ files from the Files app
 • Searchable library with filters and sorting
 • Reading queues to plan what to read next
-• With a server, progress syncs both ways
+• With Komga, Kavita or a Gutter server, progress syncs both ways
 • Your library stays browsable when the server is out of reach
 
 GUTTER PRO
@@ -32,4 +32,4 @@ Reading, streaming, file import and progress sync are free.
 PRIVACY
 Gutter collects nothing. No accounts, analytics, ads or tracking. It talks only to the servers you add.
 
-Gutter does not include or sell comics. You need your own CBZ files, or your own Komga, Kavita or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server
+Gutter does not include or sell comics. You need your own CBZ files, or your own Komga, Kavita, OPDS or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server
