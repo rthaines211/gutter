@@ -126,6 +126,8 @@ OpdsFeed parseOpdsFeed(String xml) {
 // ponytail: a file whose page count changes gets a new id (and loses its
 // local progress); fine while servers rarely rewrite files.
 
+String _noQuery(String url) => url.split('?').first;
+
 String _b64(String s) => base64Url.encode(utf8.encode(s)).replaceAll('=', '');
 String _unb64(String s) => utf8.decode(base64Url.decode(base64Url.normalize(s)));
 
@@ -226,10 +228,12 @@ class OpdsClient extends ApiClient with LocalReaderData {
   late final Uri _origin = Uri.parse(baseUrl);
 
   /// Root entries that list books already reached another way (or never
-  /// end): on-deck, latest, collections, reading lists, publishers, search.
+  /// end): on-deck, latest, collections, reading lists, publishers, search,
+  /// and flat lists of every book (Stump "All books", Codex "Latest
+  /// Unread"), which would take the books from their series.
   static final _views = RegExp(
-      'deck|keep|latest|recent|want|reading-?list|readlist|collection|'
-      'publisher|search|favou?rite|history',
+      'deck|keep|latest|recent|want|reading-?list|readlist|collection|all-?books|'
+      'publisher|search|favou?rite|history|unread',
       caseSensitive: false);
 
   Future<OpdsFeed> _feed(String path) async =>
@@ -279,9 +283,19 @@ class OpdsClient extends ApiClient with LocalReaderData {
           final stream = e.stream;
           final nav = e.navigation;
           if (stream == null && nav != null) {
-            if (v.root && _views.hasMatch('${e.id} $nav')) continue;
+            // Without queries: every Codex link carries `topCollection=`.
+            if (v.root &&
+                _views.hasMatch(
+                    '${e.title} ${_noQuery(e.id)} ${_noQuery(nav)}')) {
+              continue;
+            }
             final path = _local(nav, v.path);
-            if (path == null || !seenFeeds.add(path)) continue;
+            if (path == null) continue;
+            // The same feed with another query is a re-sort or filter of it
+            // (Codex "Order By ..."), never a new shelf. Pages come as the
+            // feed's own `next` link.
+            if (_noQuery(path) == _noQuery(v.path)) continue;
+            if (!seenFeeds.add(path)) continue;
             queue.add(_Visit(path,
                 name: e.title,
                 image: _local(e.image ?? e.thumbnail, v.path)));
