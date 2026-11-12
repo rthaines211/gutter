@@ -28,6 +28,11 @@ Future<ProviderContainer> _pump(
     ServerSource? initial,
     Future<String?> Function(ServerSource)? kavitaLogin,
     Future<void> Function(ServerSource)? onConnected}) async {
+  // Tall enough that Connect is on screen with four server types (the
+  // segment labels wrap in the test font).
+  t.view.physicalSize = const Size(800, 800);
+  t.view.devicePixelRatio = 1;
+  addTearDown(t.view.reset);
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   // No plugin implementation under flutter_test.
@@ -332,6 +337,79 @@ void main() {
     await _pump(t, (_, _) async => 401);
     await typeUrlAndConnect(t);
     expect(find.text('Any name works for Gutter Server'), findsOneWidget);
+  });
+
+  group('OPDS', () {
+    Future<ProviderContainer> pumpOpds(WidgetTester t,
+        {void Function(ServerSource)? onProbe, int? status = 200}) async {
+      final c = await _pump(t, (_, _) async => status,
+          gutter: false, onProbe: onProbe);
+      await t.tap(find.text('OPDS'));
+      await t.pump();
+      return c;
+    }
+
+    testWidgets('a catalog URL connects without a login and is saved as an '
+        'OPDS source: origin + catalog path', (t) async {
+      ServerSource? probed;
+      final c = await pumpOpds(t, onProbe: (s) => probed = s);
+      expect(find.text('Use an API key'), findsNothing);
+      await t.enterText(_url, 'kavita.example.com/api/opds/abc123/');
+      await t.pump();
+      await t.tap(find.text('Connect'));
+      await t.pump();
+      expect(probed!.type, SourceType.opds);
+      expect(probed!.baseUrl, 'https://kavita.example.com');
+      expect(probed!.catalogPath, '/api/opds/abc123');
+      expect(probed!.authHeaders, isEmpty);
+      final saved = c.read(activeSourceProvider);
+      expect(saved.type, SourceType.opds);
+      expect(saved.name, 'OPDS');
+      expect(saved.address, 'https://kavita.example.com/api/opds/abc123');
+      expect(c.read(apiClientProvider).baseUrl, 'https://kavita.example.com');
+      // Not a Gutter server: no server-only features.
+      expect(c.read(isCustomSourceProvider), isFalse);
+      expect(c.read(gutterFeaturesProvider), isFalse);
+    });
+
+    testWidgets('a username and password become Basic auth', (t) async {
+      ServerSource? probed;
+      await pumpOpds(t, onProbe: (s) => probed = s);
+      await t.enterText(_url, 'https://komga.example.com/opds/v1.2/catalog');
+      await t.enterText(find.widgetWithText(TextField, 'Username'), 'reader');
+      await t.enterText(find.widgetWithText(TextField, 'Password'), 'pw');
+      await t.pump();
+      await t.tap(find.text('Connect'));
+      await t.pump();
+      expect(probed!.authHeaders['Authorization'],
+          'Basic ${base64Encode(utf8.encode('reader:pw'))}');
+      expect(probed!.catalogPath, '/opds/v1.2/catalog');
+    });
+
+    testWidgets('a page that is not a feed says to use the catalog address',
+        (t) async {
+      final c = await pumpOpds(t, status: null);
+      await t.enterText(_url, 'comics.example.com');
+      await t.pump();
+      await t.tap(find.text('Connect'));
+      await t.pump();
+      expect(find.textContaining('OPDS catalog address'), findsOneWidget);
+      expect(c.read(activeSourceProvider).baseUrl, isEmpty);
+    });
+
+    testWidgets('edit mode prefills the whole catalog address', (t) async {
+      await _pump(t, (_, _) async => 200,
+          initial: const ServerSource(
+              id: 'o',
+              name: 'OPDS',
+              type: SourceType.opds,
+              baseUrl: 'https://komga.example.com',
+              catalogPath: '/opds/v1.2/catalog',
+              authType: AuthType.none),
+          onConnected: (_) async {});
+      expect(find.text('https://komga.example.com/opds/v1.2/catalog'),
+          findsOneWidget);
+    });
   });
 
   group('edit / add mode', () {

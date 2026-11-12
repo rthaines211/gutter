@@ -60,7 +60,7 @@ final syncEngineProvider = Provider<SyncEngine?>((ref) {
     db: ref.watch(mirrorDbProvider),
     client: ref.watch(apiClientProvider),
     queue: queue,
-    // Each Komga or Kavita pull re-reads the whole library.
+    // Each Komga, Kavita or OPDS pull re-reads the whole library.
     minPullInterval: switch (ref.watch(activeSourceProvider).type) {
       SourceType.custom || SourceType.local => Duration.zero,
       _ => const Duration(minutes: 10),
@@ -89,10 +89,8 @@ final mirrorLibraryProvider = StreamProvider<List<MirrorSeries>>((ref) {
   return ref.watch(mirrorDbProvider).watchLibrary();
 });
 
-/// Synced cover path per issue id ([MirrorDatabase.watchIssueCoverPaths]);
-/// empty for sources without a mirror (OPDS).
+/// Synced cover path per issue id ([MirrorDatabase.watchIssueCoverPaths]).
 final issueCoverPathsProvider = StreamProvider<Map<String, String>>((ref) {
-  if (!ref.watch(hasMirrorProvider)) return Stream.value(const {});
   return ref.watch(mirrorDbProvider).watchIssueCoverPaths();
 });
 

@@ -22,7 +22,7 @@ const FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 @visibleForTesting
 String builtInApiKey = const String.fromEnvironment('PUSH_API_KEY');
 
-typedef SourceCredentials = ({String? password, String? apiKey});
+typedef SourceCredentials = ({String? password, String? apiKey, String? catalogPath});
 
 /// Every saved source's secrets from secure storage, keyed by source id.
 /// `toJson` leaves them out of SharedPreferences, so main() reads them before
@@ -43,6 +43,8 @@ Future<Map<String, SourceCredentials>> readSourceCredentials(
             await _secureStorage.read(key: '$_credentialPrefix${id}_password'),
         apiKey:
             await _secureStorage.read(key: '$_credentialPrefix${id}_apiKey'),
+        catalogPath: await _secureStorage.read(
+            key: '$_credentialPrefix${id}_catalogPath'),
       );
     }
   } catch (e) {
@@ -88,6 +90,7 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
         s.copyWith(
           password: creds[s.id]?.password ?? s.password,
           apiKey: creds[s.id]?.apiKey ?? s.apiKey,
+          catalogPath: creds[s.id]?.catalogPath ?? s.catalogPath,
         ),
     ];
     // An install over an older build keeps its saved sources, so the seed
@@ -129,6 +132,7 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
     _persist(state);
     _secureStorage.delete(key: '$_credentialPrefix${id}_password');
     _secureStorage.delete(key: '$_credentialPrefix${id}_apiKey');
+    _secureStorage.delete(key: '$_credentialPrefix${id}_catalogPath');
   }
 
   /// Makes [server] (type, URL, credentials) the default source, keeping its
@@ -146,6 +150,7 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
             username: server.username,
             password: server.password,
             apiKey: server.apiKey,
+            catalogPath: server.catalogPath,
             isDefault: true,
           )
         else
@@ -215,6 +220,12 @@ class SourceListNotifier extends Notifier<List<ServerSource>> {
             key: '$_credentialPrefix${s.id}_apiKey', value: s.apiKey!);
       } else {
         _secureStorage.delete(key: '$_credentialPrefix${s.id}_apiKey');
+      }
+      if (s.catalogPath != null) {
+        _secureStorage.write(
+            key: '$_credentialPrefix${s.id}_catalogPath', value: s.catalogPath!);
+      } else {
+        _secureStorage.delete(key: '$_credentialPrefix${s.id}_catalogPath');
       }
     }
   }

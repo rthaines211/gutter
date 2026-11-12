@@ -12,6 +12,7 @@ import '../services/kavita_client.dart';
 import '../services/komga_client.dart';
 import '../services/label_client.dart';
 import '../services/local_client.dart';
+import '../services/opds_client.dart';
 import 'connectivity_provider.dart';
 import 'source_provider.dart';
 
@@ -25,8 +26,7 @@ final serverConfigProvider = Provider<ServerConfig>((ref) {
 });
 
 /// Client for the active source: [KomgaClient] for Komga, [KavitaClient] for
-/// Kavita, else the Gutter
-/// server's [ApiClient].
+/// Kavita, [OpdsClient] for OPDS, else the Gutter server's [ApiClient].
 /// Rebuilds when active source changes.
 final apiClientProvider = Provider<ApiClient>((ref) {
   return clientFor(
@@ -67,7 +67,15 @@ ApiClient clientFor(ServerSource source,
           onRequestOutcome: onRequestOutcome,
           sessions: sessions,
         ),
-      _ => ApiClient(
+      SourceType.opds => OpdsClient(
+          baseUrl: source.baseUrl,
+          catalogPath: source.catalogPath ?? '',
+          deviceId: deviceId,
+          authHeaders: source.authHeaders,
+          onRequestOutcome: onRequestOutcome,
+          sessions: sessions,
+        ),
+      SourceType.custom => ApiClient(
           baseUrl: source.baseUrl,
           deviceId: deviceId,
           authHeaders: source.authHeaders,
@@ -104,7 +112,8 @@ final labelClientProvider = Provider<LabelClient>((ref) {
   return LabelClient(baseUrl: api.baseUrl, authHeaders: api.authHeaders);
 });
 
-/// Whether the active source is a custom backend (vs OPDS).
+/// Whether the active source is a Gutter server (vs Komga, Kavita, OPDS or
+/// local files).
 final isCustomSourceProvider = Provider<bool>((ref) {
   final source = ref.watch(activeSourceProvider);
   return source.type == SourceType.custom;
@@ -131,7 +140,3 @@ final sourceAuthSyncProvider = Provider<void>((ref) {
       localDir: docsDir == null ? null : '$docsDir/downloads/${source.id}');
 });
 
-/// Whether the active source syncs into the mirror (Gutter, Komga, Kavita).
-final hasMirrorProvider = Provider<bool>((ref) {
-  return ref.watch(activeSourceProvider).type != SourceType.opds;
-});

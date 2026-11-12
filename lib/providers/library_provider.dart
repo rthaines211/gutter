@@ -1,13 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/library_filter.dart';
 import '../models/series.dart';
-import '../models/server_source.dart';
 import '../services/mirror/library_view.dart';
-import '../services/opds_client.dart';
 import 'download_provider.dart';
 import 'mirror_provider.dart';
 import 'providers.dart';
-import 'source_provider.dart';
 
 class LibraryFilterNotifier extends Notifier<LibraryFilter> {
   @override
@@ -137,47 +134,3 @@ final librarySmartFilterProvider =
   LibrarySmartFilterNotifier.new,
 );
 
-/// Fetches the root OPDS catalog and converts entries to Series objects
-/// for display in the library grid.
-final opdsLibraryProvider =
-    FutureProvider.autoDispose<List<Series>>((ref) async {
-  final source = ref.watch(activeSourceProvider);
-  if (source.type != SourceType.opds) return [];
-
-  final client = OPDSClient(source: source);
-  final feed = await client.fetchRoot();
-
-  // OPDS root is typically navigation — find the first acquisition-type subsection
-  // and fetch it to get actual series/comics
-  for (final entry in feed.entries) {
-    if (entry.navigationLink != null) {
-      final subFeed = await client.fetchFeed(entry.navigationLink!);
-      return subFeed.entries.map((e) => Series(
-        id: e.id,
-        name: e.title,
-        folderPath: '',
-        issueCount: 0,
-        readCount: 0,
-        coverUrl: e.thumbnailUrl != null
-            ? client.resolveThumbnailUrl(e.thumbnailUrl!)
-            : '',
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-      )).toList();
-    }
-  }
-
-  // If root is already acquisition entries, convert directly
-  return feed.entries.map((e) => Series(
-    id: e.id,
-    name: e.title,
-    folderPath: '',
-    issueCount: 0,
-    readCount: 0,
-    coverUrl: e.thumbnailUrl != null
-        ? client.resolveThumbnailUrl(e.thumbnailUrl!)
-        : '',
-    createdAt: DateTime.now(),
-    updatedAt: DateTime.now(),
-  )).toList();
-});

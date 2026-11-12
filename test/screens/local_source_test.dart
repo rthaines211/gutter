@@ -104,7 +104,6 @@ void main() {
     await c.read(docsDirProvider.future);
     expect(c.read(apiClientProvider), isA<LocalClient>());
     expect(c.read(isLocalSourceProvider), true);
-    expect(c.read(hasMirrorProvider), true);
     expect(c.read(isCustomSourceProvider), false);
     expect(c.read(gutterFeaturesProvider), false);
   });

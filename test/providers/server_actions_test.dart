@@ -97,6 +97,21 @@ void main() {
         isFalse);
   });
 
+  test('OPDS: the catalog path is part of the address', () {
+    ServerSource opds(String path, {String? user}) => ServerSource(
+        id: 'o',
+        name: 'OPDS',
+        type: SourceType.opds,
+        baseUrl: 'https://comics.example.com',
+        catalogPath: path,
+        authType: user == null ? AuthType.none : AuthType.basic,
+        username: user);
+    expect(sameServer(opds('/opds/v1.2/catalog'),
+            opds('/opds/v1.2/catalog', user: 'me')),
+        isTrue);
+    expect(sameServer(opds('/api/opds/key1'), opds('/api/opds/key2')), isFalse);
+  });
+
   test('new address gets new id, is selected, old files deleted, '
       'isDefault carried', () async {
     final c = await _container([_komga]);

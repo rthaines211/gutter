@@ -24,7 +24,7 @@ bool sameServer(ServerSource a, ServerSource b) {
     return '${u.host.toLowerCase()}:${u.hasPort ? u.port : ''}${u.path}';
   }
 
-  return a.type == b.type && key(a.baseUrl) == key(b.baseUrl);
+  return a.type == b.type && key(a.address) == key(b.address);
 }
 
 typedef OutboxDrain = Future<void> Function(
@@ -185,6 +185,7 @@ class ServerActions {
         username: s.username,
         password: s.password,
         apiKey: s.apiKey,
+        catalogPath: s.catalogPath,
         isDefault: isDefault,
       );
 }

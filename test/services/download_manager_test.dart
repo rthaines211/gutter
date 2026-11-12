@@ -342,6 +342,35 @@ void main() {
     manager.dispose();
   });
 
+  test('OPDS layout: page count in the URL, pages from the PSE template',
+      () async {
+    final requests = <Uri>[];
+    final manager = DownloadManager(
+      baseDir: tempDir.path,
+      httpClient: MockClient((req) async {
+        requests.add(req.url);
+        final q = req.url.queryParameters;
+        if (req.url.path != '/opds/image' || req.headers['Authorization'] != 'Basic x') {
+          return http.Response('nope', 404);
+        }
+        return http.Response.bytes([int.parse(q['pageNumber']!)], 200);
+      }),
+    );
+    manager.enqueue(
+      comicId: 'o1', sourceId: 'src1', seriesId: '7', seriesName: 'S',
+      comicName: 'C', comicUrl: 'http://localhost/opds/image?c=1&pageNumber={pageNumber}#2',
+      headers: const {'Authorization': 'Basic x'},
+    );
+    await pumpUntil(() => manager.isDownloaded('o1', 'src1'));
+    for (var n = 0; n < 2; n++) {
+      final name = (n + 1).toString().padLeft(3, '0');
+      expect(File(p.join(comicDir('o1'), 'pages', name)).readAsBytesSync(), [n]);
+    }
+    // No info request: the count came with the URL.
+    expect(requests, hasLength(2));
+    manager.dispose();
+  });
+
   test('a relaunch only fetches the pages still missing', () async {
     final managerA = DownloadManager(
         baseDir: tempDir.path,

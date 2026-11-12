@@ -90,7 +90,7 @@ void builtInKeyTests() {
     final c = ProviderContainer(overrides: [
       sharedPrefsProvider.overrideWithValue(prefs),
       sourceCredentialsProvider.overrideWithValue(
-          {saved.id: (password: 'pw', apiKey: null)}),
+          {saved.id: (password: 'pw', apiKey: null, catalogPath: null)}),
     ]);
     addTearDown(c.dispose);
     expect(c.read(activeSourceProvider).authHeaders,
@@ -114,5 +114,30 @@ void builtInKeyTests() {
   test('existing install without a built-in key stays keyless', () async {
     final c = await existingInstall();
     expect(c.read(activeSourceProvider).authType, AuthType.none);
+  });
+
+  test("an OPDS catalog path goes to the keychain, not prefs, and comes back",
+      () async {
+    final c = await _container();
+    c.read(sourceListProvider.notifier).setDefaultServer(const ServerSource(
+        id: 'default',
+        name: 'OPDS',
+        type: SourceType.opds,
+        baseUrl: 'https://kavita.example.com',
+        authType: AuthType.none,
+        catalogPath: '/api/opds/secret-key',
+        isDefault: true));
+    final prefs = c.read(sharedPrefsProvider);
+    expect(prefs.getString('server_sources'), isNot(contains('secret-key')));
+
+    final relaunched = ProviderContainer(overrides: [
+      sharedPrefsProvider.overrideWithValue(prefs),
+      sourceCredentialsProvider
+          .overrideWithValue(await readSourceCredentials(prefs)),
+    ]);
+    addTearDown(relaunched.dispose);
+    final s = relaunched.read(activeSourceProvider);
+    expect(s.type, SourceType.opds);
+    expect(s.address, 'https://kavita.example.com/api/opds/secret-key');
   });
 }

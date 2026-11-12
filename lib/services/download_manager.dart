@@ -261,6 +261,15 @@ class DownloadManager {
     // Kavita (`<server>/api/Chapter?chapterId=<id>`): the chapter has the
     // page count; pages are 0-based and need the key as a query parameter.
     final kavita = meta.url.contains('/api/Chapter?chapterId=');
+    // OPDS (`<page template>#<count>`, SourceUrls.comicDownload): the count
+    // is in the URL; pages are 0-based into the PSE template.
+    final opds = meta.url.contains('{pageNumber}');
+    if (opds && meta.pageCount == null) {
+      final count = int.tryParse(meta.url.substring(meta.url.lastIndexOf('#') + 1)) ?? 0;
+      if (count == 0) throw Exception('No pages in comic');
+      meta = _downloadMeta[key] = meta.withPageCount(count);
+      _persistJournal();
+    }
     if (meta.pageCount == null) {
       final res = await _httpClient
           .get(Uri.parse(komga || kavita ? meta.url : '${meta.url}/info'),
@@ -285,7 +294,12 @@ class DownloadManager {
     await _fetcher.start(meta.taskId, [
       for (var i = 0; i < meta.pageCount!; i++)
         (
-          url: kavita
+          url: opds
+              ? meta.url
+                  .substring(0, meta.url.lastIndexOf('#'))
+                  .replaceAll('{pageNumber}', '$i')
+                  .replaceAll('{maxWidth}', '2048')
+              : kavita
               ? '${meta.url.replaceFirst('/api/Chapter?', '/api/Reader/image?')}'
                   '&page=$i&apiKey=${Uri.encodeQueryComponent(headers['X-API-Key'] ?? '')}'
               : '${meta.url}/pages/${komga ? i + 1 : i}',
@@ -522,7 +536,7 @@ class DownloadManager {
 }
 
 class _DownloadMeta {
-  final String url; // <server>/comics/<id>, Komga's <server>/api/v1/books/<id>, or Kavita's <server>/api/Chapter?chapterId=<id>
+  final String url; // <server>/comics/<id>, Komga's <server>/api/v1/books/<id>, Kavita's <server>/api/Chapter?chapterId=<id>, or OPDS's <page template>#<count>
   final Map<String, String> headers;
   final String taskId;
   final int? pageCount; // null until /info answers
