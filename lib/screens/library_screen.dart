@@ -227,12 +227,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
     });
     final isOnline = ref.watch(connectivityProvider);
     final isCustom = ref.watch(isCustomSourceProvider);
-    final usesMirror = ref.watch(hasMirrorProvider);
-    final libraryAsync = usesMirror
-        ? ref.watch(libraryProvider)
-        : ref.watch(opdsLibraryProvider);
-    final source = ref.watch(activeSourceProvider);
-    final serverUrl = usesMirror ? source.baseUrl : '';
+    final libraryAsync = ref.watch(libraryProvider);
+    final serverUrl = ref.watch(activeSourceProvider).baseUrl;
     final filter = ref.watch(libraryFilterProvider);
     final viewMode = ref.watch(libraryViewModeProvider);
     final activeCollection = ref.watch(activeCollectionProvider);
@@ -263,9 +259,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       if (!ref.read(connectivityProvider)) {
                         HapticFeedback.mediumImpact();
                         ref.invalidate(downloadedLibraryProvider);
-                      } else if (!usesMirror) {
-                        HapticFeedback.mediumImpact();
-                        return ref.refresh(opdsLibraryProvider.future);
                       } else {
                         HapticFeedback.mediumImpact();
                         final engine = ref.read(syncEngineProvider);
@@ -327,9 +320,6 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                     if (!ref.read(connectivityProvider)) {
                       HapticFeedback.mediumImpact();
                       ref.invalidate(downloadedLibraryProvider);
-                    } else if (!usesMirror) {
-                      HapticFeedback.mediumImpact();
-                      return ref.refresh(opdsLibraryProvider.future);
                     } else {
                       HapticFeedback.mediumImpact();
                       final engine = ref.read(syncEngineProvider);
@@ -917,11 +907,7 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                         ?.sync(force: true)
                         .catchError((_) {}) ??
                     Future.value());
-                if (ref.read(hasMirrorProvider)) {
-                  ref.invalidate(libraryProvider);
-                } else {
-                  ref.invalidate(opdsLibraryProvider);
-                }
+                ref.invalidate(libraryProvider);
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),

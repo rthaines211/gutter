@@ -30,6 +30,12 @@ class ServerSource {
   final String? username;
   final String? password;
   final String? apiKey;
+
+  /// OPDS only: the catalog's path (and query) on [baseUrl], which is just
+  /// the origin, so cover paths from the feed concatenate onto it and
+  /// credentials go to that origin alone. Kept with the secrets: Kavita's
+  /// OPDS path carries the account's API key.
+  final String? catalogPath;
   final bool isDefault;
 
   const ServerSource({
@@ -41,6 +47,7 @@ class ServerSource {
     this.username,
     this.password,
     this.apiKey,
+    this.catalogPath,
     this.isDefault = false,
   });
 
@@ -67,6 +74,9 @@ class ServerSource {
           isDefault: isDefault,
         );
 
+  /// The address as the user typed it: the catalog URL for OPDS.
+  String get address => '$baseUrl${catalogPath ?? ''}';
+
   Map<String, String> get authHeaders {
     switch (authType) {
       case AuthType.none:
@@ -90,6 +100,7 @@ class ServerSource {
     String? username,
     String? password,
     String? apiKey,
+    String? catalogPath,
   }) {
     return ServerSource(
       id: id,
@@ -100,6 +111,7 @@ class ServerSource {
       username: username ?? this.username,
       password: password ?? this.password,
       apiKey: apiKey ?? this.apiKey,
+      catalogPath: catalogPath ?? this.catalogPath,
       isDefault: isDefault,
     );
   }
@@ -112,7 +124,7 @@ class ServerSource {
         'base_url': baseUrl,
         'auth_type': authType.name,
         if (username != null) 'username': username,
-        // password and apiKey stored separately in secure storage
+        // password, apiKey and catalogPath stored separately in secure storage
         'is_default': isDefault,
       };
 
@@ -126,6 +138,7 @@ class ServerSource {
       username: json['username'] as String?,
       password: json['password'] as String?,
       apiKey: json['api_key'] as String?,
+      catalogPath: json['catalog_path'] as String?,
       isDefault: json['is_default'] as bool? ?? false,
     );
   }

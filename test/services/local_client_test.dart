@@ -14,6 +14,7 @@ import 'package:comic_reader_app/services/kavita_client.dart';
 import 'package:comic_reader_app/services/komga_client.dart';
 import 'package:comic_reader_app/services/local_client.dart';
 import 'package:comic_reader_app/services/local_import.dart';
+import 'package:comic_reader_app/services/opds_client.dart';
 import 'package:comic_reader_app/services/mirror/mirror_database.dart';
 
 import 'local_import_test.dart' show writeZip;
@@ -58,11 +59,10 @@ void main() {
         id: 'x', name: 'x', type: t, baseUrl: 'http://h', authType: AuthType.none);
     expect(clientFor(src(SourceType.komga), deviceId: 'd'), isA<KomgaClient>());
     expect(clientFor(src(SourceType.kavita), deviceId: 'd'), isA<KavitaClient>());
-    for (final t in [SourceType.custom, SourceType.opds]) {
-      final c = clientFor(src(t), deviceId: 'd', docsDir: '/docs');
-      expect(c.runtimeType, ApiClient);
-      expect(c.baseUrl, 'http://h');
-    }
+    expect(clientFor(src(SourceType.opds), deviceId: 'd'), isA<OpdsClient>());
+    final c = clientFor(src(SourceType.custom), deviceId: 'd', docsDir: '/docs');
+    expect(c.runtimeType, ApiClient);
+    expect(c.baseUrl, 'http://h');
   });
 
   test('an empty library syncs as empty', () async {

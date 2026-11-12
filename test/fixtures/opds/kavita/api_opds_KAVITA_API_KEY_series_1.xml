@@ -1,0 +1,708 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.w3.org/2005/Atom">
+  <updated>2026-11-12T01:58:39</updated>
+  <id>series-1</id>
+  <title>Pepper&amp;Carrot - Storyline</title>
+  <icon>/api/opds/KAVITA_API_KEY/favicon</icon>
+  <author>
+    <name>Kavita</name>
+    <uri>https://www.kavitareader.com</uri>
+  </author>
+  <link rel="self" type="application/atom+xml;profile=opds-catalog;kind=acquisition" href="/api/opds/KAVITA_API_KEY/series/1" />
+  <link rel="start" type="application/atom+xml;profile=opds-catalog;kind=navigation" href="/api/opds/KAVITA_API_KEY" />
+  <link rel="search" type="application/opensearchdescription+xml" href="/api/opds/KAVITA_API_KEY/search" />
+  <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/series-cover?seriesId=1&amp;apiKey=KAVITA_API_KEY" />
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>16</id>
+    <title>Continue Reading from: ◕ Pepper&amp;Carrot - Issue #2 - Rainbow potions</title>
+    <summary>File Type: x-cbz - 2.8 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">2.8 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=16&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=16&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/16/download/Pepper%26Carrot%20002%20-%20Rainbow%20potions.cbz" title="Pepper%26Carrot%20002%20-%20Rainbow%20potions.cbz" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=16&amp;pageNumber={pageNumber}" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>28</id>
+    <title>⬤ Pepper&amp;Carrot - Issue #1 - Potion of Flight</title>
+    <summary>File Type: x-cbz - 1.22 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">1.22 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=28&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=28&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/28/download/Pepper%26Carrot%20001%20-%20Potion%20of%20Flight.cbz" title="Pepper%26Carrot%20001%20-%20Potion%20of%20Flight.cbz" p5:count="5" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=28&amp;pageNumber={pageNumber}" p5:count="5" p5:lastRead="5" p5:lastReadDate="2026-11-06T14:55:45" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>16</id>
+    <title>◕ Pepper&amp;Carrot - Issue #2 - Rainbow potions</title>
+    <summary>File Type: x-cbz - 2.8 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">2.8 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=16&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=16&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/16/download/Pepper%26Carrot%20002%20-%20Rainbow%20potions.cbz" title="Pepper%26Carrot%20002%20-%20Rainbow%20potions.cbz" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=16&amp;pageNumber={pageNumber}" p5:count="7" p5:lastRead="4" p5:lastReadDate="2026-11-06T17:47:42" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>31</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #3 - The secret ingredients</title>
+    <summary>File Type: x-cbz - 4.98 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.98 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=31&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=31&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/31/download/Pepper%26Carrot%20003%20-%20The%20secret%20ingredients.cbz" title="Pepper%26Carrot%20003%20-%20The%20secret%20ingredients.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=31&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>11</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #4 - Stroke of genius</title>
+    <summary>File Type: x-cbz - 3.26 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.26 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=11&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=11&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/11/download/Pepper%26Carrot%20004%20-%20Stroke%20of%20genius.cbz" title="Pepper%26Carrot%20004%20-%20Stroke%20of%20genius.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=11&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>33</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #5 - Special holiday episode</title>
+    <summary>File Type: x-cbz - 1.87 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">1.87 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=33&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=33&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/33/download/Pepper%26Carrot%20005%20-%20Special%20holiday%20episode.cbz" title="Pepper%26Carrot%20005%20-%20Special%20holiday%20episode.cbz" p5:count="6" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=33&amp;pageNumber={pageNumber}" p5:count="6" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>26</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #6 - The Potion Contest</title>
+    <summary>File Type: x-cbz - 5.91 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.91 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=26&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=26&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/26/download/Pepper%26Carrot%20006%20-%20The%20Potion%20Contest.cbz" title="Pepper%26Carrot%20006%20-%20The%20Potion%20Contest.cbz" p5:count="11" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=26&amp;pageNumber={pageNumber}" p5:count="11" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>19</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #7 - The Wish</title>
+    <summary>File Type: x-cbz - 2.83 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">2.83 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=19&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=19&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/19/download/Pepper%26Carrot%20007%20-%20The%20Wish.cbz" title="Pepper%26Carrot%20007%20-%20The%20Wish.cbz" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=19&amp;pageNumber={pageNumber}" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>2</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #8 - Pepper s Birthday Party</title>
+    <summary>File Type: x-cbz - 3.51 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.51 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=2&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=2&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/2/download/Pepper%26Carrot%20008%20-%20Pepper%20s%20Birthday%20Party.cbz" title="Pepper%26Carrot%20008%20-%20Pepper%20s%20Birthday%20Party.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=2&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>17</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #9 - The Remedy</title>
+    <summary>File Type: x-cbz - 3.58 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.58 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=17&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=17&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/17/download/Pepper%26Carrot%20009%20-%20The%20Remedy.cbz" title="Pepper%26Carrot%20009%20-%20The%20Remedy.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=17&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>8</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #10 - Summer Special</title>
+    <summary>File Type: x-cbz - 2.82 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">2.82 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=8&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=8&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/8/download/Pepper%26Carrot%20010%20-%20Summer%20Special.cbz" title="Pepper%26Carrot%20010%20-%20Summer%20Special.cbz" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=8&amp;pageNumber={pageNumber}" p5:count="7" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>27</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #11 - The Witches of Chaosah</title>
+    <summary>File Type: x-cbz - 4.38 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.38 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=27&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=27&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/27/download/Pepper%26Carrot%20011%20-%20The%20Witches%20of%20Chaosah.cbz" title="Pepper%26Carrot%20011%20-%20The%20Witches%20of%20Chaosah.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=27&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>37</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #12 - Autumn Clearout</title>
+    <summary>File Type: x-cbz - 4.41 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.41 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=37&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=37&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/37/download/Pepper%26Carrot%20012%20-%20Autumn%20Clearout.cbz" title="Pepper%26Carrot%20012%20-%20Autumn%20Clearout.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=37&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>7</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #13 - The Pyjama Party</title>
+    <summary>File Type: x-cbz - 4.14 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.14 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=7&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=7&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/7/download/Pepper%26Carrot%20013%20-%20The%20Pyjama%20Party.cbz" title="Pepper%26Carrot%20013%20-%20The%20Pyjama%20Party.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=7&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>12</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #14 - The Dragon s Tooth</title>
+    <summary>File Type: x-cbz - 3.39 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.39 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=12&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=12&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/12/download/Pepper%26Carrot%20014%20-%20The%20Dragon%20s%20Tooth.cbz" title="Pepper%26Carrot%20014%20-%20The%20Dragon%20s%20Tooth.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=12&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>29</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #15 - The Crystal Ball</title>
+    <summary>File Type: x-cbz - 4.83 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.83 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=29&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=29&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/29/download/Pepper%26Carrot%20015%20-%20The%20Crystal%20Ball.cbz" title="Pepper%26Carrot%20015%20-%20The%20Crystal%20Ball.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=29&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>20</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #16 - The Sage of the Mountain</title>
+    <summary>File Type: x-cbz - 4.04 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.04 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=20&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=20&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/20/download/Pepper%26Carrot%20016%20-%20The%20Sage%20of%20the%20Mountain.cbz" title="Pepper%26Carrot%20016%20-%20The%20Sage%20of%20the%20Mountain.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=20&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>38</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #17 - A Fresh Start</title>
+    <summary>File Type: x-cbz - 4.06 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.06 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=38&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=38&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/38/download/Pepper%26Carrot%20017%20-%20A%20Fresh%20Start.cbz" title="Pepper%26Carrot%20017%20-%20A%20Fresh%20Start.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=38&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>23</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #18 - The Encounter</title>
+    <summary>File Type: x-cbz - 4.18 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.18 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=23&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=23&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/23/download/Pepper%26Carrot%20018%20-%20The%20Encounter.cbz" title="Pepper%26Carrot%20018%20-%20The%20Encounter.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=23&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>35</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #19 - Pollution</title>
+    <summary>File Type: x-cbz - 4.71 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.71 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=35&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=35&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/35/download/Pepper%26Carrot%20019%20-%20Pollution.cbz" title="Pepper%26Carrot%20019%20-%20Pollution.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=35&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>32</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #20 - The Picnic</title>
+    <summary>File Type: x-cbz - 3.88 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.88 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=32&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=32&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/32/download/Pepper%26Carrot%20020%20-%20The%20Picnic.cbz" title="Pepper%26Carrot%20020%20-%20The%20Picnic.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=32&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>4</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #21 - The Magic Contest</title>
+    <summary>File Type: x-cbz - 5.1 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.1 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=4&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=4&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/4/download/Pepper%26Carrot%20021%20-%20The%20Magic%20Contest.cbz" title="Pepper%26Carrot%20021%20-%20The%20Magic%20Contest.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=4&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>25</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #22 - The Voting System</title>
+    <summary>File Type: x-cbz - 7.94 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">7.94 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=25&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=25&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/25/download/Pepper%26Carrot%20022%20-%20The%20Voting%20System.cbz" title="Pepper%26Carrot%20022%20-%20The%20Voting%20System.cbz" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=25&amp;pageNumber={pageNumber}" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>22</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #23 - Take a Chance</title>
+    <summary>File Type: x-cbz - 4.48 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.48 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=22&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=22&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/22/download/Pepper%26Carrot%20023%20-%20Take%20a%20Chance.cbz" title="Pepper%26Carrot%20023%20-%20Take%20a%20Chance.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=22&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>21</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #24 - The Unity Tree</title>
+    <summary>File Type: x-cbz - 4.62 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.62 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=21&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=21&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/21/download/Pepper%26Carrot%20024%20-%20The%20Unity%20Tree.cbz" title="Pepper%26Carrot%20024%20-%20The%20Unity%20Tree.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=21&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>9</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #25 - There are no Shortcuts</title>
+    <summary>File Type: x-cbz - 5.54 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.54 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=9&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=9&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/9/download/Pepper%26Carrot%20025%20-%20There%20are%20no%20Shortcuts.cbz" title="Pepper%26Carrot%20025%20-%20There%20are%20no%20Shortcuts.cbz" p5:count="11" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=9&amp;pageNumber={pageNumber}" p5:count="11" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>30</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #26 - Books Are Great</title>
+    <summary>File Type: x-cbz - 4.7 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.7 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=30&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=30&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/30/download/Pepper%26Carrot%20026%20-%20Books%20Are%20Great.cbz" title="Pepper%26Carrot%20026%20-%20Books%20Are%20Great.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=30&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>3</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #27 - Coriander s Invention</title>
+    <summary>File Type: x-cbz - 3.95 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">3.95 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=3&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=3&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/3/download/Pepper%26Carrot%20027%20-%20Coriander%20s%20Invention.cbz" title="Pepper%26Carrot%20027%20-%20Coriander%20s%20Invention.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=3&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>18</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #28 - The Festivities</title>
+    <summary>File Type: x-cbz - 4.58 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.58 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=18&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=18&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/18/download/Pepper%26Carrot%20028%20-%20The%20Festivities.cbz" title="Pepper%26Carrot%20028%20-%20The%20Festivities.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=18&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>40</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #29 - Destroyer of Worlds</title>
+    <summary>File Type: x-cbz - 5.43 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.43 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=40&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=40&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/40/download/Pepper%26Carrot%20029%20-%20Destroyer%20of%20Worlds.cbz" title="Pepper%26Carrot%20029%20-%20Destroyer%20of%20Worlds.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=40&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>13</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #30 - Need a Hug</title>
+    <summary>File Type: x-cbz - 4.35 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.35 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=13&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=13&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/13/download/Pepper%26Carrot%20030%20-%20Need%20a%20Hug.cbz" title="Pepper%26Carrot%20030%20-%20Need%20a%20Hug.cbz" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=13&amp;pageNumber={pageNumber}" p5:count="8" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>14</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #31 - The Fight</title>
+    <summary>File Type: x-cbz - 5.35 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.35 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=14&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=14&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/14/download/Pepper%26Carrot%20031%20-%20The%20Fight.cbz" title="Pepper%26Carrot%20031%20-%20The%20Fight.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=14&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>24</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #32 - The Battlefield</title>
+    <summary>File Type: x-cbz - 4.65 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.65 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=24&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=24&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/24/download/Pepper%26Carrot%20032%20-%20The%20Battlefield.cbz" title="Pepper%26Carrot%20032%20-%20The%20Battlefield.cbz" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=24&amp;pageNumber={pageNumber}" p5:count="9" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>1</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #33 - Spell of War</title>
+    <summary>File Type: x-cbz - 5.08 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.08 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=1&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=1&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/1/download/Pepper%26Carrot%20033%20-%20Spell%20of%20War.cbz" title="Pepper%26Carrot%20033%20-%20Spell%20of%20War.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=1&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>5</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #34 - The Knighting of Shichimi</title>
+    <summary>File Type: x-cbz - 7.19 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">7.19 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=5&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=5&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/5/download/Pepper%26Carrot%20034%20-%20The%20Knighting%20of%20Shichimi.cbz" title="Pepper%26Carrot%20034%20-%20The%20Knighting%20of%20Shichimi.cbz" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=5&amp;pageNumber={pageNumber}" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>34</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #35 - The Reflection</title>
+    <summary>File Type: x-cbz - 6.21 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">6.21 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=34&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=34&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/34/download/Pepper%26Carrot%20035%20-%20The%20Reflection.cbz" title="Pepper%26Carrot%20035%20-%20The%20Reflection.cbz" p5:count="14" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=34&amp;pageNumber={pageNumber}" p5:count="14" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>10</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #36 - The Surprise Attack</title>
+    <summary>File Type: x-cbz - 8.59 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">8.59 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=10&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=10&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/10/download/Pepper%26Carrot%20036%20-%20The%20Surprise%20Attack.cbz" title="Pepper%26Carrot%20036%20-%20The%20Surprise%20Attack.cbz" p5:count="17" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=10&amp;pageNumber={pageNumber}" p5:count="17" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>6</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #37 - The Tears of the Phoenix</title>
+    <summary>File Type: x-cbz - 5.67 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">5.67 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=6&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=6&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/6/download/Pepper%26Carrot%20037%20-%20The%20Tears%20of%20the%20Phoenix.cbz" title="Pepper%26Carrot%20037%20-%20The%20Tears%20of%20the%20Phoenix.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=6&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>39</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #38 - The Healer</title>
+    <summary>File Type: x-cbz - 4.99 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">4.99 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=39&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=39&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/39/download/Pepper%26Carrot%20038%20-%20The%20Healer.cbz" title="Pepper%26Carrot%20038%20-%20The%20Healer.cbz" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=39&amp;pageNumber={pageNumber}" p5:count="10" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>36</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #39 - The Tavern</title>
+    <summary>File Type: x-cbz - 6.97 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">6.97 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=36&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=36&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/36/download/Pepper%26Carrot%20039%20-%20The%20Tavern.cbz" title="Pepper%26Carrot%20039%20-%20The%20Tavern.cbz" p5:count="13" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=36&amp;pageNumber={pageNumber}" p5:count="13" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+  <entry>
+    <updated>2026-11-12T01:58:39</updated>
+    <id>15</id>
+    <title>⭘ Pepper&amp;Carrot - Issue #40 - The Weight of Expectations</title>
+    <summary>File Type: x-cbz - 2.12 MB</summary>
+    <extent xmlns="http://purl.org/dc/terms/">2.12 MB</extent>
+    <format xmlns="http://purl.org/dc/terms/format">Archive</format>
+    <content type="text">application/x-cbz</content>
+    <link rel="http://opds-spec.org/image" type="image/jpeg" href="/api/image/chapter-cover?chapterId=15&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/image/thumbnail" type="image/jpeg" href="/api/image/chapter-cover?chapterId=15&amp;apiKey=KAVITA_API_KEY" />
+    <link rel="http://opds-spec.org/acquisition/open-access" type="application/x-cbz" href="/api/opds/KAVITA_API_KEY/series/1/volume/1/chapter/15/download/Pepper%26Carrot%20040%20-%20The%20Weight%20of%20Expectations.cbz" title="Pepper%26Carrot%20040%20-%20The%20Weight%20of%20Expectations.cbz" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <link rel="http://vaemendis.net/opds-pse/stream" type="image/jpeg" href="/api/opds/KAVITA_API_KEY/image?libraryId=1&amp;seriesId=1&amp;volumeId=1&amp;chapterId=15&amp;pageNumber={pageNumber}" p5:count="12" xmlns:p5="http://vaemendis.net/opds-pse/ns" />
+    <author>
+      <name>David Revoy</name>
+      <uri>http://opds-spec.org/author/1</uri>
+    </author>
+  </entry>
+</feed>

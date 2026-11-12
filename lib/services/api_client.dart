@@ -190,6 +190,18 @@ class ApiClient {
     return response.body.isEmpty ? null : jsonDecode(response.body);
   }
 
+  /// For non-JSON adapters ([OpdsClient]): GET [path], the body as UTF-8
+  /// text; non-2xx throws [ApiException].
+  Future<String> requestText(String path,
+      {Duration timeout = const Duration(seconds: 60)}) async {
+    final response =
+        await _request(method: 'GET', path: path, timeout: timeout);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    return utf8.decode(response.bodyBytes, allowMalformed: true);
+  }
+
   Future<void> _put(String path, Map<String, dynamic> body) async {
     final response = await _request(method: 'PUT', path: path, body: body);
     if (response.statusCode < 200 || response.statusCode >= 300) {

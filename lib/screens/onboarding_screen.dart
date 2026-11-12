@@ -64,10 +64,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     super.initState();
     final s = widget.initial;
     if (s == null) return;
-    _type = s.type == SourceType.komga || s.type == SourceType.kavita
+    _type = s.type == SourceType.komga ||
+            s.type == SourceType.kavita ||
+            s.type == SourceType.opds
         ? s.type
         : SourceType.custom;
-    _urlCtrl.text = s.baseUrl;
+    _urlCtrl.text = s.address;
     _userCtrl.text = s.username ?? '';
     _passCtrl.text = s.password ?? '';
     _keyCtrl.text = s.apiKey ?? '';
@@ -87,10 +89,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   /// on a 401).
   bool get _komga => _type != SourceType.custom;
 
+  /// OPDS: the login is optional (many catalogs are open, Kavita's has its
+  /// key in the address) and there is no API-key option.
+  bool get _opds => _type == SourceType.opds;
+
   bool get _canConnect =>
       !_probing &&
       _urlCtrl.text.trim().isNotEmpty &&
       (!_komga ||
+          _opds ||
           (_useKey
               ? _keyCtrl.text.trim().isNotEmpty
               : _userCtrl.text.trim().isNotEmpty && _passCtrl.text.isNotEmpty));
@@ -111,6 +118,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         username: current.username,
         password: current.password,
         apiKey: current.apiKey,
+        isDefault: true,
+      );
+    }
+    if (_opds) {
+      // The origin is the source's address, so feed paths concatenate onto
+      // it and the login goes to that origin only (OpdsClient).
+      final u = Uri.parse(url);
+      final user = _userCtrl.text.trim();
+      return ServerSource(
+        id: 'default',
+        name: _type.label,
+        type: _type,
+        baseUrl: u.origin,
+        catalogPath: '${u.path}${u.hasQuery ? '?${u.query}' : ''}',
+        authType: user.isEmpty ? AuthType.none : AuthType.basic,
+        username: user.isEmpty ? null : user,
+        password: user.isEmpty ? null : _passCtrl.text,
         isDefault: true,
       );
     }
@@ -202,7 +226,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     } else {
       setState(() {
         _probing = false;
-        _error = _komga
+        _error = _opds
+            ? "Couldn't open an OPDS catalog at ${candidates.first}. Enter "
+                "the OPDS catalog address from your server's settings, and "
+                'your login if it has one.'
+            : _komga
             ? "Couldn't sign in to ${_type.label} at ${candidates.first}. "
                 'Check the address and your login.'
             : "Couldn't reach a server at ${candidates.first}. "
@@ -265,6 +293,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       ButtonSegment(
                           value: SourceType.kavita, label: Text('Kavita')),
                       ButtonSegment(
+                          value: SourceType.opds, label: Text('OPDS')),
+                      ButtonSegment(
                           value: SourceType.custom,
                           label: Text('Gutter server')),
                     ],
@@ -272,6 +302,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     showSelectedIcon: false,
                     onSelectionChanged: (s) => setState(() {
                       _type = s.first;
+                      if (_opds) _useKey = false;
                       _error = null;
                       _authUrl = null;
                     }),
@@ -286,6 +317,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             hint: switch (_type) {
                               SourceType.komga => 'komga.example.com:25600',
                               SourceType.kavita => 'kavita.example.com:5000',
+                              SourceType.opds =>
+                                'comics.example.com/opds/v1.2/catalog',
                               _ => 'comics.example.com',
                             },
                             keyboard: TextInputType.url,
@@ -301,8 +334,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             }),
                         if (_komga && !_useKey) ...[
                           _field(_userCtrl, 'Username',
+                              hint: _opds ? 'Optional' : null,
                               keyboard: TextInputType.emailAddress),
-                          _field(_passCtrl, 'Password', obscure: true),
+                          _field(_passCtrl, 'Password',
+                              hint: _opds ? 'Optional' : null, obscure: true),
                         ],
                         if (!_komga && _authUrl != null) ...[
                           _field(_userCtrl, 'Username',
@@ -311,7 +346,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         ],
                         if (_komga && _useKey)
                           _field(_keyCtrl, 'API key', obscure: true),
-                        if (_komga)
+                        if (_komga && !_opds)
                           Align(
                             alignment: Alignment.centerLeft,
                             child: TextButton(

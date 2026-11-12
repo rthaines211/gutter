@@ -167,7 +167,7 @@ class ConnectivityNotifier extends Notifier<bool> {
 
   /// Foreground periodic sync (study rec 3): another device's progress
   /// appears within a minute while browsing. _drain() already guards
-  /// OPDS sources, missing engine, and drains in flight.
+  /// a missing engine and drains in flight.
   void _startSyncTimer() {
     _syncTimer?.cancel();
     _syncTimer =
@@ -178,8 +178,6 @@ class ConnectivityNotifier extends Notifier<bool> {
     // Guard: the launch microtask / resume listener can fire after the
     // container is disposed (tests, source switches); ref.read would throw.
     if (!ref.mounted) return;
-    // OPDS sources have no /sync endpoint — only custom backends mirror.
-    if (!ref.read(hasMirrorProvider)) return;
     if (_currentDrain != null) {
       if (!force) return;
       // A drain on the replaced engine is in flight; run after it.
