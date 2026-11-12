@@ -6,7 +6,7 @@ the live keyword field (`fastlane/metadata/en-US/keywords.txt`, 1.0.3):
 
 `manga,book,cbr,import,local,graphic,novel,panel,guided,zoom,offline,download,sync,self,hosted,server`
 
-"komga" and "kavita" are in the name/subtitle ("CBZ files, Komga & Kavita"),
+"komga" and "kavita" are in the name/subtitle ("CBZ, Komga, Kavita & OPDS"),
 not in the keyword field, so they cannot be assigned. Do not reuse one
 keyword on two pages.
 

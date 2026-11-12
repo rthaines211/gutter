@@ -2,7 +2,7 @@ Gutter ist ein Comic-Reader für die Comics, die du schon hast: CBZ-Dateien auf 
 
 Kein Server? Tippe auf „Import comics from Files“ und wähle deine CBZ-Dateien. Kein Konto, keine Einrichtung.
 
-Du hast einen Server? Verbinde dich mit Komga oder Kavita per Benutzername und Passwort oder per API-Schlüssel, oder mit einem selbst gehosteten Gutter-Server. Deine Bibliothek erscheint mit Serien, Covern und der Stelle, an der du aufgehört hast.
+Du hast einen Server? Verbinde dich mit Komga oder Kavita per Benutzername und Passwort oder per API-Schlüssel, mit jedem OPDS-Katalog mit Seiten-Streaming (OPDS-PSE) oder mit einem selbst gehosteten Gutter-Server. Deine Bibliothek erscheint mit Serien, Covern und der Stelle, an der du aufgehört hast.
 
 LESEN
 • Seitenmodus oder vertikaler Scrollmodus
@@ -17,7 +17,7 @@ DEINE BIBLIOTHEK
 • Durchsuchbare Bibliothek mit Filtern und Sortierung
 • Lesewarteschlangen, um zu planen, was du als Nächstes liest
 • CBZ-Dateien aus der Dateien-App importieren
-• Mit einem Server wird der Fortschritt in beide Richtungen synchronisiert
+• Mit Komga, Kavita oder einem Gutter-Server wird der Fortschritt in beide Richtungen synchronisiert
 • Du kannst deine Bibliothek weiter durchstöbern, wenn der Server nicht erreichbar ist
 
 GUTTER PRO
@@ -32,4 +32,4 @@ Lesen, Streaming, Dateiimport und die Synchronisierung des Fortschritts sind kos
 DATENSCHUTZ
 Gutter erfasst nichts. Keine Konten, keine Analysen, keine Werbung, kein Tracking. Die App spricht nur mit den Servern, die du hinzufügst.
 
-Gutter enthält und verkauft keine Comics. Du brauchst eigene CBZ-Dateien oder einen eigenen Komga-, Kavita- oder Gutter-Server. Der Gutter-Server ist kostenlos und Open Source: github.com/rthaines211/gutter-server
+Gutter enthält und verkauft keine Comics. Du brauchst eigene CBZ-Dateien oder einen eigenen Komga-, Kavita-, OPDS- oder Gutter-Server. Der Gutter-Server ist kostenlos und Open Source: github.com/rthaines211/gutter-server

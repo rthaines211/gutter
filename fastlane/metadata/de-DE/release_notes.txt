@@ -1,3 +1,5 @@
 Neu: Comics ohne Server lesen. Tippe auf „Import comics from Files“ (erster Bildschirm oder Servers) und wähle CBZ-Dateien auf deinem iPhone oder iPad. Import und Lesen sind kostenlos.
 
 Neu: Teile deine Lesestatistik als Bild, im Stats-Bildschirm.
+
+Neu: Füge jeden OPDS-Katalog mit Seiten-Streaming (OPDS-PSE) als Server hinzu. Bei OPDS bleibt der Fortschritt auf dem Gerät.

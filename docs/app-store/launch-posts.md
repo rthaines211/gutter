@@ -16,7 +16,8 @@ that felt like a native app, so I built one. It's on the App Store now.
 What it does:
 
 - Connects to Komga (username and password or an API key) and Kavita 0.9+
-  (username and password). It can also connect to Gutter server, a small
+  (username and password), and to any OPDS catalog with page streaming
+  (OPDS-PSE). It can also connect to Gutter server, a small
   Go/SQLite comic server I wrote (open source:
   https://github.com/rthaines211/gutter-server). Gutter server also serves
   an OPDS catalog and a KOReader sync endpoint, so e-readers can use it too.

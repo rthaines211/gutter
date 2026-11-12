@@ -12,15 +12,15 @@ be true for the build.
 | Locale | Keywords | Length |
 |---|---|---|
 | English (U.S.) | see `fastlane/metadata/en-US/keywords.txt` | 98 |
-| Spanish (Mexico) | `selfhosted,nas,homelab,library,collection,digital,stats,streak,queue,bookmark,comics,lector,comic` | 97 |
-| French | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,japanese` | 98 |
+| Spanish (Mexico) | `selfhosted,nas,homelab,library,collection,opds,stats,streak,queue,bookmark,comics,lector,comic` | 94 |
+| French | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,opds` | 94 |
 
 Notes:
 - Spanish (Mexico) carries the self-hosting words that did not fit in
   English, plus "lector comic(s)" for Spanish speakers.
 - French carries the manga and vertical-scroll words. "webtoon" stands on
   vertical scroll mode; remove it if that mode goes.
-- Not used: `opds` (the app cannot add an OPDS server), `epub`, `pdf`,
+- Not used: `epub`, `pdf`,
   competitor names and publisher names.
 - English (UK/Australia/Canada) fields replace the U.S. field in those
   stores, so they would need the full U.S. set; not added.
@@ -36,10 +36,10 @@ locale before it goes into App Store Connect.** Nothing here is uploaded yet.
 
 | Locale | Folder | Keywords | Length |
 |---|---|---|---|
-| French | `fr-FR` | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,japanese` | 98 |
-| Spanish (Mexico) | `es-MX` | `selfhosted,nas,homelab,library,collection,digital,stats,streak,queue,bookmark,comics,lector,comic` | 97 |
-| Portuguese (Brazil) | `pt-BR` | `manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,webtoon` | 100 |
-| German | `de-DE` | `manga,lesen,leser,cbz,cbr,graphic,novel,panel,zoom,offline,download,sync,server,nas,webtoon,sammlung` | 100 |
+| French | `fr-FR` | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,opds` | 94 |
+| Spanish (Mexico) | `es-MX` | `selfhosted,nas,homelab,library,collection,opds,stats,streak,queue,bookmark,comics,lector,comic` | 94 |
+| Portuguese (Brazil) | `pt-BR` | `manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,opds` | 97 |
+| German | `de-DE` | `manga,lesen,leser,cbz,cbr,graphic,novel,panel,zoom,offline,download,sync,server,nas,webtoon,opds` | 96 |
 
 Notes:
 - French and Spanish (Mexico) keep the keyword strings from the table above
@@ -52,5 +52,8 @@ Notes:
   Kavita", so `leitor`, `hq`, `comic` and `reader` are not in the fields.
 - Screen labels that the app shows in English (Panels, Aa, Up Next, Read)
   stay in English in the release notes: the app has no translations.
-- The same limits apply as for English: no `opds`, `epub`, `pdf`, competitor
+- The same limits apply as for English: no `epub`, `pdf`, competitor
   names or publisher names. "webtoon" stands on vertical scroll mode.
+- `opds` is in every translated keyword field (1.0.3 adds OPDS servers).
+  English has it in the subtitle ("CBZ, Komga, Kavita & OPDS"), so it is
+  not in the English keywords.
