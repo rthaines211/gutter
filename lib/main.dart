@@ -3,6 +3,8 @@ import 'providers/pro_provider.dart';
 import 'services/source_auth_client.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:flutter/foundation.dart'
+    show LicenseEntryWithLineBreaks, LicenseRegistry;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +27,12 @@ import 'services/push_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // The bundled sample comic is CC BY: credit it in the licenses list.
+  LicenseRegistry.addLicense(() => Stream.value(const LicenseEntryWithLineBreaks(
+      ['Pepper&Carrot (sample comic)'],
+      'Pepper&Carrot by David Revoy, www.peppercarrot.com. '
+      'Licensed under Creative Commons Attribution 4.0 (CC BY 4.0), '
+      'https://creativecommons.org/licenses/by/4.0/')));
 
   // Android 15 forces edge-to-edge; draw under transparent bars everywhere
   // and let SafeArea/MediaQuery padding keep content clear (as on iOS).

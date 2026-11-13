@@ -158,7 +158,9 @@ Future<void> shareStatsCard(BuildContext context, StatsSummary summary, Color ac
     final png = await renderStatsCardPng(context, summary, accent);
     final file = File(p.join((await getTemporaryDirectory()).path, 'gutter-stats.png'));
     await file.writeAsBytes(png);
-    await Share.shareXFiles([XFile(file.path, mimeType: 'image/png')], sharePositionOrigin: origin);
+    await Share.shareXFiles([XFile(file.path, mimeType: 'image/png')],
+        text: 'Read with Gutter: https://apps.apple.com/us/app/gutter-comic-reader/id6831270255',
+        sharePositionOrigin: origin);
   } catch (e) {
     debugPrint('share stats: $e');
     messenger?.showSnackBar(const SnackBar(content: Text("Couldn't share your stats.")));

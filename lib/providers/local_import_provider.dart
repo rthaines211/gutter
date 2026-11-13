@@ -22,6 +22,12 @@ final comicFilePickerProvider = Provider<Future<List<String>> Function()>(
             .invokeListMethod<String>('pickComics') ??
         const []);
 
+/// Pepper&Carrot #1 by David Revoy (CC BY 4.0), for a first read with no
+/// server and no files. Show [sampleComicCredit] wherever it is offered.
+const sampleComicAsset = 'assets/sample/pepper_carrot_001.cbz';
+const sampleComicCredit =
+    'Pepper&Carrot by David Revoy, CC BY 4.0, www.peppercarrot.com';
+
 /// One picked file: [problem] is null when it was imported.
 typedef ImportOutcome = ({String fileName, String? problem});
 
@@ -49,7 +55,23 @@ class LocalImportNotifier extends Notifier<({int done, int total})?> {
   /// Free: no Pro gate, never [DownloadManager.enqueue].
   Future<List<ImportOutcome>> pickAndImport({bool intoLocal = false}) async {
     if (state != null) return const [];
-    final paths = await ref.read(comicFilePickerProvider)();
+    return _import(await ref.read(comicFilePickerProvider)(), intoLocal);
+  }
+
+  /// The bundled sample ([sampleComicAsset]), imported like a picked file
+  /// through the same one-step path, so the Library opens on it. Already
+  /// imported: the import says so and the Library still opens.
+  Future<List<ImportOutcome>> importSample() async {
+    if (state != null) return const [];
+    final data = await rootBundle.load(sampleComicAsset);
+    // The temp copy's name is what the import parses: Pepper&Carrot, #1.
+    final path = p.join(Directory.systemTemp.path, 'Pepper&Carrot 001.cbz');
+    await File(path).writeAsBytes(data.buffer.asUint8List(), flush: true);
+    return _import([path], true);
+  }
+
+  Future<List<ImportOutcome>> _import(
+      List<String> paths, bool intoLocal) async {
     if (paths.isEmpty) return const [];
     if (intoLocal) {
       ref.read(navigationProvider.notifier).go(NavDestination.library);

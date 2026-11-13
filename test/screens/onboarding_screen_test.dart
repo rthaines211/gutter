@@ -473,6 +473,7 @@ void main() {
 
   group('read files on this device', () {
     final action = find.text('Import comics from Files');
+    final sample = find.text('Try a sample comic');
 
     for (final store in [true, false]) {
       testWidgets('sets up the local source (store: $store)', (t) async {
@@ -483,6 +484,8 @@ void main() {
         expect(c.read(activeSourceProvider).baseUrl, isEmpty);
 
         expect(action, findsOneWidget);
+        expect(sample, findsOneWidget);
+        expect(find.textContaining('CC BY 4.0'), findsOneWidget);
         // Once a file is picked, the import calls this.
         c.read(serverActionsProvider).useLocal();
         await t.pump();
@@ -499,8 +502,11 @@ void main() {
     testWidgets('not offered on Android', (t) async {
       isAndroid = true;
       addTearDown(() => isAndroid = false);
+      isStore = true;
+      addTearDown(() => isStore = false);
       await _pump(t, (_, _) async => null, gutter: false);
       expect(action, findsNothing);
+      expect(sample, findsNothing);
     });
 
     testWidgets('not in the Servers add/edit form', (t) async {
