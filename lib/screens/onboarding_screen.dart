@@ -382,6 +382,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   if (widget.onConnected == null && !isAndroid) ...[
                     const SizedBox(height: 12),
                     const LocalImportButton(intoLocal: true),
+                    const SizedBox(height: 8),
+                    const SampleComicButton(),
                   ],
                 ],
               ),

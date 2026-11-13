@@ -609,6 +609,8 @@ class _LibraryScreenState extends ConsumerState<LibraryScreen> {
                       if (!isAndroid) ...[
                         const SizedBox(height: 16),
                         const LocalImportButton(),
+                        const SizedBox(height: 8),
+                        const SampleComicButton(),
                       ],
                     ],
                   ),

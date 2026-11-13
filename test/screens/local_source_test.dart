@@ -155,6 +155,25 @@ void main() {
     expect(File(p.join(tmp.path, 'downloads', 'loc', comicId, 'pages', '001.png')).existsSync(), true);
   });
 
+  test('importSample: Pepper&Carrot #1 in the local source, once', () async {
+    final c = await container();
+    await c.read(docsDirProvider.future);
+    final import = c.read(localImportProvider.notifier);
+
+    await import.importSample();
+    await import.importSample();
+
+    expect(c.read(navigationProvider), NavDestination.library);
+    final done = c.read(downloadManagerProvider)!.currentState.completed;
+    expect(done.map((i) => (i.seriesName, i.sourceId)), [('Pepper&Carrot', 'loc')]);
+    final meta = jsonDecode(File(p.join(tmp.path, 'downloads', 'loc',
+            done.single.comicId, 'metadata.json'))
+        .readAsStringSync());
+    expect(meta['number'], '1');
+    final series = await c.read(mirrorDbProvider).watchLibrary().first;
+    expect(series.map((s) => s.series.name), ['Pepper&Carrot']);
+  });
+
   test('every import problem has its own message', () {
     expect({for (final e in LocalImportError.values) importProblem(e)}.length,
         LocalImportError.values.length);
