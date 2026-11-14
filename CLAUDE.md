@@ -103,7 +103,7 @@ Configurable base URL (no built-in default in public builds). Backend: the Go/SQ
 - **Phone**: `FloatingTabBar`, 5 tabs: Read(0), Library(1), Creators(2), Review(3), More(4).
 - **iPad**: `IconRail` driven by the `NavDestination` enum. New destinations are appended to the END of the enum so stored indices don't shift; `creators` is last.
 - **Library header**: Segmented control (All Series / Collections / Sources) + inline filter chip bar with facet picker sheet
-- **Library split view**: On iPad, tapping a series opens `SeriesDetailPanel` on the right, at 0.40 width in landscape and 0.46 in portrait, with no animation (local `_selectedSeriesId` state). The Creators tab uses the same split for `CreatorDetailPanel`, and Downloads for its series pane (a pushed page on a phone; "Get next 3" and "Remove read" live there).
+- **Library split view**: On iPad, tapping a series opens `SeriesDetailPanel` on the right, at 0.40 width in landscape and 0.46 in portrait, with no animation (local `_selectedSeriesId` state). The Creators tab uses the same split for `CreatorDetailPanel`.
 - **Reader chrome on iPad**: `ReaderTopBar(rail: true)` is a vertical rail (side set in Aa → More → Rail, `railSideProvider`, `ReaderTopBar.railTop`); the bottom `FilmstripScrubber` bar stays on both form factors. Chrome shows only on swipe up — no tap bands near the rail.
 - `SeriesDetailPanel` is a reusable widget used by both the library split view (`onClose` callback) and `SeriesDetailScreen` (full-screen wrapper). Panel mode uses a compact vertical layout (cover above title); full-screen uses side-by-side.
 
