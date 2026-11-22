@@ -645,6 +645,18 @@ class ApiClient {
     await _delete('/queues/${Uri.encodeComponent(id)}');
   }
 
+  // User-made arcs (reading orders); id is client-generated.
+  Future<void> putUserArc(String id, String name, List<String> issueIds) async {
+    await _put('/arcs/${Uri.encodeComponent(id)}', {
+      'name': name,
+      'issue_ids': issueIds,
+    });
+  }
+
+  Future<void> deleteUserArc(String id) async {
+    await _delete('/arcs/${Uri.encodeComponent(id)}');
+  }
+
   // Batch reading progress
   Future<void> batchUpdateProgress(List<Map<String, dynamic>> items) async {
     await _put('/reading/batch', {'items': items});

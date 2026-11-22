@@ -12,7 +12,9 @@ import '../providers/accent_provider.dart';
 import '../providers/arc_provider.dart';
 import '../services/arc_shelves.dart';
 import '../widgets/shimmer_box.dart';
+import '../providers/user_arc_provider.dart';
 import 'arc_common.dart';
+import 'arc_editor_screen.dart';
 import 'series_detail_screen.dart';
 
 /// Reading-order lists longer than this show a window around the current
@@ -28,6 +30,27 @@ class ArcDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ArcDetailScreenState extends ConsumerState<ArcDetailScreen> {
+  Future<void> _confirmDelete(BuildContext context, String id, String name) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Delete "$name"?'),
+        content: const Text('The comics stay in your library.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Delete')),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    await ref.read(userArcActionsProvider).delete(id);
+    if (context.mounted) Navigator.pop(context);
+  }
+
   bool _showAll = false;
   // Lives here, not in _Summary, so it survives the summary scrolling out
   // of the lazy list.
@@ -43,7 +66,39 @@ class _ArcDetailScreenState extends ConsumerState<ArcDetailScreen> {
     final gutter = tablet ? 32.0 : 16.0;
     return Scaffold(
       backgroundColor: context.scheme.bg,
-      appBar: AppBar(backgroundColor: context.scheme.bg),
+      appBar: AppBar(
+        backgroundColor: context.scheme.bg,
+        actions: [
+          if (arc.source == 'user') ...[
+            IconButton(
+              tooltip: 'Edit reading order',
+              icon: const Icon(Icons.edit_rounded),
+              // Wait for the issues, or the editor opens empty and a save
+              // would wipe the arc.
+              onPressed: !issuesAsync.hasValue ? null : () async {
+                final saved = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ArcEditorScreen(
+                      arcId: arc.id,
+                      initialName: arc.name,
+                      initialIssues: issuesAsync.value ?? const [],
+                    ),
+                  ),
+                );
+                // The detail holds a fixed Arc; go back so the shelf shows
+                // the synced edit.
+                if (saved == true && context.mounted) Navigator.pop(context);
+              },
+            ),
+            IconButton(
+              tooltip: 'Delete reading order',
+              icon: const Icon(Icons.delete_outline_rounded),
+              onPressed: () => _confirmDelete(context, arc.id, arc.name),
+            ),
+          ],
+        ],
+      ),
       body: issuesAsync.when(
         loading: () => Padding(
           padding: EdgeInsets.all(gutter),

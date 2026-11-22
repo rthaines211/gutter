@@ -127,9 +127,13 @@ class ArcShelf {
 
 const _moreEventsTitle = 'More events';
 
+/// Shelf for arcs the user made (source 'user'), first after In progress.
+const yourArcsTitle = 'Your reading orders';
+
 /// Groups arcs into the home-screen shelf layout.
 ///
 /// - `inProgress`: arcs with `0 < read < present`, most recently read first.
+/// - user-made arcs (not in progress) lead `shelves` as 'Your reading orders'.
 /// - `featured`: the top 2 remaining arcs by `present` (ties by name).
 /// - `shelves`: the rest, grouped by `publisher` — publishers with 2+ arcs
 ///   get their own shelf (ordered by arc count desc, then name); singletons
@@ -141,7 +145,13 @@ const _moreEventsTitle = 'More events';
   final inProgress = arcs.where((a) => a.read > 0 && a.read < a.present).toList()
     ..sort(_byLastReadAtDesc);
 
-  final remaining = arcs.where((a) => !inProgress.contains(a)).toList()
+  final mine = arcs
+      .where((a) => a.source == 'user' && !inProgress.contains(a))
+      .toList()
+    ..sort((a, b) => a.name.compareTo(b.name));
+  final remaining = arcs
+      .where((a) => !inProgress.contains(a) && !mine.contains(a))
+      .toList()
     ..sort(_byPresentDescThenName);
   final featured = remaining.take(2).toList();
 
@@ -170,6 +180,7 @@ const _moreEventsTitle = 'More events';
     });
 
   final result = <ArcShelf>[
+    if (mine.isNotEmpty) ArcShelf(title: yourArcsTitle, arcs: mine),
     for (final entry in shelves)
       ArcShelf(
         title: entry.key,
