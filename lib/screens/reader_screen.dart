@@ -1976,7 +1976,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     // iPad: a side panel over the reader, which stays in view behind it.
     // Phone: the full series page, as before.
     final result = await Navigator.of(context).push(
-        LayoutBreakpoint.isTablet(context)
+        // shortestSide, not isTablet: a big iPhone in landscape is 932 wide.
+        MediaQuery.sizeOf(context).shortestSide >= 600
             ? seriesSidePanelRoute(_seriesId!)
             : MaterialPageRoute<String>(
                 settings: const RouteSettings(name: '/series-detail'),

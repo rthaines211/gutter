@@ -62,8 +62,9 @@ class _SeriesSidePanel extends ConsumerWidget {
     final size = MediaQuery.sizeOf(context);
     // Same widths as the Library split view, but never narrower than the
     // panel's header row needs (iPad Split View, small windows).
-    final width = (size.width * (size.width > size.height ? 0.40 : 0.46))
-        .clamp(400.0, size.width - 24);
+    final base = size.width * (size.width > size.height ? 0.40 : 0.46);
+    final width = base < 400 ? 400.0 : base;
+    final fitted = width > size.width - 24 ? size.width - 24 : width;
     return Align(
       alignment: Alignment.centerRight,
       child: SafeArea(
@@ -73,7 +74,7 @@ class _SeriesSidePanel extends ConsumerWidget {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(AppTheme.r18),
             child: SizedBox(
-              width: width,
+              width: fitted,
               child: Scaffold(
                 backgroundColor: context.scheme.bg,
                 body: SeriesDetailPanel(

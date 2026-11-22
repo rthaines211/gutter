@@ -330,6 +330,26 @@ void main() {
     });
   }
 
+  testWidgets('phone: issue details is the full series page, not the panel',
+      (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    server.settings = {'page_fit': 'fitHeight'};
+    final h = await pumpReader(tester, server: server, tempDir: env);
+    await settleImages(tester);
+    await openIssueDetailsWithSeries(tester, h);
+    expect(find.byType(SeriesDetailScreen), findsOneWidget);
+    expect(find.byType(ReaderScreen), findsNothing,
+        reason: 'the full page covers the reader (offstage)');
+    Navigator.of(tester.element(find.byType(SeriesDetailScreen))).pop();
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.byType(ReaderScreen), findsOneWidget);
+    await disposeReader(tester);
+  });
+
   testWidgets('issue details shows the status bar; back restores immersive',
       (tester) async {
     final modes = <String>[];
