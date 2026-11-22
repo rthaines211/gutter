@@ -6,7 +6,11 @@ import '../config/comic_style.dart';
 import '../config/layout_breakpoint.dart';
 import '../config/scheme.dart';
 import '../config/string_utils.dart';
+import '../models/arc.dart';
 import '../models/reading_progress.dart';
+import '../providers/arc_provider.dart';
+import '../services/arc_shelves.dart';
+import 'arc_common.dart';
 import '../providers/connectivity_provider.dart';
 import '../providers/download_provider.dart';
 import '../providers/mirror_provider.dart';
@@ -175,6 +179,9 @@ class ReadScreen extends ConsumerWidget {
               )).toList(),
             ),
 
+          // The user's own reading orders, one row each.
+          _ReadingOrderShelves(comic: comic, offline: offline),
+
           // Just Added shelf
           if (data.justAdded.isNotEmpty)
             _buildShelf(
@@ -216,7 +223,7 @@ class ReadScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildShelf({
+  static Widget _buildShelf({
     required ComicTokens comic,
     required String title,
     required double height,
@@ -342,5 +349,89 @@ class ReadScreen extends ConsumerWidget {
     ];
     final now = DateTime.now();
     return '${days[now.weekday - 1]}, ${months[now.month - 1]} ${now.day}';
+  }
+}
+
+/// One shelf per user-made arc (source 'user'): issue covers in arc order,
+/// starting at the next unread. Finished arcs drop off. Tapping opens the
+/// reader on the whole arc, so swiping on follows the arc.
+class _ReadingOrderShelves extends ConsumerWidget {
+  final ComicTokens comic;
+  final bool offline;
+  const _ReadingOrderShelves({required this.comic, required this.offline});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mine = (ref.watch(arcsProvider).value ?? const <Arc>[])
+        .where((a) => a.source == 'user')
+        .toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final arc in mine)
+          _ReadingOrderShelf(arc: arc, comic: comic, offline: offline),
+      ],
+    );
+  }
+}
+
+class _ReadingOrderShelf extends ConsumerWidget {
+  static const _coverW = 120.0;
+  final Arc arc;
+  final ComicTokens comic;
+  final bool offline;
+  const _ReadingOrderShelf(
+      {required this.arc, required this.comic, required this.offline});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final issues = ref.watch(arcIssuesProvider(arc.id)).value;
+    if (issues == null || issues.isEmpty) return const SizedBox.shrink();
+    final start = arcCurrentIndex(issues);
+    if (start < 0) return const SizedBox.shrink();
+    // Offline, like the other shelves: only what can open.
+    final onDevice = offline ? ref.watch(onDeviceProvider).comicIds : null;
+    final shown = [
+      for (var i = start; i < issues.length; i++)
+        if (onDevice == null || onDevice.contains(issues[i].id)) i,
+    ];
+    if (shown.isEmpty) return const SizedBox.shrink();
+    final read = issues.where((i) => i.status == 'completed').length;
+    return ReadScreen._buildShelf(
+      comic: comic,
+      title: arc.name,
+      trailing: '$read OF ${issues.length} READ',
+      height: _coverW * 1.5 + 40,
+      children: [
+        for (final i in shown)
+          GestureDetector(
+            onTap: () => openArcIssue(context, arc, issues, i),
+            child: SizedBox(
+              width: _coverW,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ArcCover(
+                    comicId: issues[i].id,
+                    url: ref.watch(issueCoverUrlProvider(issues[i].id)),
+                    width: _coverW,
+                    height: _coverW * 1.5,
+                    radius: AppTheme.r8,
+                    placeholderIcon: Icons.menu_book_rounded,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    issueLabel(issues[i]),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontSize: 12, height: 1.2, color: context.scheme.t2),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
   }
 }
