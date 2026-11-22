@@ -163,7 +163,7 @@ void main() {
     });
   });
 
-  testWidgets('rail: controls stack down the right edge, close beside the title top-left',
+  testWidgets('rail: close tops the rail, away from the title',
       (t) async {
     await _pump(
       t,
@@ -180,8 +180,9 @@ void main() {
     expect(more.center.dx, moreOrLessEquals(bookmark.center.dx));
     expect(more.top, greaterThan(bookmark.bottom));
     expect(bookmark.left, greaterThan(title.right));
-    // Close is in the title tag, just left of the title.
-    expect(back.right, lessThanOrEqualTo(title.left));
-    expect(back.center.dy, closeTo(title.center.dy, 20));
+    // Close leads the rail, above the other controls, not beside the title.
+    expect(back.center.dx, moreOrLessEquals(bookmark.center.dx));
+    expect(back.bottom, lessThan(bookmark.top - 16));
+    expect(back.left, greaterThan(title.right + 100));
   });
 }
