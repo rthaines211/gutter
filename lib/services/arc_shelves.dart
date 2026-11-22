@@ -212,3 +212,12 @@ int _byPresentDescThenName(Arc a, Arc b) {
   if (byPresent != 0) return byPresent;
   return a.name.compareTo(b.name);
 }
+
+/// "Ultimates (2024) #19" for an issue in a cross-series list; falls back to
+/// the file name when the issue has no series or number.
+String issueLabel(SeriesIssue i) {
+  final n = i.number?.trim() ?? '';
+  final s = i.seriesName;
+  if (s == null) return i.name;
+  return n.isEmpty ? '$s · ${i.name}' : '$s #$n';
+}

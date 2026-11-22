@@ -6,9 +6,9 @@ import '../models/series.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/user_arc_provider.dart';
 import '../services/arc_list_matcher.dart';
+import '../services/arc_shelves.dart';
 
-String _label(SeriesIssue i) =>
-    '${i.seriesName ?? i.name}${i.number == null ? '' : ' #${i.number}'}';
+String _label(SeriesIssue i) => issueLabel(i);
 
 /// Make or edit a user arc: paste a reading order, add issues by search,
 /// drag to reorder. [arcId] null = new arc.
@@ -150,15 +150,17 @@ class _ArcEditorScreenState extends ConsumerState<ArcEditorScreen> {
               }),
               itemBuilder: (context, i) {
                 final issue = _issues[i];
+                // Remove sits on the left, as in iOS list editing, so it is
+                // never next to the drag handle on the right.
                 return ListTile(
                   key: ValueKey(issue.id),
-                  leading: Text('${i + 1}', style: TextStyle(color: context.scheme.t2)),
-                  title: Text(_label(issue)),
-                  trailing: IconButton(
+                  leading: IconButton(
                     tooltip: 'Remove',
-                    icon: const Icon(Icons.close_rounded),
+                    icon: const Icon(Icons.remove_circle_rounded,
+                        color: Colors.redAccent),
                     onPressed: () => setState(() => _issues.removeAt(i)),
                   ),
+                  title: Text('${i + 1}. ${_label(issue)}'),
                 );
               },
             ),

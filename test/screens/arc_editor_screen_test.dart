@@ -58,7 +58,7 @@ void main() {
     await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 200)));
     await t.pumpAndSettle();
 
-    expect(find.text('Ultimate Endgame (2026) #1'), findsOneWidget);
+    expect(find.text('1. Ultimate Endgame (2026) #1'), findsOneWidget);
     expect(find.textContaining('Not in your library: Nope #9'), findsOneWidget);
 
     await t.tap(find.text('Save'));
