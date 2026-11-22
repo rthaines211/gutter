@@ -80,6 +80,17 @@ void main() {
     await disposeReader(tester);
   });
 
+  testWidgets('Gutter server: long-press on the page offers no clip',
+      (tester) async {
+    await open(tester, gutter: true);
+    final g = await tester.startGesture(const Offset(400, 300));
+    await tester.pump(const Duration(milliseconds: 600));
+    await g.up();
+    await settleImages(tester);
+    expect(find.textContaining('panel'), findsNothing);
+    await disposeReader(tester);
+  });
+
   testWidgets('Gutter server: More keeps Chapters, Clip a panel and Credits',
       (tester) async {
     await open(tester, gutter: true);

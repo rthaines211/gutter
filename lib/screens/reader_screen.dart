@@ -1039,10 +1039,11 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     _loadBubbles(page + 1);
   }
 
-  /// Long-press swaps a popped-out balloon with the next; anywhere else it clips a panel.
+  /// Long-press swaps a popped-out balloon with the next. It does not clip a
+  /// panel: a thumb resting on the page while carrying the iPad set that off.
+  /// Clipping is ⋯ → Clip a panel (the armed tap) only.
   void _handleLongPress(ReaderSettings settings, Offset pos) {
-    if (_handleBubbleLongPress(settings)) return;
-    if (ref.read(isCustomSourceProvider)) _clipPanel(settings, pos);
+    _handleBubbleLongPress(settings);
   }
 
   bool _handleBubbleLongPress(ReaderSettings settings) {
@@ -1087,7 +1088,7 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
           ? pb.panels[k - 1]
           : panelAt(pb.panels, (MatrixUtils.transformPoint(Matrix4.inverted(m), pos) - display.topLeft) /
               (display.width / pagePx.width));
-      if (panel == null) return _clipHint('No panel here. Long-press inside a panel to clip it.');
+      if (panel == null) return _clipHint('No panel here. Tap inside a panel to clip it.');
       final outline = MatrixUtils.transformRect(m, panelOnScreen(display, pagePx, panel));
       HapticFeedback.mediumImpact();
       setState(() => _clipOutline = outline);
