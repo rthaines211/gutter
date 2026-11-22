@@ -46,7 +46,7 @@ class _ArcDetailScreenState extends ConsumerState<ArcDetailScreen> {
         ],
       ),
     );
-    if (ok != true) return;
+    if (ok != true || !mounted) return;
     await ref.read(userArcActionsProvider).delete(id);
     if (context.mounted) Navigator.pop(context);
   }
@@ -73,7 +73,9 @@ class _ArcDetailScreenState extends ConsumerState<ArcDetailScreen> {
             IconButton(
               tooltip: 'Edit reading order',
               icon: const Icon(Icons.edit_rounded),
-              onPressed: () async {
+              // Wait for the issues, or the editor opens empty and a save
+              // would wipe the arc.
+              onPressed: !issuesAsync.hasValue ? null : () async {
                 final saved = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(

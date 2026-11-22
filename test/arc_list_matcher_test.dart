@@ -54,4 +54,15 @@ void main() {
     ]);
     expect(m.single.issue?.id, 'e1');
   });
+
+  test('trailing year and punctuation still match', () {
+    final m = matchArcList(
+        'Ultimates #19 (2016)\nUltimates #19,\nUltimate Endgame 1 (2026)\nUltimate Endgame (2099) #1',
+        [
+          _i('old19', 'Ultimates (2016)', '19'),
+          _i('new19', 'Ultimates (2024)', '19'),
+          _i('end1', 'Ultimate Endgame', '1'),
+        ]);
+    expect(m.map((e) => e.issue?.id), ['old19', 'new19', 'end1', 'end1']);
+  });
 }

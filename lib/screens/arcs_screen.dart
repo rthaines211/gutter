@@ -65,7 +65,12 @@ class _ArcsScreenState extends ConsumerState<ArcsScreen> {
             ),
           ),
           data: (arcs) {
-            if (arcs.isEmpty) return const _EmptyState();
+            if (arcs.isEmpty) {
+              return Column(children: [
+                _header(0),
+                const Expanded(child: _EmptyState()),
+              ]);
+            }
             return ListView(
               padding: const EdgeInsets.only(bottom: 120),
               children: [

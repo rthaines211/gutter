@@ -8,8 +8,8 @@ class ArcLineMatch {
 }
 
 final _bullet = RegExp(r'^\s*(?:[-*•]\s*)?(?:\[[ xX]?\]\s*)?(?:\d+[.)]\s+)?');
-final _hashNumber = RegExp(r'^(.*?)\s*#\s*(\S+)');
-final _trailingNumber = RegExp(r'^(.*\D)\s+(\d+(?:\.\d+)?)$');
+final _hashNumber = RegExp(r'^(.*?)\s*#\s*(\d+(?:\.\d+)?[a-zA-Z]?)');
+final _trailingNumber = RegExp(r'^(.*\D)\s+(\d+(?:\.\d+)?)[.,;:]*$');
 final _year = RegExp(r'\((\d{4})(?:-\d{4})?\)');
 
 /// Lower-case letters and digits only, years dropped, `&` read as "and".
@@ -59,7 +59,10 @@ List<ArcLineMatch> matchArcList(String text, List<SeriesIssue> issues) {
   for (final raw in text.split('\n')) {
     final line = raw.replaceFirst(_bullet, '').trim();
     if (line.isEmpty) continue;
-    final m = _hashNumber.firstMatch(line) ?? _trailingNumber.firstMatch(line);
+    // A year can sit anywhere ("Ultimates (2024) #19", "Ultimates #19 (2024)").
+    final year = _yearOf(line);
+    final bare = line.replaceAll(_parens, ' ').trim();
+    final m = _hashNumber.firstMatch(bare) ?? _trailingNumber.firstMatch(bare);
     if (m == null) {
       out.add(ArcLineMatch(line, null));
       continue;
@@ -67,10 +70,11 @@ List<ArcLineMatch> matchArcList(String text, List<SeriesIssue> issues) {
     final name = m.group(1)!;
     var candidates =
         byKey['${_seriesKey(name)}#${_numberKey(m.group(2)!)}'] ?? const [];
-    final year = _yearOf(name);
     if (year > 0) {
-      candidates =
+      final sameYear =
           candidates.where((c) => _yearOf(c.seriesName!) == year).toList();
+      // No series carries that year in its name: keep them all.
+      if (sameYear.isNotEmpty) candidates = sameYear;
     }
     SeriesIssue? best;
     for (final c in candidates) {

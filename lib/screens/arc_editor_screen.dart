@@ -32,6 +32,8 @@ class _ArcEditorScreenState extends ConsumerState<ArcEditorScreen> {
   late final List<SeriesIssue> _issues = [...widget.initialIssues];
   final List<String> _unmatched = [];
   List<SeriesIssue>? _library;
+  late final String _id = widget.arcId ?? UserArcActions.newId();
+  bool _saving = false;
 
   @override
   void dispose() {
@@ -48,32 +50,10 @@ class _ArcEditorScreenState extends ConsumerState<ArcEditorScreen> {
   }
 
   Future<void> _paste() async {
-    final ctl = TextEditingController();
     final text = await showDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Paste a reading order'),
-        content: SizedBox(
-          width: 480,
-          child: TextField(
-            controller: ctl,
-            autofocus: true,
-            maxLines: 12,
-            decoration: const InputDecoration(
-              hintText: 'One issue per line, like\nUltimates #19',
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(
-              onPressed: () => Navigator.pop(ctx, ctl.text),
-              child: const Text('Add')),
-        ],
-      ),
+      builder: (_) => const _PasteDialog(),
     );
-    ctl.dispose();
     if (text == null || text.trim().isEmpty) return;
     final matches = matchArcList(text, await _loadLibrary());
     if (!mounted) return;
@@ -100,9 +80,10 @@ class _ArcEditorScreenState extends ConsumerState<ArcEditorScreen> {
 
   Future<void> _save() async {
     final name = _name.text.trim();
-    if (name.isEmpty || _issues.isEmpty) return;
+    if (name.isEmpty || _issues.isEmpty || _saving) return;
+    _saving = true;
     await ref.read(userArcActionsProvider).save(
-          widget.arcId ?? UserArcActions.newId(),
+          _id,
           name,
           _issues.map((i) => i.id).toList(),
         );
@@ -199,6 +180,8 @@ class _IssuePicker extends StatefulWidget {
 
 class _IssuePickerState extends State<_IssuePicker> {
   String _q = '';
+  late final _labels =
+      [for (final i in widget.library) _label(i).toLowerCase()];
 
   @override
   Widget build(BuildContext context) {
@@ -206,13 +189,10 @@ class _IssuePickerState extends State<_IssuePicker> {
         _q.toLowerCase().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
     final hits = words.isEmpty
         ? const <SeriesIssue>[]
-        : widget.library
-            .where((i) {
-              final l = _label(i).toLowerCase();
-              return words.every(l.contains);
-            })
-            .take(100)
-            .toList();
+        : [
+            for (var k = 0; k < _labels.length; k++)
+              if (words.every(_labels[k].contains)) widget.library[k],
+          ].take(100).toList();
     return SafeArea(
       child: SizedBox(
         height: MediaQuery.sizeOf(context).height * 0.7,
@@ -243,6 +223,51 @@ class _IssuePickerState extends State<_IssuePicker> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Owns its controller so it is disposed after the close animation, not
+/// while the dialog is still on screen.
+class _PasteDialog extends StatefulWidget {
+  const _PasteDialog();
+
+  @override
+  State<_PasteDialog> createState() => _PasteDialogState();
+}
+
+class _PasteDialogState extends State<_PasteDialog> {
+  final _ctl = TextEditingController();
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Paste a reading order'),
+      content: SizedBox(
+        width: 480,
+        child: TextField(
+          controller: _ctl,
+          autofocus: true,
+          maxLines: 12,
+          decoration: const InputDecoration(
+            hintText: 'One issue per line, like\nUltimates #19',
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel')),
+        FilledButton(
+            onPressed: () => Navigator.pop(context, _ctl.text),
+            child: const Text('Add')),
+      ],
     );
   }
 }
