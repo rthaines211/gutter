@@ -100,7 +100,8 @@ class ReaderTopBar extends ConsumerWidget {
     final comic = ComicTokens.watch(ref, context, accent);
     final scheme = context.scheme;
 
-    // Close sits beside the title in both layouts.
+    // Phone bar: Close beside the title. Rail: Close tops the rail, away
+    // from the title (a title tap opens a sheet, and a near miss exited).
     final back = _ActionButton(
       key: const Key('reader.back'),
       label: 'Close',
@@ -274,6 +275,15 @@ class ReaderTopBar extends ConsumerWidget {
                       children: [
                         // The running sleep pill ("45m") is wider than the
                         // rail; scale it down rather than overflow.
+                        back,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Divider(
+                              height: 1,
+                              indent: 14,
+                              endIndent: 14,
+                              color: scheme.borderFaint),
+                        ),
                         for (final (i, a) in actions.indexed) ...[
                           if (i > 0) gap,
                           FittedBox(fit: BoxFit.scaleDown, child: a),
@@ -296,17 +306,10 @@ class ReaderTopBar extends ConsumerWidget {
               child: Padding(
                 padding: const EdgeInsets.all(railMargin),
                 child: glass(
-                  padding: const EdgeInsets.fromLTRB(4, 4, 14, 4),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      back,
-                      const SizedBox(width: 6),
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 280),
-                        child: titleBlock,
-                      ),
-                    ],
+                  padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    child: titleBlock,
                   ),
                 ),
               ),
