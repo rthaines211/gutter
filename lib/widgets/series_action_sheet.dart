@@ -106,6 +106,57 @@ void showIssueActionSheet({
   );
 }
 
+/// One-tap read toggle for issue rows: writes the mirror first so the row
+/// flips at once, then the server, and offers Undo (which restores an
+/// in-progress page, not just "unread").
+Future<void> toggleIssueRead(
+    BuildContext context, WidgetRef ref, SeriesIssue issue) async {
+  HapticFeedback.selectionClick();
+  final wasRead = issue.status == 'completed';
+  final prevPage = issue.status == 'in_progress' ? issue.currentPage : null;
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  await setIssueReadState(ref, issue, read: !wasRead);
+  final label = issue.number == null ? issue.displayName : '#${issue.number}';
+  messenger
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(
+      content: Text('Marked $label ${wasRead ? 'unread' : 'read'}'),
+      duration: const Duration(seconds: 4),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () => setIssueReadState(ref, issue,
+            read: wasRead, page: wasRead ? null : prevPage),
+      ),
+    ));
+}
+
+/// Sets an issue to read, unread, or (with [page]) in progress at [page].
+/// Mirror first, then the server; a failed server write is corrected by the
+/// next pull, as with [markIssue].
+Future<void> setIssueReadState(WidgetRef ref, SeriesIssue issue,
+    {required bool read, int? page}) async {
+  final db = ref.read(mirrorDbProvider);
+  final total = issue.totalPages ?? 1;
+  final current = read ? total : page;
+  if (current == null) {
+    await db.deleteProgressLocal(issue.id);
+  } else {
+    await db.saveProgressLocal(
+        comicId: issue.id, currentPage: current, totalPages: total);
+  }
+  final client = ref.read(apiClientProvider);
+  try {
+    if (current == null) {
+      await client.batchDeleteProgress([issue.id]);
+    } else {
+      await client.batchUpdateProgress([
+        {'comic_id': issue.id, 'current_page': current, 'total_pages': total}
+      ]);
+    }
+    await ref.read(syncEngineProvider)?.sync();
+  } catch (_) {}
+}
+
 /// Marks a single issue as read or unread.
 Future<void> markIssue({
   required WidgetRef ref,

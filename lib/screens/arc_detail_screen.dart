@@ -11,6 +11,7 @@ import '../models/series.dart';
 import '../providers/accent_provider.dart';
 import '../providers/arc_provider.dart';
 import '../services/arc_shelves.dart';
+import '../widgets/series_action_sheet.dart';
 import '../widgets/shimmer_box.dart';
 import '../providers/user_arc_provider.dart';
 import 'arc_common.dart';
@@ -184,6 +185,8 @@ class _ArcDetailScreenState extends ConsumerState<ArcDetailScreen> {
                   accent: accent,
                   tablet: tablet,
                   onTap: () => openArcIssue(context, arc, issues, i),
+                  onToggleRead: () =>
+                      toggleIssueRead(context, ref, issues[i]),
                 ),
               if (paged)
                 Padding(
@@ -461,6 +464,7 @@ class _IssueRow extends StatelessWidget {
   final Color accent;
   final bool tablet;
   final VoidCallback onTap;
+  final VoidCallback onToggleRead;
   const _IssueRow({
     required this.issue,
     required this.position,
@@ -468,6 +472,7 @@ class _IssueRow extends StatelessWidget {
     required this.accent,
     required this.tablet,
     required this.onTap,
+    required this.onToggleRead,
   });
 
   @override
@@ -616,8 +621,21 @@ class _IssueRow extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              trailing,
+              const SizedBox(width: 2),
+              // One tap marks read / unread (44pt target).
+              Semantics(
+                button: true,
+                label: completed ? 'Mark unread' : 'Mark read',
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: onToggleRead,
+                  child: ConstrainedBox(
+                    constraints:
+                        const BoxConstraints(minWidth: 44, minHeight: 44),
+                    child: Center(child: trailing),
+                  ),
+                ),
+              ),
             ],
           ),
         ),

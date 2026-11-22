@@ -1973,11 +1973,16 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     _sessionTracker.pause(page);
     _screenController.setKeepScreenOn(false);
     _awayFromReader = true;
-    final result = await Navigator.of(context).push(MaterialPageRoute<String>(
-      settings: const RouteSettings(name: '/series-detail'),
-      builder: (_) =>
-          SeriesDetailScreen(seriesId: _seriesId!, fromReader: true),
-    ));
+    // iPad: a side panel over the reader, which stays in view behind it.
+    // Phone: the full series page, as before.
+    final result = await Navigator.of(context).push(
+        LayoutBreakpoint.isTablet(context)
+            ? seriesSidePanelRoute(_seriesId!)
+            : MaterialPageRoute<String>(
+                settings: const RouteSettings(name: '/series-detail'),
+                builder: (_) =>
+                    SeriesDetailScreen(seriesId: _seriesId!, fromReader: true),
+              ));
     _awayFromReader = false;
     // 'replaced': an issue was opened and this reader is about to be swapped
     // out — the new reader arms all of this itself.

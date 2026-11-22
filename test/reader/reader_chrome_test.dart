@@ -8,6 +8,7 @@ import 'package:comic_reader_app/providers/accent_provider.dart';
 import 'package:comic_reader_app/providers/settings_provider.dart';
 import 'package:comic_reader_app/screens/reader_screen.dart';
 import 'package:comic_reader_app/screens/series_detail_screen.dart';
+import 'package:comic_reader_app/widgets/series_detail_panel.dart';
 import 'package:comic_reader_app/widgets/filmstrip_scrubber.dart';
 import 'package:comic_reader_app/widgets/issue_grid_view.dart';
 import 'package:comic_reader_app/widgets/issue_list_view.dart';
@@ -267,7 +268,7 @@ void main() {
         (w) => w is GestureDetector && w.onTap == bar.onTitleTap));
     await settleImages(tester, rounds: 5);
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byType(SeriesDetailScreen), findsOneWidget);
+    expect(find.byType(SeriesDetailPanel), findsOneWidget);
   }
 
   for (final target in ['c2', 'c1']) {
@@ -298,7 +299,7 @@ void main() {
       await tester.scrollUntilVisible(row, 200,
           scrollable: find
               .descendant(
-                  of: find.byType(SeriesDetailScreen),
+                  of: find.byType(SeriesDetailPanel),
                   matching: find.byWidgetPredicate((w) =>
                       w is Scrollable && w.axisDirection == AxisDirection.down))
               .first);
@@ -320,7 +321,7 @@ void main() {
               'neither re-arms on pop nor restores edgeToEdge on dispose');
       expect(PaintingBinding.instance.imageCache.containsKey(sentinel), isTrue,
           reason: "A's dispose must not clear B's image cache");
-      expect(find.byType(SeriesDetailScreen, skipOffstage: false), findsNothing);
+      expect(find.byType(SeriesDetailPanel, skipOffstage: false), findsNothing);
       expect(find.byType(ReaderScreen, skipOffstage: false), findsOneWidget,
           reason: 'the series page and the old reader are both replaced');
       expect(tester.widget<ReaderScreen>(find.byType(ReaderScreen)).comicId,
@@ -348,7 +349,7 @@ void main() {
     await openIssueDetailsWithSeries(tester, h);
     expect(modes.last, 'SystemUiMode.edgeToEdge');
 
-    Navigator.of(tester.element(find.byType(SeriesDetailScreen))).pop();
+    Navigator.of(tester.element(find.byType(SeriesDetailPanel))).pop();
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -371,15 +372,21 @@ void main() {
         (w) => w is GestureDetector && w.onTap == bar.onTitleTap));
     await settleImages(tester, rounds: 5);
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byType(SeriesDetailScreen), findsOneWidget);
+    expect(find.byType(SeriesDetailPanel), findsOneWidget);
     expect(find.byType(ReaderScreen, skipOffstage: false), findsOneWidget,
         reason: 'the reader stays under the series page');
+    // iPad (this surface counts as tablet): a side panel, reader in view.
+    expect(find.byType(SeriesDetailScreen), findsNothing);
+    expect(find.byType(ReaderScreen), findsOneWidget,
+        reason: 'the panel is see-through: the reader is not offstage');
+    expect(tester.getRect(find.byType(SeriesDetailPanel)).left,
+        greaterThan(300), reason: 'the panel sits on the right');
 
-    Navigator.of(tester.element(find.byType(SeriesDetailScreen))).pop();
+    Navigator.of(tester.element(find.byType(SeriesDetailPanel))).pop();
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
-    expect(find.byType(SeriesDetailScreen), findsNothing);
+    expect(find.byType(SeriesDetailPanel), findsNothing);
     expect(find.byType(ReaderScreen), findsOneWidget);
     expect(h.stateOf(tester).currentPage, 3);
     expect(find.byType(ReaderTopBar), findsNothing,

@@ -29,3 +29,64 @@ class SeriesDetailScreen extends ConsumerWidget {
     );
   }
 }
+
+/// The series panel sliding in from the right over the reader (iPad), with
+/// the page dimmed behind. Tap the page or the panel's close to dismiss.
+/// Opening an issue pops with [SeriesDetailScreen.replacedResult], exactly
+/// like the full page, so the reader's return path is unchanged.
+/// ponytail: the page dims but doesn't slide left as in the mockup; shift
+/// it if the covered strip turns out to matter.
+Route<String> seriesSidePanelRoute(String seriesId) => PageRouteBuilder<String>(
+      settings: const RouteSettings(name: '/series-panel'),
+      opaque: false,
+      barrierDismissible: true,
+      barrierLabel: 'Close series',
+      barrierColor: Colors.black45,
+      transitionDuration: const Duration(milliseconds: 260),
+      reverseTransitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, _, _) => _SeriesSidePanel(seriesId: seriesId),
+      transitionsBuilder: (context, animation, _, child) => SlideTransition(
+        position: Tween(begin: const Offset(1, 0), end: Offset.zero).animate(
+            CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+        child: child,
+      ),
+    );
+
+class _SeriesSidePanel extends ConsumerWidget {
+  final String seriesId;
+  const _SeriesSidePanel({required this.seriesId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accent = ref.watch(accentProvider).value ?? AppTheme.accent;
+    final size = MediaQuery.sizeOf(context);
+    // Same widths as the Library split view, but never narrower than the
+    // panel's header row needs (iPad Split View, small windows).
+    final width = (size.width * (size.width > size.height ? 0.40 : 0.46))
+        .clamp(400.0, size.width - 24);
+    return Align(
+      alignment: Alignment.centerRight,
+      child: SafeArea(
+        left: false,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(AppTheme.r18),
+            child: SizedBox(
+              width: width,
+              child: Scaffold(
+                backgroundColor: context.scheme.bg,
+                body: SeriesDetailPanel(
+                  seriesId: seriesId,
+                  accent: accent,
+                  fromReader: true,
+                  onClose: () => Navigator.of(context).maybePop(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -2,6 +2,7 @@
 import '../providers/mirror_provider.dart';
 import '../providers/providers.dart';
 import 'package:flutter/material.dart';
+import 'series_action_sheet.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../config/app_theme.dart';
@@ -120,6 +121,41 @@ class IssueGridTile extends ConsumerWidget {
                         issueId: issue.id,
                         isRead: isCompleted,
                         accent: accent,
+                      ),
+                    ),
+                    // One-tap read toggle over the badge corner (44pt target).
+                    // Unread shows a faint ring where the check will land.
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Semantics(
+                        button: true,
+                        label: isCompleted ? 'Mark unread' : 'Mark read',
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => toggleIssueRead(context, ref, issue),
+                          child: SizedBox(
+                            width: 44,
+                            height: 44,
+                            child: isCompleted
+                                ? null
+                                : Align(
+                                    alignment: Alignment.topRight,
+                                    child: Container(
+                                      margin: const EdgeInsets.all(6),
+                                      width: 18,
+                                      height: 18,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.black.withValues(alpha: 0.3),
+                                        border: Border.all(
+                                            color: Colors.white.withValues(alpha: 0.75),
+                                            width: 1.5),
+                                      ),
+                                    ),
+                                  ),
+                          ),
+                        ),
                       ),
                     ),
                     // Writeback error badge — bottom left corner
