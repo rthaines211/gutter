@@ -14,6 +14,7 @@ import '../widgets/glass_button.dart';
 import '../widgets/panel_frame.dart';
 import 'arc_common.dart';
 import 'arc_detail_screen.dart';
+import 'arc_editor_screen.dart';
 
 void _openDetail(BuildContext context, Arc arc) {
   HapticFeedback.selectionClick();
@@ -116,6 +117,14 @@ class _ArcsScreenState extends ConsumerState<ArcsScreen> {
                 Text('$count', style: context.monoLabel),
               ],
             ),
+          ),
+          GlassButton(
+            label: 'New reading order',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ArcEditorScreen()),
+            ),
+            child: Icon(Icons.add_rounded, size: 20, color: context.scheme.tx),
           ),
           GlassButton(
             label: _searching ? 'Close search' : 'Search',

@@ -147,6 +147,14 @@ class SyncQueueDrainer {
       await client.putQueue(ReadingQueue.fromJson(payload));
     } else if (type == 'queue_delete') {
       await client.deleteQueue(payload['id'] as String);
+    } else if (type == 'arc_upsert') {
+      await client.putUserArc(
+        payload['id'] as String,
+        payload['name'] as String,
+        (payload['issue_ids'] as List).cast<String>(),
+      );
+    } else if (type == 'arc_delete') {
+      await client.deleteUserArc(payload['id'] as String);
     } else if (type == 'comic_metadata') {
       await client.patchComicMetadata(
         payload['comic_id'] as String,

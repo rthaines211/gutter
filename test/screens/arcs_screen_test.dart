@@ -112,7 +112,7 @@ void main() {
       await t.pump(const Duration(milliseconds: 100));
 
       // Content's right padding is 20 (measured on the glass, not its 44pt hit box).
-      expect(t.getRect(find.descendant(of: find.byType(GlassButton), matching: find.byType(LiquidGlass))).right,
+      expect(t.getRect(find.descendant(of: find.byType(GlassButton), matching: find.byType(LiquidGlass)).last).right,
           moreOrLessEquals(size.width - 20, epsilon: 1));
 
       expect(find.text('Biggest in your library'), findsOneWidget,

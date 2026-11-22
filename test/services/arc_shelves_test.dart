@@ -120,6 +120,19 @@ void main() {
   });
 
   group('buildArcShelves', () {
+    test('user arcs get their own first shelf, never featured', () {
+      final s = buildArcShelves([
+        _arc(id: 'big', name: 'Big', present: 50),
+        _arc(id: 'u1', name: 'Endgame', present: 13, source: 'user'),
+        _arc(id: 'u2', name: 'Busy', present: 9, source: 'user', read: 2,
+            lastReadAt: DateTime(2026)),
+      ]);
+      expect(s.featured.map((a) => a.id), ['big']);
+      expect(s.inProgress.map((a) => a.id), ['u2']);
+      expect(s.shelves.first.title, yourArcsTitle);
+      expect(s.shelves.first.arcs.map((a) => a.id), ['u1']);
+    });
+
     test('inProgress holds 0 < read < present, sorted by lastReadAt desc',
         () {
       final older = _arc(

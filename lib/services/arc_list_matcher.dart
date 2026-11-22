@@ -1,0 +1,84 @@
+import '../models/series.dart';
+
+/// One pasted line and the library issue it matched (null = not found).
+class ArcLineMatch {
+  final String line;
+  final SeriesIssue? issue;
+  const ArcLineMatch(this.line, this.issue);
+}
+
+final _bullet = RegExp(r'^\s*(?:[-*•]\s*)?(?:\[[ xX]?\]\s*)?(?:\d+[.)]\s+)?');
+final _hashNumber = RegExp(r'^(.*?)\s*#\s*(\S+)');
+final _trailingNumber = RegExp(r'^(.*\D)\s+(\d+(?:\.\d+)?)$');
+final _year = RegExp(r'\((\d{4})(?:-\d{4})?\)');
+
+/// Lower-case letters and digits only, years dropped, `&` read as "and".
+/// "Ultimate Universe – Finale (2026)" and "Ultimate Universe: Finale" agree.
+String _seriesKey(String name) => name
+    .replaceAll(_year, '')
+    .toLowerCase()
+    .replaceAll('&', 'and')
+    .replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+String _numberKey(String n) {
+  final t = n.trim().toLowerCase();
+  final stripped = t.replaceFirst(RegExp(r'^0+(?=\d)'), '');
+  return stripped;
+}
+
+final _parens = RegExp(r'\([^)]*\)');
+final _nameNumber = RegExp(r'(\d+(?:\.\d+)?)\s*$');
+
+/// The issue's number, else the trailing number in its file name: the
+/// scanner leaves `number` empty for names like "Ultimate Endgame 1 (2026).cbz".
+String? _issueNumber(SeriesIssue i) {
+  final n = i.number?.trim();
+  if (n != null && n.isNotEmpty) return n;
+  final bare = i.name.replaceFirst(RegExp(r'\.\w+$'), '').replaceAll(_parens, '').trim();
+  return _nameNumber.firstMatch(bare)?.group(1);
+}
+
+int _yearOf(String name) =>
+    int.tryParse(_year.firstMatch(name)?.group(1) ?? '') ?? 0;
+
+/// Matches a pasted reading order ("- [ ] 3. Ultimates #19", one per line)
+/// to library issues by series name + issue number. When several series
+/// share a name ("Ultimates", "Ultimates (2024)"), a year on the line picks
+/// one; otherwise the newest series that has that number wins.
+/// ponytail: exact-name match only; add fuzzy matching if real lists miss.
+List<ArcLineMatch> matchArcList(String text, List<SeriesIssue> issues) {
+  final byKey = <String, List<SeriesIssue>>{};
+  for (final i in issues) {
+    final n = _issueNumber(i);
+    final s = i.seriesName;
+    if (n == null || s == null) continue;
+    byKey.putIfAbsent('${_seriesKey(s)}#${_numberKey(n)}', () => []).add(i);
+  }
+
+  final out = <ArcLineMatch>[];
+  for (final raw in text.split('\n')) {
+    final line = raw.replaceFirst(_bullet, '').trim();
+    if (line.isEmpty) continue;
+    final m = _hashNumber.firstMatch(line) ?? _trailingNumber.firstMatch(line);
+    if (m == null) {
+      out.add(ArcLineMatch(line, null));
+      continue;
+    }
+    final name = m.group(1)!;
+    var candidates =
+        byKey['${_seriesKey(name)}#${_numberKey(m.group(2)!)}'] ?? const [];
+    final year = _yearOf(name);
+    if (year > 0) {
+      candidates =
+          candidates.where((c) => _yearOf(c.seriesName!) == year).toList();
+    }
+    SeriesIssue? best;
+    for (final c in candidates) {
+      if (best == null || _yearOf(c.seriesName!) > _yearOf(best.seriesName!)) {
+        best = c;
+      }
+    }
+    out.add(ArcLineMatch(line, best));
+  }
+  return out;
+}

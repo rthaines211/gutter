@@ -904,6 +904,26 @@ class MirrorDatabase extends _$MirrorDatabase {
         }).toList());
   }
 
+  /// Every issue with its series id and name, for building a reading order
+  /// (paste matching and the issue picker). Progress is not joined.
+  Future<List<SeriesIssue>> allIssuesWithSeries() async {
+    final rows = await customSelect('''
+      SELECT i.payload AS issue_payload, i.series_id AS series_id,
+             json_extract(s.payload, '\$.name') AS series_name
+      FROM issue_rows i
+      JOIN series_rows s ON s.id = i.series_id
+      ORDER BY series_name, i.position
+    ''', readsFrom: {issueRows, seriesRows}).get();
+    return rows.map((r) {
+      final m =
+          jsonDecode(r.read<String>('issue_payload')) as Map<String, dynamic>;
+      m['series_id'] = r.read<String>('series_id');
+      m['series_name'] = r.read<String?>('series_name');
+      m['status'] ??= 'unread';
+      return SeriesIssue.fromJson(m);
+    }).toList();
+  }
+
   /// Local-first queue write: replace the queue row and its ordered membership.
   Future<void> upsertQueueLocal(ReadingQueue q) async {
     await transaction(() async {
