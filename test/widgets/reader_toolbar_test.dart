@@ -163,7 +163,7 @@ void main() {
     });
   });
 
-  testWidgets('rail: close tops the rail, away from the title',
+  testWidgets('rail: close alone in the far corner, title above the rail',
       (t) async {
     await _pump(
       t,
@@ -179,10 +179,10 @@ void main() {
     final title = t.getRect(find.text('Batman #80'));
     expect(more.center.dx, moreOrLessEquals(bookmark.center.dx));
     expect(more.top, greaterThan(bookmark.bottom));
-    expect(bookmark.left, greaterThan(title.right));
-    // Close leads the rail, above the other controls, not beside the title.
-    expect(back.center.dx, moreOrLessEquals(bookmark.center.dx));
-    expect(back.bottom, lessThan(bookmark.top - 16));
-    expect(back.left, greaterThan(title.right + 100));
+    // Rail on the right: title top-right above it, Close alone top-left.
+    expect(title.right, greaterThan(bookmark.left - 60));
+    expect(title.bottom, lessThan(bookmark.top));
+    expect(back.right, lessThan(title.left - 100));
+    expect(back.top, lessThan(bookmark.top));
   });
 }

@@ -100,8 +100,9 @@ class ReaderTopBar extends ConsumerWidget {
     final comic = ComicTokens.watch(ref, context, accent);
     final scheme = context.scheme;
 
-    // Phone bar: Close beside the title. Rail: Close tops the rail, away
-    // from the title (a title tap opens a sheet, and a near miss exited).
+    // Phone bar: Close beside the title. Rail: Close alone in the top corner
+    // away from the rail, the title on the rail's side (a title tap opens a
+    // sheet, and a near miss beside it exited the comic).
     final back = _ActionButton(
       key: const Key('reader.back'),
       label: 'Close',
@@ -275,15 +276,6 @@ class ReaderTopBar extends ConsumerWidget {
                       children: [
                         // The running sleep pill ("45m") is wider than the
                         // rail; scale it down rather than overflow.
-                        back,
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Divider(
-                              height: 1,
-                              indent: 14,
-                              endIndent: 14,
-                              color: scheme.borderFaint),
-                        ),
                         for (final (i, a) in actions.indexed) ...[
                           if (i > 0) gap,
                           FittedBox(fit: BoxFit.scaleDown, child: a),
@@ -295,6 +287,7 @@ class ReaderTopBar extends ConsumerWidget {
               ),
             ),
           ),
+          // Close alone in the top corner away from the rail.
           Positioned(
             top: 0,
             left: railOnLeft ? null : 0,
@@ -302,6 +295,21 @@ class ReaderTopBar extends ConsumerWidget {
             child: SafeArea(
               left: !railOnLeft,
               right: railOnLeft,
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.all(railMargin),
+                child: glass(padding: const EdgeInsets.all(4), back),
+              ),
+            ),
+          ),
+          // Title above the rail, on the rail's side.
+          Positioned(
+            top: 0,
+            left: railOnLeft ? 0 : null,
+            right: railOnLeft ? null : 0,
+            child: SafeArea(
+              left: railOnLeft,
+              right: !railOnLeft,
               bottom: false,
               child: Padding(
                 padding: const EdgeInsets.all(railMargin),
