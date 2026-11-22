@@ -539,6 +539,11 @@ class MirrorDatabase extends _$MirrorDatabase {
             : Value(jsonEncode(chapters)),
       ));
 
+  /// Local-first "unread": drop the issue's progress row. The next pull
+  /// restores it if the server delete never landed.
+  Future<void> deleteProgressLocal(String comicId) =>
+      (delete(progressRows)..where((t) => t.comicId.equals(comicId))).go();
+
   /// Merges [changes] into the stored series payload JSON. Local-first
   /// metadata edits call this before the server PATCH so streams update
   /// immediately; the next sync pull overwrites with server truth.

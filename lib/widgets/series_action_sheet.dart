@@ -2,9 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 import '../config/app_theme.dart';
 import '../config/scheme.dart';
 import '../models/series.dart';
+import '../providers/cache_providers.dart';
 import '../providers/mirror_provider.dart';
 import '../providers/providers.dart';
 import '../services/api_client.dart';
@@ -106,32 +108,100 @@ void showIssueActionSheet({
   );
 }
 
-/// Marks a single issue as read or unread.
+/// Reads a provider; both `ref.read` and `ProviderContainer.read` fit.
+typedef ProviderReader = T Function<T>(ProviderListenable<T> provider);
+
+/// One-tap read toggle for issue rows: writes the mirror first so the row
+/// flips at once, shows Undo straight away (it restores an in-progress
+/// page, not just "unread"), then pushes to the server in the background.
+Future<void> toggleIssueRead(
+    BuildContext context, WidgetRef ref, SeriesIssue issue) async {
+  HapticFeedback.selectionClick();
+  // The container outlives this row (lazy lists recycle it; the reader's
+  // series panel may close), so Undo reads through it, not through [ref].
+  final read = ProviderScope.containerOf(context, listen: false).read;
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  final wasRead = issue.status == 'completed';
+  final label = issue.number == null ? issue.displayName : '#${issue.number}';
+  // Unread drops the progress row, bookmarks with it, and Undo can't bring
+  // those back: keep that behind the long-press sheet.
+  if (wasRead &&
+      (await read(mirrorDbProvider).bookmarksFor(issue.id)).isNotEmpty) {
+    messenger
+      ?..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+          content: Text('$label has bookmarks. Long-press to mark it unread.')));
+    return;
+  }
+  final prevPage = issue.status == 'in_progress' ? issue.currentPage : null;
+  await setIssueReadState(read, issue, read: !wasRead, awaitServer: false);
+  messenger
+    ?..hideCurrentSnackBar()
+    ..showSnackBar(SnackBar(
+      content: Text('Marked $label ${wasRead ? 'unread' : 'read'}'),
+      duration: const Duration(seconds: 4),
+      action: SnackBarAction(
+        label: 'Undo',
+        onPressed: () => setIssueReadState(read, issue,
+            read: wasRead, page: wasRead ? null : prevPage),
+      ),
+    ));
+}
+
+/// Sets an issue to read, unread, or (with [page]) in progress at [page].
+/// Writes the mirror, then pushes to the server (awaited unless
+/// [awaitServer] is false). A failed push goes to the outbox, so an offline
+/// toggle reaches the server on the next sync, as reader progress does.
+Future<void> setIssueReadState(ProviderReader reader, SeriesIssue issue,
+    {required bool read, int? page, bool awaitServer = true}) async {
+  final db = reader(mirrorDbProvider);
+  final total = issue.totalPages ?? 1;
+  final current = read ? total : page;
+  if (current == null) {
+    await db.deleteProgressLocal(issue.id);
+  } else {
+    await db.saveProgressLocal(
+        comicId: issue.id, currentPage: current, totalPages: total);
+  }
+  Future<void> pushToServer() async {
+    final client = reader(apiClientProvider);
+    try {
+      if (current == null) {
+        await client.batchDeleteProgress([issue.id]);
+      } else {
+        await client.batchUpdateProgress([
+          {'comic_id': issue.id, 'current_page': current, 'total_pages': total}
+        ]);
+      }
+    } catch (_) {
+      await reader(syncQueueProvider)?.enqueue(current == null
+          ? {'type': 'progress_delete', 'payload': {'comic_id': issue.id}}
+          : {
+              'type': 'progress',
+              'payload': {
+                'comic_id': issue.id,
+                'current_page': current,
+                'total_pages': total,
+              },
+            });
+    }
+    try {
+      await reader(syncEngineProvider)?.sync();
+    } catch (_) {}
+  }
+  final push = pushToServer();
+  if (awaitServer) await push;
+}
+
+/// Marks a single issue as read or unread (long-press sheet).
 Future<void> markIssue({
   required WidgetRef ref,
   required SeriesIssue issue,
   required String seriesId,
   required bool read,
 }) async {
-  final client = ref.read(apiClientProvider);
-  try {
-    if (read) {
-      await client.batchUpdateProgress([
-        {
-          'comic_id': issue.id,
-          'current_page': issue.totalPages ?? 1,
-          'total_pages': issue.totalPages ?? 1,
-        }
-      ]);
-    } else {
-      await client.batchDeleteProgress([issue.id]);
-    }
-    HapticFeedback.mediumImpact();
-    // Pull the server's view of the write into the local mirror; the
-    // mirror-backed library/series streams update on their own.
-    final engine = ref.read(syncEngineProvider);
-    if (engine != null) await engine.sync();
-  } catch (_) {}
+  HapticFeedback.mediumImpact();
+  await setIssueReadState(ref.read, issue, read: read);
 }
 
 /// Marks all issues in a series as read.

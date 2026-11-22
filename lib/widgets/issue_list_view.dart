@@ -1,5 +1,6 @@
 // lib/widgets/issue_list_view.dart
 import 'package:flutter/material.dart';
+import 'series_action_sheet.dart';
 import 'pro_sheet.dart';
 import '../config/source_urls.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -125,9 +126,18 @@ class IssueListRow extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            // Status circle (30px)
-            Container(
+            const SizedBox(width: 3),
+            // Status circle (30px): one tap marks read / unread. The 7pt
+            // padding makes a 44pt target; the spacers shrink to match.
+            Semantics(
+              button: true,
+              label: isCompleted ? 'Mark unread' : 'Mark read',
+              child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => toggleIssueRead(context, ref, issue),
+              child: Padding(
+              padding: const EdgeInsets.all(7),
+              child: Container(
               width: 30,
               height: 30,
               decoration: BoxDecoration(
@@ -163,7 +173,10 @@ class IssueListRow extends ConsumerWidget {
                           ),
               ),
             ),
-            const SizedBox(width: 12),
+            ),
+            ),
+            ),
+            const SizedBox(width: 5),
 
             // Title + subtitle
             Expanded(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:comic_reader_app/models/sync_response.dart';
 import 'package:comic_reader_app/screens/series_detail_screen.dart';
+import 'package:comic_reader_app/widgets/series_detail_panel.dart';
 import 'package:comic_reader_app/widgets/reader_toolbar.dart';
 import 'package:comic_reader_app/screens/reader_screen.dart';
 import 'package:comic_reader_app/services/sleep_timer.dart';
@@ -193,7 +194,7 @@ void main() {
         (w) => w is GestureDetector && w.onTap == bar.onTitleTap));
     await settleImages(tester, rounds: 5);
     await tester.pump(const Duration(milliseconds: 400));
-    expect(find.byType(SeriesDetailScreen), findsOneWidget);
+    expect(find.byType(SeriesDetailPanel), findsOneWidget);
   }
 
   testWidgets('fire under series detail: resume waits, return restores',
@@ -208,7 +209,7 @@ void main() {
     expect(wakelockCalls, isNot(contains(true)),
         reason: 'series page keeps the wakelock released');
 
-    Navigator.of(tester.element(find.byType(SeriesDetailScreen))).pop();
+    Navigator.of(tester.element(find.byType(SeriesDetailPanel))).pop();
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
@@ -285,7 +286,7 @@ void main() {
     // series_detail_panel.dart's _openIssue (fromReader path): pop with
     // SeriesDetailScreen.replacedResult, then pushReplacement a fresh
     // ReaderScreen for the picked issue.
-    Navigator.of(tester.element(find.byType(SeriesDetailScreen)))
+    Navigator.of(tester.element(find.byType(SeriesDetailPanel)))
         .pop(SeriesDetailScreen.replacedResult);
     await tester.pump();
     Navigator.of(tester.element(find.byType(ReaderScreen))).pushReplacement(
