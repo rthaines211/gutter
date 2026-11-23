@@ -1,5 +1,9 @@
-Nouveau : lisez vos comics sans serveur. Touchez « Import comics from Files » (premier écran, ou Servers) et choisissez des fichiers CBZ sur votre iPhone ou iPad. L'import et la lecture sont gratuits.
+Nouveau : touchez le cercle d'un numéro pour le marquer comme lu ou non lu. Vous pouvez annuler aussitôt.
 
-Nouveau : partagez vos statistiques de lecture sous forme d'image, depuis l'écran Stats.
+Nouveau sur iPad : pendant la lecture, touchez le titre du comic pour voir sa série dans un panneau latéral, sans quitter la page.
 
-Nouveau : ajoutez tout catalogue OPDS avec diffusion des pages (OPDS-PSE) comme serveur. Avec OPDS, la progression reste sur l'appareil.
+Nouveau : pas encore de comics ? Touchez « Try a sample comic » sur le premier écran.
+
+Amélioré : sur iPad, Fermer est seul dans le coin supérieur, loin du titre, pour éviter les touches par erreur.
+
+Corrigé : les catalogues OPDS Stump et Codex rangent les numéros dans la bonne série.

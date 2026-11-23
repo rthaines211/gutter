@@ -1,5 +1,9 @@
-New: read comics with no server. Tap Import comics from Files (first screen, or Servers) and pick CBZ files from your iPhone or iPad. Import and reading are free.
+New: tap the circle on any issue to mark it read or unread. Undo is right there.
 
-New: share your reading stats as an image, from the Stats screen.
+New on iPad: tap the comic's title while reading to see its series in a side panel, without leaving the page.
 
-New: add any OPDS catalog with page streaming (OPDS-PSE) as a server. With OPDS, progress stays on the device.
+New: no comics yet? Tap Try a sample comic on the first screen.
+
+Better: on iPad, Close sits alone in the top corner, away from the title, so it's hard to hit by mistake.
+
+Fixed: Stump and Codex OPDS catalogs now group issues into the right series.
