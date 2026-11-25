@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config/app_theme.dart';
+import '../config/flavor.dart';
 import '../config/platform.dart';
 import '../config/scheme.dart';
 import '../providers/accent_provider.dart';
 import '../providers/pro_provider.dart';
+import '../services/review_prompt.dart';
 
 List<(IconData, String)> get _features => [
   (Icons.download_for_offline_outlined, 'Offline downloads'),
@@ -25,9 +28,23 @@ bool requirePro(BuildContext context, WidgetRef ref, {required String reason}) {
   return false;
 }
 
-Future<void> showProSheet(BuildContext context, {String? reason}) =>
+const _finishOfferKey = 'pro_offer_after_finish_shown';
+
+/// Once, without Pro: true on a finished-issue exit from the 3rd finish on,
+/// when the rating prompt didn't just show. Marks the offer as shown.
+bool takeFinishOffer(SharedPreferences prefs, {required bool pro}) {
+  if (!isStore || pro) return false;
+  if (prefs.getBool(_finishOfferKey) ?? false) return false;
+  if (ReviewPrompt.finishedCount(prefs) < ReviewPrompt.threshold) return false;
+  prefs.setBool(_finishOfferKey, true);
+  return true;
+}
+
+Future<void> showProSheet(BuildContext context,
+        {String? reason, bool useRootNavigator = false}) =>
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: useRootNavigator,
       isScrollControlled: true,
       backgroundColor: context.scheme.s2,
       builder: (_) => ProSheet(reason: reason),

@@ -25,7 +25,26 @@ bool zoomTrialCovers(SharedPreferences prefs, String comicId) {
   return trial == comicId;
 }
 
+/// Without Pro, the first issue opened starts with guided zoom on, so the
+/// trial is felt, not hidden in Aa. True when this call claims the trial
+/// for [comicId]; false once any issue has it.
+bool claimZoomTrial(SharedPreferences prefs, String comicId) {
+  if (prefs.getString(zoomTrialKey) != null) return false;
+  prefs.setString(zoomTrialKey, comicId);
+  return true;
+}
+
 const zoomTrialOver = 'Guided zoom was free for one issue. It is part of Pro.';
+
+const _trialOfferKey = 'zoom_trial_offer_shown';
+
+/// True the first time the zoom trial ends: show the paywall that once,
+/// a short note after that.
+bool takeZoomTrialOffer(SharedPreferences prefs) {
+  if (prefs.getBool(_trialOfferKey) ?? false) return false;
+  prefs.setBool(_trialOfferKey, true);
+  return true;
+}
 
 final proStoreProvider = Provider<ProStore>((ref) => InAppPurchaseProStore());
 
