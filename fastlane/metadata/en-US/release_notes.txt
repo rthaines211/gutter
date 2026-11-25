@@ -1,1 +1,1 @@
-Maintenance update: the app is the same as 1.0.4, with a refreshed App Store listing.
+New: your first comic opens with guided zoom on, free for that issue, so you can try reading panel by panel.
