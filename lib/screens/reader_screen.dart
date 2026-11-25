@@ -33,6 +33,8 @@ import '../services/pan_sequence_controller.dart';
 import '../widgets/volume_key_listener.dart';
 import '../config/app_theme.dart';
 import '../config/flavor.dart';
+import '../config/platform.dart';
+import '../widgets/pro_sheet.dart';
 import '../widgets/ambient_progress_rail.dart';
 import '../widgets/floating_page_pill.dart';
 import '../widgets/filmstrip_scrubber.dart';
@@ -361,13 +363,30 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
       // back to Off, so every reader of the setting agrees, with a note.
       // ponytail: on a Gutter server this also turns it off for the user's
       // other devices; fine unless one of them has Pro and this one doesn't.
+      // The free issue is the first one opened, with zoom already on (the
+      // save fires this listener again, which shows the "free" note).
+      if (b.zoomMode == 'off' &&
+          !ref.read(proProvider) &&
+          (_serverBubbles || onDevicePanels) &&
+          claimZoomTrial(ref.read(sharedPrefsProvider), _comicId)) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            ref.read(settingsProvider.notifier).save(b.copyWith(zoomMode: 'panels'));
+          }
+        });
+        return;
+      }
       if (b.zoomMode != 'off' && !ref.read(proProvider)) {
         final free = zoomTrialCovers(ref.read(sharedPrefsProvider), _comicId);
         if (!free) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             ref.read(settingsProvider.notifier).save(b.copyWith(zoomMode: 'off'));
-            _clipHint(zoomTrialOver);
+            if (takeZoomTrialOffer(ref.read(sharedPrefsProvider))) {
+              showProSheet(context, reason: zoomTrialOver);
+            } else {
+              _clipHint(zoomTrialOver);
+            }
           });
           return;
         }
@@ -1566,17 +1585,29 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
           ? null
           : '${skipped.number != null && skipped.number!.isNotEmpty ? '#${skipped.number}' : skipped.name} isn\'t on this ${LayoutBreakpoint.deviceNoun}',
       onNext: _advanceToNextIssue,
-      onBackToSeries: () async {
-        await _markCurrentCompletedAndFlushSession();
-        if (mounted) Navigator.of(context).pop();
-        unawaited(ReviewPrompt.maybeAsk());
-      },
-      onClose: () async {
-        await _markCurrentCompletedAndFlushSession();
-        if (mounted) Navigator.of(context).pop();
-        unawaited(ReviewPrompt.maybeAsk());
-      },
+      onBackToSeries: _leaveFinished,
+      onClose: _leaveFinished,
     );
+  }
+
+  /// Leaves a finished issue, then asks for a rating when due, or else
+  /// offers Pro once (never both on one exit).
+  Future<void> _leaveFinished() async {
+    await _markCurrentCompletedAndFlushSession();
+    if (!mounted) return;
+    final nav = Navigator.of(context);
+    final pro = ref.read(proProvider);
+    final prefs = ref.read(sharedPrefsProvider);
+    nav.pop();
+    if (await ReviewPrompt.maybeAsk()) return;
+    if (!takeFinishOffer(prefs, pro: pro)) return;
+    // After the closing cover flight (420ms) lands.
+    await Future<void>.delayed(const Duration(milliseconds: 600));
+    final host = nav.overlay?.context;
+    if (host == null || !host.mounted) return;
+    unawaited(showProSheet(host,
+        useRootNavigator: true,
+        reason: "You've finished ${ReviewPrompt.finishedCount(prefs)} issues in Gutter."));
   }
 
   Future<void> _markCurrentCompletedAndFlushSession() async {

@@ -18,16 +18,22 @@ class ReviewPrompt {
     await p.setInt(_countKey, (p.getInt(_countKey) ?? 0) + 1);
   }
 
+  static int finishedCount(SharedPreferences p) => p.getInt(_countKey) ?? 0;
+
   /// Shows the rating dialog when it's due. Call it when the reader leaves a
-  /// finished issue, never mid-page. [request] is for tests.
-  static Future<void> maybeAsk({Future<void> Function()? request}) async {
-    if (!isStore) return; // the personal build isn't on the App Store
+  /// finished issue, never mid-page. True when it asked. [request] is for tests.
+  static Future<bool> maybeAsk({Future<void> Function()? request}) async {
+    if (!isStore) return false; // the personal build isn't on the App Store
     final p = await SharedPreferences.getInstance();
-    if (p.getBool(_askedKey) ?? false) return;
-    if ((p.getInt(_countKey) ?? 0) < threshold) return;
+    if (p.getBool(_askedKey) ?? false) return false;
+    if (finishedCount(p) < threshold) return false;
     await p.setBool(_askedKey, true);
-    if (request != null) return request();
+    if (request != null) {
+      await request();
+      return true;
+    }
     final review = InAppReview.instance;
     if (await review.isAvailable()) await review.requestReview();
+    return true;
   }
 }
