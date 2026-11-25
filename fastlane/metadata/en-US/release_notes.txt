@@ -1,9 +1,1 @@
-New: tap the circle on any issue to mark it read or unread. Undo is right there.
-
-New on iPad: tap the comic's title while reading to see its series in a side panel, without leaving the page.
-
-New: no comics yet? Tap Try a sample comic on the first screen.
-
-Better: on iPad, Close sits alone in the top corner, away from the title, so it's hard to hit by mistake.
-
-Fixed: Stump and Codex OPDS catalogs now group issues into the right series.
+Maintenance update: the app is the same as 1.0.4, with a refreshed App Store listing.
