@@ -1,9 +1,1 @@
-Novo: toque no círculo de uma edição para marcá-la como lida ou não lida. Dá para desfazer na hora.
-
-Novo no iPad: durante a leitura, toque no título do quadrinho para ver a série em um painel lateral, sem sair da página.
-
-Novo: ainda sem quadrinhos? Toque em "Try a sample comic" na primeira tela.
-
-Melhor: no iPad, Fechar fica sozinho no canto superior, longe do título, para evitar toques por engano.
-
-Corrigido: catálogos OPDS do Stump e do Codex agrupam as edições na série certa.
+Atualização de manutenção: o app é igual à 1.0.4, com uma página da App Store renovada.

@@ -1,9 +1,1 @@
-Nouveau : touchez le cercle d'un numéro pour le marquer comme lu ou non lu. Vous pouvez annuler aussitôt.
-
-Nouveau sur iPad : pendant la lecture, touchez le titre du comic pour voir sa série dans un panneau latéral, sans quitter la page.
-
-Nouveau : pas encore de comics ? Touchez « Try a sample comic » sur le premier écran.
-
-Amélioré : sur iPad, Fermer est seul dans le coin supérieur, loin du titre, pour éviter les touches par erreur.
-
-Corrigé : les catalogues OPDS Stump et Codex rangent les numéros dans la bonne série.
+Mise à jour de maintenance : l’app est identique à la 1.0.4, avec une fiche App Store revue.

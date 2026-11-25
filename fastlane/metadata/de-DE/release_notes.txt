@@ -1,9 +1,1 @@
-Neu: Tippe auf den Kreis eines Hefts, um es als gelesen oder ungelesen zu markieren. Rückgängig geht sofort.
-
-Neu auf dem iPad: Tippe beim Lesen auf den Titel, um die Serie in einer Seitenleiste zu sehen, ohne die Seite zu verlassen.
-
-Neu: Noch keine Comics? Tippe auf dem ersten Bildschirm auf „Try a sample comic“.
-
-Besser: Auf dem iPad steht „Schließen“ allein in der oberen Ecke, weit weg vom Titel, damit du es nicht aus Versehen triffst.
-
-Behoben: OPDS-Kataloge von Stump und Codex ordnen Hefte der richtigen Serie zu.
+Wartungsupdate: Die App entspricht Version 1.0.4, mit überarbeitetem App-Store-Eintrag.
