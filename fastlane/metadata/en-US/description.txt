@@ -1,8 +1,10 @@
-Gutter is a comic reader for the comics you already own: CBZ files on your iPhone or iPad, or the library on your own server. Reading, file import and progress sync are free. Pro is one purchase, not a subscription.
+Gutter is a comic reader for the comics you already own: CBZ files on your iPhone or iPad, or the library on your own Komga, Kavita, OPDS or Gutter server. Reading, file import and progress sync are free. Pro is one purchase, never a subscription.
 
-No server? Tap Import comics from Files and pick your CBZ files. There is no account and nothing to set up.
+TRY IT IN SECONDS
+No comics yet? Tap Try a sample comic on the first screen and you're reading. Have CBZ files? Tap Import comics from Files and pick them. No account, nothing to set up.
 
-Have a server? Connect to Komga or Kavita with your username and password or an API key, to any OPDS catalog with page streaming (OPDS-PSE), or to a self-hosted Gutter server. Your library shows up with series, covers and where you left off.
+BRING YOUR SERVER
+Connect to Komga or Kavita with your username and password or an API key, to any OPDS catalog with page streaming (OPDS-PSE), or to a self-hosted Gutter server. Your series, covers and place in every issue show up. With Komga, Kavita or a Gutter server, progress syncs both ways.
 
 READING
 • Page mode or vertical scroll mode
@@ -12,24 +14,23 @@ READING
 • Choice of tap zone layouts, page background and brightness
 • Optional page turns with the volume buttons
 • Sleep timer for reading in bed
+• On iPad, tap the comic's title while reading to see its series in a side panel, without leaving the page
 
 YOUR LIBRARY
-• Import CBZ files from the Files app
+• Pick up where you left off from the Read tab
 • Searchable library with filters and sorting
+• Tap the circle on any issue to mark it read or unread, with Undo
 • Reading queues to plan what to read next
-• With Komga, Kavita or a Gutter server, progress syncs both ways
 • Your library stays browsable when the server is out of reach
 
 GUTTER PRO
-A one-time purchase, not a subscription. You will never pay for a version upgrade: one purchase covers every future version.
+One purchase covers every future version. No subscription, ever.
+• Guided zoom: step through a page panel by panel, and through two-page spreads. Panels are found on your device, so it works with Komga and Kavita too. Your first comic opens with it on, free for that issue
 • Offline downloads: take issues from your server with you
-• Guided zoom: step through a page panel by panel (panels are found on your device, so it works with Komga and Kavita), and through two-page spreads. You can try panel zoom on one issue for free
 • More than one server
-• Reading stats: pages per day, streaks and more
-
-Reading, streaming, file import and progress sync are free.
+• Reading stats: pages per day, streaks and more, with a card you can share. The card shows your numbers, never what you read
 
 PRIVACY
 Gutter collects nothing. No accounts, analytics, ads or tracking. It talks only to the servers you add.
 
-Gutter does not include or sell comics. You need your own CBZ files, or your own Komga, Kavita, OPDS or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server
+Gutter does not include or sell comics. Apart from the free sample, you need your own CBZ files, or your own Komga, Kavita, OPDS or Gutter server. The Gutter server is free and open source: github.com/rthaines211/gutter-server

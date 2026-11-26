@@ -1,1 +1,1 @@
-manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,opds
+manhwa,manhua,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,zoom,spread

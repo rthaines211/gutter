@@ -1,8 +1,10 @@
-Gutter ist ein Comic-Reader für die Comics, die du schon hast: CBZ-Dateien auf deinem iPhone oder iPad oder die Bibliothek auf deinem eigenen Server. Lesen, Dateiimport und die Synchronisierung des Lesefortschritts sind kostenlos. Pro ist ein Einmalkauf, kein Abo.
+Gutter ist ein Comic-Reader für die Comics, die du schon hast: CBZ-Dateien auf deinem iPhone oder iPad oder die Bibliothek auf deinem eigenen Komga-, Kavita-, OPDS- oder Gutter-Server. Lesen, Dateiimport und die Synchronisierung des Lesefortschritts sind kostenlos. Pro ist ein Einmalkauf, nie ein Abo.
 
-Kein Server? Tippe auf „Import comics from Files“ und wähle deine CBZ-Dateien. Kein Konto, keine Einrichtung.
+IN SEKUNDEN AUSPROBIEREN
+Noch keine Comics? Tippe auf dem ersten Bildschirm auf „Try a sample comic“ und lies los. Du hast CBZ-Dateien? Tippe auf „Import comics from Files“ und wähle sie aus. Kein Konto, keine Einrichtung.
 
-Du hast einen Server? Verbinde dich mit Komga oder Kavita per Benutzername und Passwort oder per API-Schlüssel, mit jedem OPDS-Katalog mit Seiten-Streaming (OPDS-PSE) oder mit einem selbst gehosteten Gutter-Server. Deine Bibliothek erscheint mit Serien, Covern und der Stelle, an der du aufgehört hast.
+BRING DEINEN SERVER MIT
+Verbinde dich mit Komga oder Kavita per Benutzername und Passwort oder per API-Schlüssel, mit jedem OPDS-Katalog mit Seiten-Streaming (OPDS-PSE) oder mit einem selbst gehosteten Gutter-Server. Deine Serien, Cover und die Stelle, an der du in jeder Ausgabe aufgehört hast, erscheinen. Mit Komga, Kavita oder einem Gutter-Server wird der Fortschritt in beide Richtungen synchronisiert.
 
 LESEN
 • Seitenmodus oder vertikaler Scrollmodus
@@ -12,24 +14,23 @@ LESEN
 • Auswahl an Tippzonen-Layouts, Seitenhintergrund und Helligkeit
 • Optional: Umblättern mit den Lautstärketasten
 • Sleep-Timer fürs Lesen im Bett
+• Auf dem iPad: Tippe beim Lesen auf den Titel des Comics, um seine Serie in einer Seitenleiste zu sehen, ohne die Seite zu verlassen
 
 DEINE BIBLIOTHEK
+• Mach im Tab „Read“ da weiter, wo du aufgehört hast
 • Durchsuchbare Bibliothek mit Filtern und Sortierung
+• Tippe auf den Kreis einer Ausgabe, um sie als gelesen oder ungelesen zu markieren, mit Rückgängig
 • Lesewarteschlangen, um zu planen, was du als Nächstes liest
-• CBZ-Dateien aus der Dateien-App importieren
-• Mit Komga, Kavita oder einem Gutter-Server wird der Fortschritt in beide Richtungen synchronisiert
 • Du kannst deine Bibliothek weiter durchstöbern, wenn der Server nicht erreichbar ist
 
 GUTTER PRO
-Ein Einmalkauf, kein Abo. Du zahlst nie für ein Versions-Upgrade: Ein Kauf deckt alle künftigen Versionen ab.
+Ein Kauf deckt alle künftigen Versionen ab. Nie ein Abo.
+• Geführter Zoom: Gehe eine Seite Panel für Panel durch, ebenso Doppelseiten. Die Panels werden auf deinem Gerät erkannt, deshalb funktioniert es auch mit Komga und Kavita. Dein erster Comic öffnet sich mit eingeschaltetem geführten Zoom, kostenlos für diese Ausgabe
 • Offline-Downloads: Nimm Ausgaben von deinem Server mit
-• Geführter Zoom: Gehe eine Seite Panel für Panel durch (die Panels werden auf deinem Gerät erkannt, deshalb funktioniert es mit Komga und Kavita), ebenso Doppelseiten. Den Panel-Zoom kannst du bei einer Ausgabe kostenlos ausprobieren
 • Mehr als ein Server
-• Lesestatistiken: Seiten pro Tag, Streaks und mehr
-
-Lesen, Streaming, Dateiimport und die Synchronisierung des Fortschritts sind kostenlos.
+• Lesestatistiken: Seiten pro Tag, Streaks und mehr, mit einer Karte zum Teilen. Die Karte zeigt deine Zahlen, nie, was du liest
 
 DATENSCHUTZ
 Gutter erfasst nichts. Keine Konten, keine Analysen, keine Werbung, kein Tracking. Die App spricht nur mit den Servern, die du hinzufügst.
 
-Gutter enthält und verkauft keine Comics. Du brauchst eigene CBZ-Dateien oder einen eigenen Komga-, Kavita-, OPDS- oder Gutter-Server. Der Gutter-Server ist kostenlos und Open Source: github.com/rthaines211/gutter-server
+Gutter verkauft keine Comics. Abgesehen vom kostenlosen Beispiel brauchst du eigene CBZ-Dateien oder einen eigenen Komga-, Kavita-, OPDS- oder Gutter-Server. Der Gutter-Server ist kostenlos und Open Source: github.com/rthaines211/gutter-server

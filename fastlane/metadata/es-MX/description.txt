@@ -1,8 +1,10 @@
-Gutter es un lector para los cómics que ya tienes: archivos CBZ en tu iPhone o iPad, o la biblioteca de tu propio servidor. Leer, importar archivos y sincronizar tu progreso es gratis. Pro es una sola compra, no una suscripción.
+Gutter es un lector para los cómics que ya tienes: archivos CBZ en tu iPhone o iPad, o la biblioteca de tu propio servidor Komga, Kavita, OPDS o Gutter. Leer, importar archivos y sincronizar tu progreso es gratis. Pro es una sola compra, nunca una suscripción.
 
-¿Sin servidor? Toca «Import comics from Files» y elige tus archivos CBZ. Sin cuenta y sin nada que configurar.
+PRUÉBALO EN SEGUNDOS
+¿Todavía no tienes cómics? Toca «Try a sample comic» en la primera pantalla y empieza a leer. ¿Tienes archivos CBZ? Toca «Import comics from Files» y elígelos. Sin cuenta y sin nada que configurar.
 
-¿Tienes un servidor? Conéctate a Komga o Kavita con tu usuario y contraseña o con una clave de API, a cualquier catálogo OPDS con transmisión de páginas (OPDS-PSE), o a un servidor Gutter autoalojado. Tu biblioteca aparece con sus series, sus portadas y el punto donde te quedaste.
+TRAE TU SERVIDOR
+Conéctate a Komga o Kavita con tu usuario y contraseña o con una clave de API, a cualquier catálogo OPDS con transmisión de páginas (OPDS-PSE), o a un servidor Gutter autoalojado. Aparecen tus series, tus portadas y el punto donde te quedaste en cada número. Con Komga, Kavita o un servidor Gutter, el progreso se sincroniza en ambos sentidos.
 
 LECTURA
 • Modo página o desplazamiento vertical
@@ -12,24 +14,23 @@ LECTURA
 • Varias disposiciones de zonas táctiles, fondo de página y brillo a elegir
 • Cambio de página opcional con los botones de volumen
 • Temporizador de sueño para leer en la cama
+• En iPad, toca el título del cómic mientras lees para ver su serie en un panel lateral, sin salir de la página
 
 TU BIBLIOTECA
+• Sigue donde te quedaste desde la pestaña Read
 • Biblioteca con búsqueda, filtros y orden
+• Toca el círculo de cualquier número para marcarlo como leído o no leído, con Deshacer
 • Colas de lectura para planear qué leer después
-• Importa archivos CBZ desde la app Archivos
-• Con Komga, Kavita o un servidor Gutter, el progreso se sincroniza en ambos sentidos
 • Puedes seguir explorando tu biblioteca cuando el servidor está fuera de alcance
 
 GUTTER PRO
-Una sola compra, no una suscripción. Nunca pagarás por una actualización de versión: una compra cubre todas las versiones futuras.
+Una sola compra cubre todas las versiones futuras. Nunca una suscripción.
+• Zoom guiado: recorre la página viñeta por viñeta, y también las páginas dobles. Las viñetas se detectan en tu dispositivo, así que también funciona con Komga y Kavita. Tu primer cómic se abre con el zoom guiado activado, gratis en ese número
 • Descargas sin conexión: lleva contigo los números de tu servidor
-• Zoom guiado: recorre la página viñeta por viñeta (las viñetas se detectan en tu dispositivo, así que funciona con Komga y Kavita) y también las páginas dobles. Puedes probar gratis el zoom por viñetas en un número
 • Más de un servidor
-• Estadísticas de lectura: páginas por día, rachas y más
-
-Leer, ver en streaming, importar archivos y sincronizar el progreso es gratis.
+• Estadísticas de lectura: páginas por día, rachas y más, con una tarjeta para compartir. La tarjeta muestra tus números, nunca lo que lees
 
 PRIVACIDAD
 Gutter no recopila nada. Sin cuentas, analíticas, anuncios ni rastreo. Solo se comunica con los servidores que agregas.
 
-Gutter no incluye ni vende cómics. Necesitas tus propios archivos CBZ, o tu propio servidor Komga, Kavita, OPDS o Gutter. El servidor Gutter es gratuito y de código abierto: github.com/rthaines211/gutter-server
+Gutter no vende cómics. Aparte del ejemplo gratis, necesitas tus propios archivos CBZ, o tu propio servidor Komga, Kavita, OPDS o Gutter. El servidor Gutter es gratuito y de código abierto: github.com/rthaines211/gutter-server
