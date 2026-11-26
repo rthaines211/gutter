@@ -1,8 +1,10 @@
-Gutter est un lecteur pour les comics que vous possédez déjà : des fichiers CBZ sur votre iPhone ou iPad, ou la bibliothèque de votre propre serveur. La lecture, l'import de fichiers et la synchronisation de la progression sont gratuits. Pro est un achat unique, pas un abonnement.
+Gutter est un lecteur pour les comics que vous possédez déjà : des fichiers CBZ sur votre iPhone ou iPad, ou la bibliothèque de votre propre serveur Komga, Kavita, OPDS ou Gutter. La lecture, l'import de fichiers et la synchronisation de la progression sont gratuits. Pro est un achat unique, jamais un abonnement.
 
-Pas de serveur ? Touchez « Import comics from Files » et choisissez vos fichiers CBZ. Aucun compte, rien à configurer.
+ESSAYEZ EN QUELQUES SECONDES
+Pas encore de comics ? Touchez « Try a sample comic » sur le premier écran et commencez à lire. Vous avez des fichiers CBZ ? Touchez « Import comics from Files » et choisissez-les. Aucun compte, rien à configurer.
 
-Vous avez un serveur ? Connectez-vous à Komga ou Kavita avec votre nom d'utilisateur et votre mot de passe ou avec une clé d'API, à tout catalogue OPDS avec diffusion des pages (OPDS-PSE), ou bien à un serveur Gutter auto-hébergé. Votre bibliothèque s'affiche avec ses séries, ses couvertures et l'endroit où vous vous êtes arrêté.
+APPORTEZ VOTRE SERVEUR
+Connectez-vous à Komga ou Kavita avec votre nom d'utilisateur et votre mot de passe ou avec une clé d'API, à tout catalogue OPDS avec diffusion des pages (OPDS-PSE), ou bien à un serveur Gutter auto-hébergé. Vos séries, vos couvertures et l'endroit où vous vous êtes arrêté dans chaque numéro s'affichent. Avec Komga, Kavita ou un serveur Gutter, la progression se synchronise dans les deux sens.
 
 LECTURE
 • Mode page ou défilement vertical
@@ -12,24 +14,23 @@ LECTURE
 • Choix de la disposition des zones tactiles, du fond de page et de la luminosité
 • Changement de page avec les boutons de volume, en option
 • Minuteur de mise en veille pour lire au lit
+• Sur iPad, touchez le titre du comic pendant la lecture pour voir sa série dans un panneau latéral, sans quitter la page
 
 VOTRE BIBLIOTHÈQUE
+• Reprenez là où vous vous êtes arrêté depuis l'onglet Read
 • Bibliothèque avec recherche, filtres et tri
+• Touchez le cercle d'un numéro pour le marquer comme lu ou non lu, avec Annuler
 • Files de lecture pour prévoir vos prochaines lectures
-• Importez des fichiers CBZ depuis l'app Fichiers
-• Avec Komga, Kavita ou un serveur Gutter, la progression se synchronise dans les deux sens
 • Votre bibliothèque reste consultable quand le serveur est injoignable
 
 GUTTER PRO
-Un achat unique, pas un abonnement. Vous ne paierez jamais de mise à niveau : un seul achat couvre toutes les versions futures.
+Un seul achat couvre toutes les versions futures. Jamais d'abonnement.
+• Zoom guidé : parcourez une page case par case, ainsi que les doubles pages. Les cases sont détectées sur votre appareil, donc cela fonctionne aussi avec Komga et Kavita. Votre premier comic s'ouvre avec le zoom guidé activé, gratuitement pour ce numéro
 • Téléchargements hors ligne : emportez les numéros de votre serveur avec vous
-• Zoom guidé : parcourez une page case par case (les cases sont détectées sur votre appareil, donc cela fonctionne avec Komga et Kavita), ainsi que les doubles pages. Vous pouvez essayer gratuitement le zoom par cases sur un numéro
 • Plus d'un serveur
-• Statistiques de lecture : pages par jour, séries de jours consécutifs et plus encore
-
-La lecture, le streaming, l'import de fichiers et la synchronisation de la progression sont gratuits.
+• Statistiques de lecture : pages par jour, séries de jours consécutifs et plus encore, avec une carte à partager. La carte montre vos chiffres, jamais ce que vous lisez
 
 CONFIDENTIALITÉ
 Gutter ne collecte rien. Pas de compte, pas d'outils d'analyse, pas de publicité, pas de pistage. L'app ne communique qu'avec les serveurs que vous ajoutez.
 
-Gutter ne contient et ne vend aucun comic. Il vous faut vos propres fichiers CBZ, ou votre propre serveur Komga, Kavita, OPDS ou Gutter. Le serveur Gutter est gratuit et open source : github.com/rthaines211/gutter-server
+Gutter ne vend aucun comic. À part l'exemple gratuit, il vous faut vos propres fichiers CBZ, ou votre propre serveur Komga, Kavita, OPDS ou Gutter. Le serveur Gutter est gratuit et open source : github.com/rthaines211/gutter-server

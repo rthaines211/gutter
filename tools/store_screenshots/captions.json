@@ -1,0 +1,245 @@
+{
+  "_note": "Caption per shot and locale. title is set in Bangers (upper-cased by frame.py), sub in the body font. App UI in the captures stays English (the app has no translations). Translations are machine-written: have a native speaker check them before upload.",
+  "panel": {
+    "en-US": {
+      "title": "Panel by panel",
+      "sub": "Guided zoom walks you through every page"
+    },
+    "fr-FR": {
+      "title": "Case par case",
+      "sub": "Le zoom guidé vous fait parcourir chaque page"
+    },
+    "es-MX": {
+      "title": "Viñeta por viñeta",
+      "sub": "El zoom guiado te lleva por cada página"
+    },
+    "pt-BR": {
+      "title": "Quadro a quadro",
+      "sub": "O zoom guiado percorre cada página com você"
+    },
+    "de-DE": {
+      "title": "Panel für Panel",
+      "sub": "Der geführte Zoom führt dich durch jede Seite"
+    }
+  },
+  "read": {
+    "en-US": {
+      "title": "Pick up where you left off",
+      "sub": "Progress syncs with Komga and Kavita"
+    },
+    "fr-FR": {
+      "title": "Reprenez là où vous en étiez",
+      "sub": "La progression se synchronise avec Komga et Kavita"
+    },
+    "es-MX": {
+      "title": "Sigue donde te quedaste",
+      "sub": "Tu progreso se sincroniza con Komga y Kavita"
+    },
+    "pt-BR": {
+      "title": "Continue de onde parou",
+      "sub": "O progresso sincroniza com Komga e Kavita"
+    },
+    "de-DE": {
+      "title": "Lies weiter, wo du warst",
+      "sub": "Fortschritt synchron mit Komga und Kavita"
+    }
+  },
+  "library": {
+    "en-US": {
+      "title": "Your whole library",
+      "sub": "Komga, Kavita, OPDS or your own CBZ files"
+    },
+    "fr-FR": {
+      "title": "Toute votre bibliothèque",
+      "sub": "Komga, Kavita, OPDS ou vos propres fichiers CBZ"
+    },
+    "es-MX": {
+      "title": "Toda tu biblioteca",
+      "sub": "Komga, Kavita, OPDS o tus propios archivos CBZ"
+    },
+    "pt-BR": {
+      "title": "Toda a sua biblioteca",
+      "sub": "Komga, Kavita, OPDS ou seus próprios arquivos CBZ"
+    },
+    "de-DE": {
+      "title": "Deine ganze Bibliothek",
+      "sub": "Komga, Kavita, OPDS oder eigene CBZ-Dateien"
+    }
+  },
+  "series_panel": {
+    "en-US": {
+      "title": "The series, right there",
+      "sub": "Tap the title to see every issue beside the page"
+    },
+    "fr-FR": {
+      "title": "La série, juste à côté",
+      "sub": "Touchez le titre pour voir tous les numéros"
+    },
+    "es-MX": {
+      "title": "La serie, ahí mismo",
+      "sub": "Toca el título para ver todos los números"
+    },
+    "pt-BR": {
+      "title": "A série, bem ao lado",
+      "sub": "Toque no título para ver todas as edições"
+    },
+    "de-DE": {
+      "title": "Die Serie, gleich daneben",
+      "sub": "Tippe auf den Titel für alle Ausgaben"
+    }
+  },
+  "read_checks": {
+    "en-US": {
+      "title": "One tap: read",
+      "sub": "Tap the circle on any issue. Undo is right there"
+    },
+    "fr-FR": {
+      "title": "Lu, en un geste",
+      "sub": "Touchez le cercle d'un numéro. Annuler est juste là"
+    },
+    "es-MX": {
+      "title": "Leído, de un toque",
+      "sub": "Toca el círculo de un número. Puedes deshacerlo"
+    },
+    "pt-BR": {
+      "title": "Lido, num toque",
+      "sub": "Toque no círculo de uma edição. Dá para desfazer"
+    },
+    "de-DE": {
+      "title": "Gelesen, mit einem Tipp",
+      "sub": "Tippe auf den Kreis einer Ausgabe. Rückgängig inklusive"
+    }
+  },
+  "sample": {
+    "en-US": {
+      "title": "Reading in seconds",
+      "sub": "Try a sample comic. No server, no account"
+    },
+    "fr-FR": {
+      "title": "Lisez en quelques secondes",
+      "sub": "Essayez un comic d'exemple. Sans serveur ni compte"
+    },
+    "es-MX": {
+      "title": "A leer en segundos",
+      "sub": "Prueba un cómic de ejemplo. Sin servidor ni cuenta"
+    },
+    "pt-BR": {
+      "title": "Lendo em segundos",
+      "sub": "Teste um quadrinho de exemplo. Sem servidor nem conta"
+    },
+    "de-DE": {
+      "title": "In Sekunden lesen",
+      "sub": "Teste einen Beispiel-Comic. Ohne Server und Konto"
+    }
+  },
+  "page": {
+    "en-US": {
+      "title": "Made for iPad",
+      "sub": "Full-screen pages, sharp at any zoom"
+    },
+    "fr-FR": {
+      "title": "Pensé pour l'iPad",
+      "sub": "Des pages en plein écran, nettes à tout zoom"
+    },
+    "es-MX": {
+      "title": "Hecho para iPad",
+      "sub": "Páginas a pantalla completa, nítidas con zoom"
+    },
+    "pt-BR": {
+      "title": "Feito para o iPad",
+      "sub": "Páginas em tela cheia, nítidas em qualquer zoom"
+    },
+    "de-DE": {
+      "title": "Fürs iPad gemacht",
+      "sub": "Seiten im Vollbild, scharf bei jedem Zoom"
+    }
+  },
+  "offline": {
+    "en-US": {
+      "title": "Read offline",
+      "sub": "Download issues and read anywhere"
+    },
+    "fr-FR": {
+      "title": "Lisez hors ligne",
+      "sub": "Téléchargez des numéros, lisez partout"
+    },
+    "es-MX": {
+      "title": "Lee sin conexión",
+      "sub": "Descarga números y lee donde sea"
+    },
+    "pt-BR": {
+      "title": "Leia offline",
+      "sub": "Baixe edições e leia em qualquer lugar"
+    },
+    "de-DE": {
+      "title": "Offline lesen",
+      "sub": "Ausgaben laden und überall lesen"
+    }
+  },
+  "stats": {
+    "en-US": {
+      "title": "Your reading, in numbers",
+      "sub": "Streaks and pages per day, with a card to share"
+    },
+    "fr-FR": {
+      "title": "Vos lectures en chiffres",
+      "sub": "Séries de jours et pages par jour, à partager"
+    },
+    "es-MX": {
+      "title": "Tu lectura en números",
+      "sub": "Rachas y páginas por día, con tarjeta para compartir"
+    },
+    "pt-BR": {
+      "title": "Sua leitura em números",
+      "sub": "Sequências e páginas por dia, com cartão para compartilhar"
+    },
+    "de-DE": {
+      "title": "Dein Lesen in Zahlen",
+      "sub": "Streaks und Seiten pro Tag, mit Karte zum Teilen"
+    }
+  },
+  "pro": {
+    "en-US": {
+      "title": "One purchase. No subscription.",
+      "sub": "Gutter Pro covers every future version"
+    },
+    "fr-FR": {
+      "title": "Un achat. Aucun abonnement.",
+      "sub": "Gutter Pro couvre toutes les versions futures"
+    },
+    "es-MX": {
+      "title": "Una compra. Sin suscripción.",
+      "sub": "Gutter Pro cubre todas las versiones futuras"
+    },
+    "pt-BR": {
+      "title": "Uma compra. Sem assinatura.",
+      "sub": "O Gutter Pro cobre todas as versões futuras"
+    },
+    "de-DE": {
+      "title": "Ein Kauf. Kein Abo.",
+      "sub": "Gutter Pro deckt alle künftigen Versionen ab"
+    }
+  },
+  "pages": {
+    "en-US": {
+      "title": "Big, sharp pages",
+      "sub": "Fit to screen, width or height"
+    },
+    "fr-FR": {
+      "title": "De grandes pages nettes",
+      "sub": "Ajustées à l'écran, à la largeur ou à la hauteur"
+    },
+    "es-MX": {
+      "title": "Páginas grandes y nítidas",
+      "sub": "Ajuste a la pantalla, al ancho o al alto"
+    },
+    "pt-BR": {
+      "title": "Páginas grandes e nítidas",
+      "sub": "Ajuste à tela, à largura ou à altura"
+    },
+    "de-DE": {
+      "title": "Große, scharfe Seiten",
+      "sub": "An Bildschirm, Breite oder Höhe angepasst"
+    }
+  }
+}

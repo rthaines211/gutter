@@ -11,9 +11,9 @@ be true for the build.
 
 | Locale | Keywords | Length |
 |---|---|---|
-| English (U.S.) | see `fastlane/metadata/en-US/keywords.txt` | 98 |
-| Spanish (Mexico) | `selfhosted,nas,homelab,library,collection,opds,stats,streak,queue,bookmark,comics,lector,comic` | 94 |
-| French | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,opds` | 94 |
+| English (U.S.) | see `fastlane/metadata/en-US/keywords.txt` (Option A, 1.0.6) | 98 |
+| Spanish (Mexico) | `selfhosted,nas,homelab,collection,stats,streak,queue,bookmark,lector,tracker,unread,sync,vinetas` | 96 |
+| French | `manhwa,manhua,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,zoom,spread` | 93 |
 
 Notes:
 - Spanish (Mexico) carries the self-hosting words that did not fit in
@@ -36,8 +36,8 @@ locale before it goes into App Store Connect.** Nothing here is uploaded yet.
 
 | Locale | Folder | Keywords | Length |
 |---|---|---|---|
-| French | `fr-FR` | `manhwa,manhua,webtoon,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,opds` | 94 |
-| Spanish (Mexico) | `es-MX` | `selfhosted,nas,homelab,library,collection,opds,stats,streak,queue,bookmark,comics,lector,comic` | 94 |
+| French | `fr-FR` | `manhwa,manhua,vertical,scroll,bd,bande,dessinee,lecteur,volume,chapter,series,rtl,zoom,spread` | 93 |
+| Spanish (Mexico) | `es-MX` | `selfhosted,nas,homelab,collection,stats,streak,queue,bookmark,lector,tracker,unread,sync,vinetas` | 96 |
 | Portuguese (Brazil) | `pt-BR` | `manga,quadrinhos,gibi,comics,ler,cbz,cbr,quadro,zoom,offline,baixar,sincronizar,servidor,nas,opds` | 97 |
 | German | `de-DE` | `manga,lesen,leser,cbz,cbr,graphic,novel,panel,zoom,offline,download,sync,server,nas,webtoon,opds` | 96 |
 
@@ -57,3 +57,7 @@ Notes:
 - `opds` is in every translated keyword field (1.0.3 adds OPDS servers).
   English has it in the subtitle ("CBZ, Komga, Kavita & OPDS"), so it is
   not in the English keywords.
+
+2026-11-26: French and Spanish (Mexico) fields no longer repeat words from the
+English Option A field or subtitle (`webtoon`, `library`, `opds`, `comics`). See
+`listing-refresh-2026-11.md`.
