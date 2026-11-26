@@ -76,8 +76,11 @@ class ProNotifier extends Notifier<bool> {
         await ref.read(sharedPrefsProvider).setBool(_unlockedKey, true);
       }
       // StoreKit re-delivers every uncompleted transaction on launch; on
-      // Play, completing acknowledges.
-      if (p.pendingCompletePurchase) await store.complete(p);
+      // Play, completing acknowledges. Play can't acknowledge a pending
+      // (cash, slow card) purchase: it comes again as purchased.
+      if (p.pendingCompletePurchase && p.status != PurchaseStatus.pending) {
+        await store.complete(p);
+      }
     }
   }
 
