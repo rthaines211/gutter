@@ -11,17 +11,23 @@ class ReviewPrompt {
   static const threshold = 3;
   static const _countKey = 'review_finished_count';
   static const _askedKey = 'review_prompt_asked';
+  static const _finishedIdsKey = 'review_finished_ids';
 
-  /// Counts one finished issue.
-  static Future<void> recordFinish() async {
+  /// Counts [issueKey] (source id + comic id) as finished, once: a re-read
+  /// doesn't count again. Counts from older versions are kept.
+  // ponytail: one prefs entry per finished issue; fine for thousands.
+  static Future<void> recordFinish(String issueKey) async {
     final p = await SharedPreferences.getInstance();
+    final ids = p.getStringList(_finishedIdsKey) ?? const <String>[];
+    if (ids.contains(issueKey)) return;
+    await p.setStringList(_finishedIdsKey, [...ids, issueKey]);
     await p.setInt(_countKey, (p.getInt(_countKey) ?? 0) + 1);
   }
 
   static int finishedCount(SharedPreferences p) => p.getInt(_countKey) ?? 0;
 
   /// Shows the rating dialog when it's due. Call it when the reader leaves a
-  /// finished issue, never mid-page. True when it asked. [request] is for tests.
+  /// finished issue (Close, Back to series or Next issue), never mid-page. True when it asked. [request] is for tests.
   static Future<bool> maybeAsk({Future<void> Function()? request}) async {
     if (!isStore) return false; // the personal build isn't on the App Store
     final p = await SharedPreferences.getInstance();
