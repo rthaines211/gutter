@@ -1621,7 +1621,8 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
     final state = ref.read(readerProvider(_readerKey)).value;
     final pageCount = state?.info?.pageCount ?? 0;
     if (pageCount > 0) {
-      unawaited(ReviewPrompt.recordFinish());
+      // Awaited: the rating check right after this reads the count.
+      await ReviewPrompt.recordFinish('${ref.read(activeSourceProvider).id}/$_comicId');
       // Local-first: mark completed in the mirror so shelves update instantly
       // even if the network write fails.
       await ref.read(mirrorDbProvider).saveProgressLocal(
@@ -1674,6 +1675,9 @@ class ReaderScreenState extends ConsumerState<ReaderScreen>
 
     // Mark current comic as completed + flush session via the shared helper.
     await _markCurrentCompletedAndFlushSession();
+    // Readers who always tap Next never use Close: ask here too. The dialog
+    // is Apple's overlay and shows over the next issue as it opens.
+    unawaited(ReviewPrompt.maybeAsk());
 
     if (!mounted) return;
 
