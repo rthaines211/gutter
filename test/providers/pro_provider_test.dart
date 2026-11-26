@@ -114,6 +114,19 @@ void main() {
       expect(store.completed, hasLength(1), reason: 'Play refunds unacknowledged purchases');
     });
 
+    test('a pending purchase is not acknowledged or unlocked until it goes through', () async {
+      final (c, store) = await container();
+      c.read(proProvider);
+      store.controller.add([purchase(PurchaseStatus.pending, pending: true)]);
+      await pumpEventQueue();
+      expect(c.read(proProvider), isFalse);
+      expect(store.completed, isEmpty, reason: 'Play rejects acknowledging a pending purchase');
+      store.controller.add([purchase(PurchaseStatus.purchased, pending: true)]);
+      await pumpEventQueue();
+      expect(c.read(proProvider), isTrue);
+      expect(store.completed, hasLength(1));
+    });
+
     test('buy asks the store for the Pro product', () async {
       final (c, store) = await container();
       await c.read(proProvider.notifier).buy();
