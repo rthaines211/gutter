@@ -1,6 +1,18 @@
-# Comic Reader App
+# CLAUDE.md
 
-Flutter-based comic reader for iPad that connects to a local backend API server.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+# Gutter (comic reader app)
+
+Flutter comic reader for iPad and iPhone (Android in preparation) that reads self-hosted libraries: the Gutter server (Go, separate repo `gutter-server`), Komga, Kavita, OPDS catalogs, or comics imported onto the device. On the App Store as "Gutter"; the personal build installs as "Longbox". Source-available under PolyForm Noncommercial (`LICENSE`); third-party assets are listed in `NOTICE`.
+
+## Common commands
+
+- `flutter pub get` — install dependencies
+- `flutter analyze --no-fatal-infos` — lint (infos are allowed; warnings are not)
+- `flutter test` — full suite (~3 min); `make check` runs analyze + test and gates every device build
+- `flutter test test/reader/page_reader_flow_test.dart` — one file; add `--plain-name "<test name>"` for one test
+- `dart run build_runner build --delete-conflicting-outputs` — regenerate `lib/services/mirror/mirror_database.g.dart` after changing drift tables. A schema change also bumps `schemaVersion` and adds an `if (from < N)` step to `onUpgrade` in `mirror_database.dart`.
 
 ## Tech Stack
 
@@ -41,8 +53,10 @@ lib/
   screens/      # ReaderScreen, LibraryScreen, BrowseScreen, SeriesDetailScreen, etc.
   services/     # ApiClient, PagePrefetcher, PanSequenceController, display_rect_calculator, page_transform_calculator, spread_detector
   widgets/      # PageReader, ScrollReader, ZoomWrapper, SeriesDetailPanel, ShimmerBox, StaggeredEntry, IpadSidebar, etc.
-test/           # Unit tests (page_prefetcher_test.dart)
-docs/           # Design specs and implementation plans
+test/           # Mirrors lib/ (services/, providers/, screens/, widgets/…); test/reader/ is the reader integration suite
+docs/           # Design specs, plans (docs/plans), roadmap, App Store/Play copy (docs/app-store)
+fastlane/metadata/  # Store listing text per locale (de-DE, en-US, es-MX, fr-FR, pt-BR)
+tools/store_screenshots/  # frame.py + captions.json: frames raw captures as localized store screenshots
 ```
 
 ## Build & Run
@@ -168,7 +182,7 @@ Configurable base URL (no built-in default in public builds). Backend: the Go/SQ
 flutter test
 ```
 
-Tests exist for PagePrefetcher, PanSequenceController (Matrix4-based), display_rect_calculator, page_transform_calculator, spread_detector, and ReaderSettings serialization.
+`test/flutter_test_config.dart` runs every test as the personal flavor on iOS (see Build & Run and Android).
 
 `test/reader/` is the reader integration suite: it pumps the real `ReaderScreen` against an in-test HTTP server (`fake_comic_server.dart`) via `harness.dart` (`pumpReader`, `settleImages`, `disposeReader`, `useComicServer`). Never use `pumpAndSettle` there (repeating shimmer timers); real HTTP and image decode only progress inside `tester.runAsync` (use `settleImages`).
 
@@ -179,5 +193,16 @@ Tests exist for PagePrefetcher, PanSequenceController (Matrix4-based), display_r
 - `reader_chrome_test` "fitWidth step: vertical drag…" flakes under full-suite load and passes alone.
 - A bare `ProviderContainer` that calls `NavigationNotifier.go` needs `gutterFeaturesProvider.overrideWithValue(true)`. Widgets with issue covers need `issueCoverPathsProvider` overridden (`Stream.value(const {})`).
 - Phone-layout widget tests use 600 wide, not 390: Library/Arcs header rows overflow with the Ahem test font.
+
+## Releases and store copy
+
+- Version lives only in `pubspec.yaml` (`version: 1.0.6+11`). A release bump is its own PR titled `chore: <version> (<build>)`, plus release notes when there are any.
+- Store text is in `fastlane/metadata/<locale>/` (name, subtitle, description, keywords, promotional text, release notes) for all five locales; change every locale together. There is no Fastfile: the metadata is the source copy for App Store Connect. Background, keyword research and review notes are in `docs/app-store/`.
+- Screenshots: `python3 tools/store_screenshots/frame.py --device ipad --shot read --capture raw/read.png --out out/` (needs Pillow); captions per locale in `captions.json`.
+- Keep store copy true to what the build does (see Pro above).
+
+## Worktrees
+
+`.config/wt.toml` (worktrunk) runs `flutter pub get` when a worktree is created and copies ignored files listed in `.worktreeinclude`. `Makefile.local`, `CLAUDE.local.md` and `ios/Flutter/Flavor.xcconfig` are untracked, so a fresh checkout has none of them.
 
 Personal deploy notes, device setup and local tooling: see `CLAUDE.local.md` (untracked).
